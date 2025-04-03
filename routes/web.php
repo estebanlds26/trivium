@@ -4,8 +4,22 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('welcome')->with('section', 'home');
 });
+Route::get('/acerca-de', function () {
+    return view('welcome')->with('section', 'about');
+});
+Route::get('/productos', function () {
+    return view('welcome')->with('section', 'products');
+});
+Route::get('/iniciar-sesion', function () {
+    return view('welcome')->with('section', 'login');
+});
+Route::get('/registrarse', function () {
+    return view('welcome')->with('section', 'register');
+});
+
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');
