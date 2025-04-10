@@ -75,7 +75,7 @@ body {
 
 .product-detail {
   height: 100%;
-  display: none;
+  display: flex;
   background-color: #2b2b2b;
   align-items: center;
   position: absolute;

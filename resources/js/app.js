@@ -1,276 +1,226 @@
 import './bootstrap';
-
 import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;
 
-
-Alpine.data('elemento', () => ({
+Alpine.data('mainApp', () => ({
     open: false,
-    
-    toggle() {
-        this.open = !this.open
-    }
-}))
-Alpine.data('elemento1', () => ({    
-}))
-
-Alpine.start();
-
-document.addEventListener("DOMContentLoaded", function(){
-    //Efecto de desenfoque al hacer scroll
-    
-    const container = document.querySelector(".relevant");
-    const content = document.querySelector(".content");
-    const background = document.querySelector(".background");
-    
-    let routes = {
-        'home': '',
-        'about': 'acerca-de',
-        'products': 'productos',
-        'login': 'iniciar-sesion',
-        'register': 'registrarse',
-    };
-    let routesInverse = {
+    routes: {
+        home: '',
+        about: 'acerca-de',
+        products: 'productos',
+        login: 'iniciar-sesion',
+        register: 'registrarse',
+    },
+    routesInverse: {
         '/': 'home',
         '/acerca-de': 'about',
         '/productos': 'products',
         '/iniciar-sesion': 'login',
         '/registrarse': 'register',
-    };
+    },
+    previousSection: null,
+    scrollTop: 0,
     
-    let previousSection = document.querySelector("#about.relevant-content");
-    
-    content.addEventListener("scroll", () => {
-        const scrollTop = content.scrollTop;
-        background.style.filter = `blur(${scrollTop / 74}px)`;
-        updateFigure();
-        if (content.scrollTop > 230) {
-            if (document.querySelector(".link.active")?.id == "home-link") {
+    init() {
+        this.previousSection = document.querySelector("#about.relevant-content");
+        this.updateFigure();
+        window.addEventListener("resize", this.updateFigure);
+        //nexttick
+        this.$nextTick(() => {
+            let section= window.location.pathname;
+            let link=`.link#${this.routesInverse[section]}-link`
+            document.querySelector(link).click();
+        });
+        
+    },
+    toggle() {
+        this.open = !this.open;
+    },
+    handleScroll(content, background) {
+        this.scrollTop = content.scrollTop;
+        background.style.filter = `blur(${this.scrollTop / 74}px)`;
+        this.updateFigure();
+        if (this.scrollTop > 230) {
+            if (document.querySelector(".link.active")?.id === "home-link") {
                 document.querySelector(".link.active").classList.remove("active");
-                document.querySelector(`.link#${previousSection.id}-link`).classList.add("active");
+                document.querySelector(`.link#${this.previousSection.id}-link`).classList.add("active");
                 document.querySelector(".relevant-content.active")?.classList.remove("active");
-                previousSection.classList.add("active");
-                history.pushState({ page: 1 }, "", `/${routes[previousSection.id]}`);
+                this.previousSection.classList.add("active");
+                history.pushState({ page: 1 }, "", `/${this.routes[this.previousSection.id]}`);
             }
         } else {
-            previousSection = document.querySelector(".relevant-content.active") ?? previousSection;
-            previousSection.classList.remove("active");
+            this.previousSection = document.querySelector(".relevant-content.active") ?? this.previousSection;
+            this.previousSection.classList.remove("active");
             document.querySelector(".link.active")?.classList.remove("active");
             document.querySelector(".link#home-link").classList.add("active");
-            history.pushState({ page: 1 }, "", `/${routes["home"]}`);
+            history.pushState({ page: 1 }, "", `/${this.routes["home"]}`);
         }
-    });
-    
-    //Links de navegación
-    const links = document.querySelectorAll(".link");
-    links.forEach(link => {
-        link.addEventListener("click", function(ev) {
-            ev.preventDefault();
-            const section = document.querySelector(`#${this.id.replace("-link", "")}`);
-            autoScrollHeaderTop();
-            document.querySelector(".relevant-content.active")?.classList.remove("active");
-            document.querySelector(".link.active").classList.remove("active");
-            this.classList.add("active");
-            section?.classList.add("active");
-            if (section) section.scrollTop = 0;
-            history.pushState({ page: 1 }, "", `/${routes[this.id.replace("-link", "")]}`);
-            if (this.id == "home-link") {
-                autoScrollHeaderBottom();
-            } else {
-                previousSection = section ?? previousSection;
-            }  
-        });  
-    });
-    
-    if (!(window.location.pathname == "/" || window.location.pathname == "" || window.location.pathname == "/index.html")) {
-        let section = window.location.pathname.replace(".html", "");
-        document.querySelector(`.link#${routesInverse[section]}-link`).click();
-    }
-    //Auto scroll del contenido para mayor visibilidad
-    function autoScrollHeaderTop() {
-        container.querySelector("nav").scrollIntoView({ "behavior": "smooth", inline: "center", block: "start" }); 
-    }
-    function autoScrollHeaderBottom(mode) {
-        if (typeof mode != "undefined") {
-            if (mode == "abrupt") {
-                container.querySelector("nav").scrollIntoView({ "behavior": "auto", inline: "center", block: "end" });
-                return;
-            }
-        }
-        container.querySelector("nav").scrollIntoView({ "behavior": "smooth", inline: "center", block: "end" }); 
-    }
-    
-    if (["/", ""].includes(window.location.pathname)) autoScrollHeaderBottom("abrupt");
-    
-    document.querySelector(".relevant-content").addEventListener("scroll", function() {
-        autoScrollHeaderTop();
-    }); 
-
-    let landingPages = {
-        about: `<section class="bottom">...</section>`
-    };
-
-    function updateFigure() {
-        let e = document.querySelector(".content");
-        let eScrollTopMax = e.scrollHeight - e.clientHeight;
-        if (eScrollTopMax - e.scrollTop < 75) {
-            document.querySelector(".bottom").style.paddingTop = `${eScrollTopMax - e.scrollTop}px`;
-            document.querySelector(".content figure img").style.width = `${85 + eScrollTopMax - e.scrollTop}px`;
-            if (eScrollTopMax - e.scrollTop < 5) {
-                document.querySelector(".content figure").style.paddingTop = `${5 - (eScrollTopMax - e.scrollTop)}px`;
-            } else {
-                document.querySelector(".content figure").style.paddingTop = `0px`;
-            }
+    },
+    navigateToSection(link) {
+        const section = document.querySelector(`#${link.id.replace("-link", "")}`);
+        this.autoScrollHeaderTop();
+        document.querySelector(".relevant-content.active")?.classList.remove("active");
+        document.querySelector(".link.active").classList.remove("active");
+        link.classList.add("active");
+        section?.classList.add("active");
+        if (section) section.scrollTop = 0;
+        history.pushState({ page: 1 }, "", `/${this.routes[link.id.replace("-link", "")]}`);
+        if (link.id === "home-link") {
+            this.autoScrollHeaderBottom();
         } else {
-            document.querySelector(".bottom").style.paddingTop = "75px";
-            document.querySelector(".content figure img").style.width = "160px";
+            this.previousSection = section ?? this.previousSection;
         }
+    },
+    autoScrollHeaderTop() {
+        document.querySelector(".relevant nav").scrollIntoView({ behavior: "smooth", block: "start" });
+    },
+    autoScrollHeaderBottom(mode) {
+        const behavior = mode === "abrupt" ? "auto" : "smooth";
+        document.querySelector(".relevant nav").scrollIntoView({ behavior, block: "end" });
+    },
+    updateFigure() {
+        const e = document.querySelector(".content");
+        const eScrollTopMax = e.scrollHeight - e.clientHeight;
+        const bottom = document.querySelector(".bottom");
+        const figureImg = document.querySelector(".content figure img");
+        const figure = document.querySelector(".content figure");
+
+        if (eScrollTopMax - e.scrollTop < 75) {
+            bottom.style.paddingTop = `${eScrollTopMax - e.scrollTop}px`;
+            figureImg.style.width = `${85 + eScrollTopMax - e.scrollTop}px`;
+            figure.style.paddingTop = eScrollTopMax - e.scrollTop < 5 ? `${5 - (eScrollTopMax - e.scrollTop)}px` : `0px`;
+        } else {
+            bottom.style.paddingTop = "75px";
+            figureImg.style.width = "160px";
+        }
+    },
+    
+}));
+
+Alpine.data('productos', () => ({
+    slideshowIndex: 0,
+    products: [
+        {
+            id: 0,
+            name: "Irish Red Ale",
+            image: "/images/welcome/TRIVIUM-25.jpg",
+            description: `La Irish Red Ale es una joya en nuestro repertorio en
+                        Trivium, una cerveza que tiene profundas raíces en la
+                        tradición cervecera irlandesa. Cuando comenzamos
+                        nuestra aventura en el mundo de la cerveza artesanal,
+                        sabíamos que queríamos capturar la esencia y el
+                        carácter únicos de este estilo clásico.
+
+                        Nos enamoramos de la Irish Red Ale por su color rojizo
+                        distintivo, que proviene de las maltas tostadas que
+                        utilizamos en su elaboración. Estas maltas no solo le
+                        dan su apariencia característica, sino que también
+                        aportan sabores dulces y notas de caramelo que
+                        complementan perfectamente el ligero amargor de
+                        los lúpulos utilizados.
+
+                        Cada lote de nuestra Irish Red Ale es una celebración
+                        de la rica historia cervecera de Irlanda y de nuestra
+                        pasión por la calidad y la artesanía. Es una cerveza que
+                        nos conecta con las tradiciones mientras permitimos
+                        que nuestro toque personal y creativo brille a través de
+                        cada sorbo. Nos enorgullece compartir esta cerveza con
+                        nuestros clientes, invitándolos a disfrutar de su
+                        complejidad y carácter único, al tiempo que honramos
+                        y celebramos la herencia cervecera que inspiró su
+                        creación.`,
+                price: 9000,
+                images: [
+                    "/images/welcome/TRIVIUM-25.jpg",
+                    "/images/welcome/TRIVIUM-28.jpg",
+                    "/images/welcome/TRIVIUM-25.jpg",
+                    "/images/welcome/TRIVIUM-28.jpg",
+                    "/images/welcome/TRIVIUM-25.jpg",
+                    "/images/welcome/TRIVIUM-28.jpg",
+                    "/images/welcome/TRIVIUM-25.jpg",
+                    "/images/welcome/TRIVIUM-28.jpg",
+                    "/images/welcome/TRIVIUM-25.jpg",
+                    "/images/welcome/TRIVIUM-28.jpg",
+                    "/images/welcome/TRIVIUM-25.jpg",
+                    "/images/welcome/TRIVIUM-28.jpg",
+                    "/images/welcome/TRIVIUM-25.jpg",
+                    "/images/welcome/TRIVIUM-28.jpg",
+                ],
+        }
+    ],
+    showProductDetail: false,
+    productDetail: null,
+    intervalThumbnails: null,
+    intervalScroll: null,
+    closeProductDetail(){
+        this.showProductDetail = false;
+        this.productDetail = null;
+    },
+    setProductDetail(producto){
+        this.productDetail = producto;
+        this.showProductDetail= true;
+    },
+    nextSlideshowImage() {
+        this.slideshowIndex = (this.slideshowIndex + 1) % this.productDetail.images.length;
+        this.updateSlideshow();
+    },
+    prevSlideshowImage() {
+        this.slideshowIndex = (this.slideshowIndex - 1 + this.productDetail.images.length) % this.productDetail.images.length;
+        this.updateSlideshow();
+    },
+    appearControls(){
+        const controls = document.querySelector(".controls");
+        const scrollRightControls= document.querySelector(".scroll-right-controls")
+        const scrollLeftControls= document.querySelector(".scroll-left-controls")
+        clearTimeout(this.intervalThumbnails)
+        controls.classList.add("visible")
+        scrollRightControls.classList.add("visible")
+        scrollLeftControls.classList.add("visible")
+        this.intervalThumbnails= setTimeout(function(){
+            controls.classList.remove("visible")
+            scrollRightControls.classList.remove("visible")
+            scrollLeftControls.classList.remove("visible")
+        }, 984)
+    },
+    scrollLeft () {
+        clearInterval(this.intervalScroll)
+        this.intervalScroll= setInterval(function(){
+            controls.scrollLeft-= 1
+            this.appearControls()
+
+        }, 2)
+    },
+    scrollRight () {
+        clearInterval(this.intervalScroll)
+        this.intervalScroll= setInterval(function(){
+            controls.scrollLeft+= 1
+            this.appearControls()
+        }, 2)
+    },
+    updateSlideshow(index) {
+        const slideshowContainer = document.querySelector(".slideshow-container");
+        
+        const slideshowImgs = slideshowContainer.querySelectorAll(".slideshow img");
+        const thumbnails = Array.from(document.querySelectorAll(".controls img"));
+        
+        
+        if(typeof index != "undefined"){
+            this.slideshowIndex = index;
+            this.appearControls()
+        }
+        slideshowContainer.setAttribute("data-index", this.slideshowIndex);
+        slideshowImgs[this.slideshowIndex].scrollIntoView({ behavior: "smooth", inline: "center" });
+        document.querySelector(".controls .active").classList.remove("active");
+        thumbnails[this.slideshowIndex].classList.add("active");
+        thumbnails[this.slideshowIndex].scrollIntoView({ behavior: "smooth", inline: "center" });
+
+        this.appearControls()
     }
 
-    window.addEventListener("resize", updateFigure);
-    const productDetailClose = document.querySelector(".product-detail .close");
-    const products = document.querySelector("#products");
-    const productCards = document.querySelectorAll(".product");
+}))
 
-    productDetailClose.addEventListener("click", () => {
-        products.classList.remove("details");
-    });
-    productCards.forEach((card) => {
-        card.addEventListener("click", () => {
-            products.classList.add("details");
-        });
-    });
-
-    const nextImage = document.querySelector(".next-image");
-    const slideshowContainer = document.querySelector(".slideshow-container");
-    const slideshowImages = slideshowContainer.querySelectorAll(".slideshow img");
-    const controls = document.querySelector(".controls");
-    const slideshowThumbnailImages = controls.querySelectorAll("img");
-    const slideshowThumbnailsFiltered = Array.from(slideshowThumbnailImages);
-    let intervalScroll = null;
-    let intervalThumbnails = null;
-
-    nextImage.addEventListener("mouseup", function () {
-        let index = slideshowContainer.getAttribute("data-index");
-        index++;
-        if (index > slideshowImages.length - 1) {
-            index = 0;
-        }
-        slideshowContainer.setAttribute("data-index", index);
-        slideshowImages[index].scrollIntoView({ "behavior": "smooth", inline: "center" });
-        controls.querySelector(".active").classList.remove("active");
-        slideshowThumbnailImages[index].classList.add("active");
-        slideshowThumbnailImages[index].scrollIntoView({ "behavior": "smooth", inline: "center" });
-
-        clearTimeout(intervalThumbnails);
-        controls.classList.add("visible");
-        scrollRightControls.classList.add("visible");
-        scrollLeftControls.classList.add("visible");
-        intervalThumbnails = setTimeout(function() {
-            controls.classList.remove("visible");
-            scrollRightControls.classList.remove("visible");
-            scrollLeftControls.classList.remove("visible");
-        }, 523);
-    });
-
-    const prevImage = document.querySelector(".prev-image");
-    prevImage.addEventListener("mouseup", function () {
-        let index = slideshowContainer.getAttribute("data-index");
-        index--;
-        if (index < 0) {
-            index = slideshowImages.length - 1;
-        }
-        slideshowContainer.setAttribute("data-index", index);
-        slideshowImages[index].scrollIntoView({ "behavior": "smooth", inline: "center" });
-        controls.querySelector(".active").classList.remove("active");
-        slideshowThumbnailImages[index].classList.add("active");
-        slideshowThumbnailImages[index].scrollIntoView({ "behavior": "smooth", inline: "center" });
-
-        clearTimeout(intervalThumbnails);
-        controls.classList.add("visible");
-        scrollRightControls.classList.add("visible");
-        scrollLeftControls.classList.add("visible");
-        intervalThumbnails = setTimeout(function() {
-            controls.classList.remove("visible");
-            scrollRightControls.classList.remove("visible");
-            scrollLeftControls.classList.remove("visible");
-        }, 523);
-    });
-
-    slideshowThumbnailImages.forEach(im => {
-        im.addEventListener("click", function(ev) {
-            let index = Array.prototype.indexOf.call(ev.target.parentNode.children, ev.target);
-            slideshowContainer.setAttribute("data-index", index);
-            slideshowImages[index].scrollIntoView({ "behavior": "smooth", inline: "center" });
-            controls.querySelector(".active").classList.remove("active");
-            slideshowThumbnailImages[index].classList.add("active");
-            slideshowThumbnailImages[index].scrollIntoView({ "behavior": "smooth", inline: "center" });
-
-            clearTimeout(intervalThumbnails);
-            controls.classList.add("visible");
-            scrollRightControls.classList.add("visible");
-            scrollLeftControls.classList.add("visible");
-            intervalThumbnails = setTimeout(function() {
-                controls.classList.remove("visible");
-                scrollRightControls.classList.remove("visible");
-                scrollLeftControls.classList.remove("visible");
-            }, 984);
-        });
-    });
-
-    const scrollRightControls = document.querySelector(".scroll-right-controls");
-    const scrollLeftControls = document.querySelector(".scroll-left-controls");
-
-    scrollLeftControls.addEventListener("mouseenter", function () {
-        clearInterval(intervalScroll);
-        intervalScroll = setInterval(function() {
-            controls.scrollLeft -= 1;
-            clearTimeout(intervalThumbnails);
-            controls.classList.add("visible");
-            scrollRightControls.classList.add("visible");
-            scrollLeftControls.classList.add("visible");
-            intervalThumbnails = setTimeout(function() {
-                controls.classList.remove("visible");
-                scrollRightControls.classList.remove("visible");
-                scrollLeftControls.classList.remove("visible");
-            }, 984);
-        }, 2);
-    });
-
-    scrollRightControls.addEventListener("mouseenter", function () {
-        clearInterval(intervalScroll);
-        intervalScroll = setInterval(function() {
-            controls.scrollLeft += 1;
-            clearTimeout(intervalThumbnails);
-            controls.classList.add("visible");
-            scrollRightControls.classList.add("visible");
-            scrollLeftControls.classList.add("visible");
-            intervalThumbnails = setTimeout(function() {
-                controls.classList.remove("visible");
-                scrollRightControls.classList.remove("visible");
-                scrollLeftControls.classList.remove("visible");
-            }, 984);
-        }, 2);
-    });
-
-    scrollLeftControls.addEventListener("mouseleave", function () {
-        clearInterval(intervalScroll);
-    });
-
-    scrollRightControls.addEventListener("mouseleave", function () {
-        clearInterval(intervalScroll);
-    });
-
-    slideshowContainer.addEventListener("mousemove", function() {
-        clearTimeout(intervalThumbnails);
-        controls.classList.add("visible");
-        scrollRightControls.classList.add("visible");
-        scrollLeftControls.classList.add("visible");
-        intervalThumbnails = setTimeout(function() {
-            controls.classList.remove("visible");
-            scrollRightControls.classList.remove("visible");
-            scrollLeftControls.classList.remove("visible");
-        }, 984);
-    });
-});
+Alpine.data('producto', () => ({
+    quantity: 0
+}))
+Alpine.start();
