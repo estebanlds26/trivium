@@ -1,62 +1,303 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="en" x-data="mainApp" x-init="init()">
 
-        <title>Laravel</title>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trivium | Cervecería Artesanal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}" type="image/x-icon" />
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
-
-        <!-- Styles / Scripts -->
-            @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/main.js' ])
-   
-    </head>
-    <body class="bg-[#fff] dark:bg-[#fff] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
-        <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden">
-            @if (Route::has('login'))
-                <nav class="flex items-center justify-end gap-4">
-                    @auth
-                        <a
-                            href="{{ url('/dashboard') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal"
-                        >
-                            Dashboard
-                        </a>
-                    @else
-                        <a
-                            href="{{ route('login') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-[#1b1b18] border border-transparent hover:border-[#19140035] dark:hover:border-[#3E3E3A] rounded-sm text-sm leading-normal"
-                        >
-                            Log in
-                        </a>
-
-                        @if (Route::has('register'))
-                            <a
-                                href="{{ route('register') }}"
-                                class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
-                                Register
-                            </a>
-                        @endif
-                    @endauth
+<body>
+    <aside class="content" @scroll="handleScroll($event.target, document.querySelector('.background'))">
+        <section class="bottom">
+            <figure>
+                <img id="home-link" class="link active" src="{{ asset('images/welcome/TRIVIUM_recortado.png') }}"
+                    alt="Logo de Trivium" @click="navigateToSection($event.target)" />
+            </figure>
+            <article class="relevant">
+                <nav>
+                    <div>
+                        <a data-title="Iniciar Sesión" data-link="login" id="login-link" class="link"
+                            @click.prevent="navigateToSection($event.target)">Iniciar Sesión</a>
+                        <a data-title="Productos" data-link="products" id="products-link" class="link"
+                            @click.prevent="navigateToSection($event.target)">Ver Productos</a>
+                    </div>
+                    <div>
+                        <a data-title="Acerca De" data-link="about" id="about-link" class="link"
+                            @click.prevent="navigateToSection($event.target)">Acerca De</a>
+                        <a id="register-link" data-title="Registrarse" data-link="register" class="link"
+                            @click.prevent="navigateToSection($event.target)">Registrarse</a>
+                    </div>
                 </nav>
-            @endif
-        </header>
-        <div x-data="elemento">
-            <button x-on:click="toggle()">Cambiar</button>
-            <p x-text="open?'abierto':'cerrado'"></p>
-            <template x-if="open">
-                <span>asdlkansdl <b><u>sapopperro</u></b></span>
-            </template>
-            <div x-data="elemento2">
-                <button x-on:click="toggle()">Cambiar</button>
-                <p x-text="open?'abierto':'cerrado'"></p>
-            </div>
-        </div>
-        @if (Route::has('login'))
-            <div class="h-14.5 hidden lg:block"></div>
-        @endif
-    </body>
+
+                <section id="login" class="relevant-content">
+                    <form>
+                        <label for="username">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" name="username" placeholder="Nombre de usuario o Correo">
+                        </label>
+                        <label for="password">
+                            <i class="fa-solid fa-key"></i>
+                            <input type="password" name="password" placeholder="Contraseña">
+                        </label>
+                        <button type="submit" class="fa-solid fa-door-open"></button>
+                    </form>
+                    <figure>
+                        <img src="{{ asset('images/welcome/TRIVIUM-Texto-Sin Fondo.png') }}" alt>
+                    </figure>
+                </section>
+
+                <section id="products" class="relevant-content" x-data="productos">
+                    <template x-if="showProductDetail">
+                    <div class="product-detail">
+                        <div class="slideshow-container" @mousemove="appearControls" :data-index="slideshowIndex">
+                            <figure class="slideshow">
+                                <template x-for="(image, index) in productDetail.images" :key="index">
+                                    <img :src="image" alt>
+                                </template>
+                            </figure>
+                            <div class="prev-image" @click="prevSlideshowImage">
+                                <i class="fa-solid fa-circle-chevron-left"></i>
+                            </div>
+                            <div class="next-image" @click="nextSlideshowImage">
+                                <i class="fa-solid fa-circle-chevron-right"></i>
+                            </div>
+                            <div class="controls visible">
+                                <template x-for="(image, index) in productDetail.images" :key="index">
+                                    <img @click="updateSlideshow(index)" :class="index== 0?'active': ''" :src="image" alt>
+                                </template>
+                            </div>
+                            <div class="scroll-left-controls visible" @mouseenter="scrollLeft" @mouseleave="clearInterval(intervalScroll)">
+                            </div>
+                            <div class="scroll-right-controls visible" @mouseenter="scrollRight" @mouseleave="clearInterval(intervalScroll)">
+                            </div>
+                        </div>
+                        <div class="right">
+                            <div class="close" @click="closeProductDetail">
+                                <i class="fa-solid fa-xmark"></i>
+                            </div>
+                            <h1  x-text="productDetail.name"></h1>
+                            <p class="description" x-text="productDetail.description">
+                                
+                            </p>
+                            <div class="bottom">
+                                <div class="info">
+                                    <div class="left"><span class="price">$ 9.000</span></div>
+                                    <div class="right">
+                                        <input type="number" name="quantity" class="quantity">
+                                        <div class="add-to-cart">
+                                            <i class="fa-solid fa-cart-shopping"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </template>
+                    <template x-for="product in products" :key="product.id">
+                        <div x-data="producto" class="product-container">
+                            <article class="product" @click="setProductDetail(product)">
+                                <figure><img :src="product.image" alt></figure>
+                                <h1 x-text="product.name"></h1>
+                                <div class="info">
+                                    <div class="left"><span class="price" x-text="`$ ${product.price}`"></span></div>
+                                    <div class="right">
+                                        <input type="number" x-model="quantity" name="quantity" class="quantity" value="1" autocomplete="off">
+                                        <div class="add-to-cart" @click="addToCart(product, quantity)">
+                                            <i class="fa-solid fa-cart-shopping"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </template>
+                    <div class="product-container">
+                        <article class="product">
+                            <figure><img src="{{ asset('images/welcome/TRIVIUM-25.jpg') }}" alt></figure>
+                            <h1>Irish Red Ale</h1>
+                            <div class="info">
+                                <div class="left"><span class="price">$ 9.000</span></div>
+                                <div class="right">
+                                    <input type="number" name="quantity" class="quantity">
+                                    <div class="add-to-cart">
+                                        <i class="fa-solid fa-cart-shopping"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="product-container">
+                        <article class="product">
+                            <figure><img src="{{ asset('images/welcome/TRIVIUM-26.jpg') }}" alt></figure>
+                            <h1>Irish Red Ale</h1>
+                            <div class="info">
+                                <div class="left"><span class="price">$ 9.000</span></div>
+                                <div class="right">
+                                    <input type="number" name="quantity" class="quantity">
+                                    <div class="add-to-cart">
+                                        <i class="fa-solid fa-cart-shopping"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="product-container">
+                        <article class="product">
+                            <figure><img src="{{ asset('images/welcome/TRIVIUM-27.jpg') }}" alt></figure>
+                            <h1>Irish Red Ale</h1>
+                            <div class="info">
+                                <div class="left"><span class="price">$ 9.000</span></div>
+                                <div class="right">
+                                    <input type="number" name="quantity" class="quantity">
+                                    <div class="add-to-cart">
+                                        <i class="fa-solid fa-cart-shopping"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+
+                </section>
+
+                <section id="about" class="relevant-content">
+                    <div class="paragraph">
+                        <img src="{{ asset('images/welcome/TRIVIUM-36.jpg') }}" alt>
+                        <p>
+                            Así fue como nació Trivium, nuestro emprendimiento de cerveza
+                            artesanal. Desde hace años, los tres compartimos una pasión
+                            profunda por la buena cerveza. Nos encantaba explorar
+                            diferentes
+                            estilos y probar cervezas artesanales de todo el mundo,
+                            maravillándonos con la variedad de sabores, aromas y la
+                            calidad
+                            que estas ofrecían, gracias a sus técnicas tradicionales y
+                            cuidado
+                            artesanal.
+                            <br>
+                            <br>
+                            En 2022, decidimos que era momento de llevar nuestra pasión un
+                            paso más allá. Nos inscribimos en un curso intensivo de
+                            cerveza
+                            artesanal, donde aprendimos desde los fundamentos básicos
+                            hasta
+                            técnicas avanzadas de elaboración. Durante semanas, nos
+                            sumergimos en el proceso detallado de malteado, maceración,
+                            hervido, fermentación y embotellado. Aprendimos sobre la
+                            importancia de los ingredientes de calidad, las levaduras
+                            adecuadas
+                            para cada estilo y cómo controlar parámetros clave como la
+                            temperatura y el pH para obtener resultados consistentes y
+                            deliciosos.
+                        </p>
+                    </div>
+                    <div class="paragraph">
+                        <p>
+                            Así fue como nació XXXX, nuestro emprendimiento de cerveza
+                            artesanal. Desde hace años, los tres compartimos una pasión
+                            profunda por la buena cerveza. Nos encantaba explorar
+                            diferentes
+                            estilos y probar cervezas artesanales de todo el mundo,
+                            maravillándonos con la variedad de sabores, aromas y la
+                            calidad
+                            que estas ofrecían, gracias a sus técnicas tradicionales y
+                            cuidado
+                            artesanal.
+                            <br>
+                            <br>
+                            En 2022, decidimos que era momento de llevar nuestra pasión un
+                            paso más allá. Nos inscribimos en un curso intensivo de
+                            cerveza
+                            artesanal, donde aprendimos desde los fundamentos básicos
+                            hasta
+                            técnicas avanzadas de elaboración. Durante semanas, nos
+                            sumergimos en el proceso detallado de malteado, maceración,
+                            hervido, fermentación y embotellado. Aprendimos sobre la
+                            importancia de los ingredientes de calidad, las levaduras
+                            adecuadas
+                            para cada estilo y cómo controlar parámetros clave como la
+                            temperatura y el pH para obtener resultados consistentes y
+                            deliciosos.
+                        </p>
+                        <img src="{{ asset('images/welcome/TRIVIUM-36.jpg') }}" alt>
+                    </div>
+                    <div class="paragraph vertical">
+                        <img src="{{ asset('images/welcome/TRIVIUM-38.jpg') }}" alt>
+                        <p>
+                            Así fue como nació XXXX, nuestro emprendimiento de cerveza
+                            artesanal. Desde hace años, los tres compartimos una pasión
+                            profunda por la buena cerveza. Nos encantaba explorar
+                            diferentes
+                            estilos y probar cervezas artesanales de todo el mundo,
+                            maravillándonos con la variedad de sabores, aromas y la
+                            calidad
+                            que estas ofrecían, gracias a sus técnicas tradicionales y
+                            cuidado
+                            artesanal.
+                            <br>
+                            <br>
+                            En 2022, decidimos que era momento de llevar nuestra pasión un
+                            paso más allá. Nos inscribimos en un curso intensivo de
+                            cerveza
+                            artesanal, donde aprendimos desde los fundamentos básicos
+                            hasta
+                            técnicas avanzadas de elaboración. Durante semanas, nos
+                            sumergimos en el proceso detallado de malteado, maceración,
+                            hervido, fermentación y embotellado. Aprendimos sobre la
+                            importancia de los ingredientes de calidad, las levaduras
+                            adecuadas
+                            para cada estilo y cómo controlar parámetros clave como la
+                            temperatura y el pH para obtener resultados consistentes y
+                            deliciosos.
+                        </p>
+                    </div>
+                </section>
+
+                <section id="register" class="relevant-content">
+                    <form>
+                        <label for="username">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" name="username" placeholder="Nombre de usuario">
+                        </label>
+                        <label for="fullname">
+                            <i class="fa-solid fa-id-card"></i>
+                            <input type="text" name="fullname" placeholder="Nombres y apellidos">
+                        </label>
+                        <label for="phone">
+                            <i class="fa-solid fa-mobile-screen-button"></i>
+                            <input type="text" name="phone" placeholder="Número de celular">
+                        </label>
+                        <label for="email">
+                            <i class="fa-solid fa-envelope"></i>
+                            <input type="email" name="email" placeholder="Correo electrónico">
+                        </label>
+                        <label for="emailconfirmation">
+                            <i class="fa-solid fa-envelope"></i>
+                            <input type="email" name="emailconfirmation"
+                                placeholder="Confirma el correo electrónico">
+                        </label>
+                        <label for="password">
+                            <i class="fa-solid fa-key"></i>
+                            <input type="password" name="password" placeholder="Crea una contraseña">
+                        </label>
+                        <label for="passwordconfirmation">
+                            <i class="fa-solid fa-key"></i>
+                            <input type="password" name="passwordconfirmation" placeholder="Confirma la contraseña">
+                        </label>
+                        <button type="submit" class="fa-solid fa-user-plus"></button>
+                    </form>
+                    <figure>
+                        <img src="{{ asset('images/welcome/TRIVIUM-Texto-Sin Fondo.png') }}" alt>
+                    </figure>
+                </section>
+            </article>
+        </section>
+    </aside>
+    <img class="background" src="{{ asset('images/welcome/3cervezastrivium.jpg') }}" alt="Tres cervezas Trivium">
+</body>
+
 </html>
