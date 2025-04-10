@@ -26,7 +26,6 @@ Alpine.data('mainApp', () => ({
         this.previousSection = document.querySelector("#about.relevant-content");
         this.updateFigure();
         window.addEventListener("resize", this.updateFigure);
-        //nexttick
         this.$nextTick(() => {
             let section= window.location.pathname;
             let link=`.link#${this.routesInverse[section]}-link`
