@@ -13,6 +13,9 @@
 </head>
 
 <body>
+    @auth
+    haosdihoasd
+    @endauth
     <aside class="content" @scroll="handleScroll($event.target, document.querySelector('.background'))">
         <section class="bottom">
             <figure>
@@ -36,10 +39,11 @@
                 </nav>
 
                 <section id="login" class="relevant-content">
-                    <form>
-                        <label for="username">
+                    <form method="POST" action="{{ route('login') }}">
+                        @csrf
+                        <label for="login">
                             <i class="fa-solid fa-user"></i>
-                            <input type="text" name="username" placeholder="Nombre de usuario o Correo">
+                            <input type="text" name="login" placeholder="Nombre de usuario o Correo">
                         </label>
                         <label for="password">
                             <i class="fa-solid fa-key"></i>
@@ -258,35 +262,36 @@
                 </section>
 
                 <section id="register" class="relevant-content">
-                    <form>
+                    <form method="POST" action="{{ route('register') }}">
+                        @csrf
                         <label for="username">
                             <i class="fa-solid fa-user"></i>
                             <input type="text" name="username" placeholder="Nombre de usuario">
                         </label>
-                        <label for="fullname">
+                        <label for="name">
                             <i class="fa-solid fa-id-card"></i>
-                            <input type="text" name="fullname" placeholder="Nombres y apellidos">
+                            <input type="text" name="name" placeholder="Nombres y apellidos">
                         </label>
-                        <label for="phone">
+                        <label for="cellphone">
                             <i class="fa-solid fa-mobile-screen-button"></i>
-                            <input type="text" name="phone" placeholder="Número de celular">
+                            <input type="text" name="cellphone" placeholder="Número de celular">
                         </label>
                         <label for="email">
                             <i class="fa-solid fa-envelope"></i>
                             <input type="email" name="email" placeholder="Correo electrónico">
                         </label>
-                        <label for="emailconfirmation">
+                        <label for="email_confirmation">
                             <i class="fa-solid fa-envelope"></i>
-                            <input type="email" name="emailconfirmation"
+                            <input type="email" name="email_confirmation"
                                 placeholder="Confirma el correo electrónico">
                         </label>
                         <label for="password">
                             <i class="fa-solid fa-key"></i>
                             <input type="password" name="password" placeholder="Crea una contraseña">
                         </label>
-                        <label for="passwordconfirmation">
+                        <label for="password_confirmation">
                             <i class="fa-solid fa-key"></i>
-                            <input type="password" name="passwordconfirmation" placeholder="Confirma la contraseña">
+                            <input type="password" name="password_confirmation" placeholder="Confirma la contraseña">
                         </label>
                         <button type="submit" class="fa-solid fa-user-plus"></button>
                     </form>

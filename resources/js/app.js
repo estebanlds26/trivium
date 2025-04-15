@@ -84,8 +84,8 @@ Alpine.data('mainApp', () => ({
         const bottom = document.querySelector(".bottom");
         const figureImg = document.querySelector(".content figure img");
         const figure = document.querySelector(".content figure");
-
-        if (eScrollTopMax - e.scrollTop < 75) {
+        console.log(e.scrollTop, eScrollTopMax);
+        if (eScrollTopMax - e.scrollTop < 1) {
             bottom.style.paddingTop = `${eScrollTopMax - e.scrollTop}px`;
             figureImg.style.width = `${85 + eScrollTopMax - e.scrollTop}px`;
             figure.style.paddingTop = eScrollTopMax - e.scrollTop < 5 ? `${5 - (eScrollTopMax - e.scrollTop)}px` : `0px`;

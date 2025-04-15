@@ -1,8 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 * {
   box-sizing: border-box;
 }
@@ -413,7 +414,7 @@ body {
   margin: 0 auto;
 
   & label {
-    &[for="username"] {
+    &[for="login"] {
       grid-area: i;
       border-top-left-radius: 17px;
     }
@@ -477,37 +478,36 @@ body {
   margin: 0 auto;
 
   & label{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
     &[for="username"]{
       grid-area: i;
       border-top-left-radius: 17px;
       border-top-right-radius: 17px;      
     }
-    &[for="fullname"] {
+    &[for="name"] {
       grid-area: i2;
       border-top-right-radius: 17px;
     }
-    &[for="phone"] {
+    &[for="cellphone"] {
       grid-area: i3;
     }
     &[for="email"] {
       grid-area: i4;
     }
-    &[for="emailconfirmation"] {
+    &[for="email_confirmation"] {
       grid-area: i5;
     }
     &[for="password"] {
       grid-area: i6;
     }
-    &[for="passwordconfirmation"] {
+    &[for="password_confirmation"] {
       grid-area: i7;
       border-bottom-left-radius: 17px;
 
     }
-    overflow: hidden;
-    position: relative;
-    display: flex;
-    align-items: center;
-
     & input {
       width: 100%;
       height: 100%;
