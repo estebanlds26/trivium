@@ -41,9 +41,9 @@
                 <section id="login" class="relevant-content">
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
-                        <label for="username">
+                        <label for="login">
                             <i class="fa-solid fa-user"></i>
-                            <input type="text" name="email_or_username" placeholder="Nombre de usuario o Correo">
+                            <input type="text" name="login" placeholder="Nombre de usuario o Correo">
                         </label>
                         <label for="password">
                             <i class="fa-solid fa-key"></i>

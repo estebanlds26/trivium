@@ -29,36 +29,30 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        try {
-            $request->validate([
-                'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
-                'name' => ['required', 'string', 'max:255'],
-                'cellphone' => ['required', 'string', 'max:255', 'unique:'.User::class],
-                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-                'email_confirmation' => ['required', 'same:email'], // Ensure email confirmation matches
-                'password' => ['required', 'confirmed', Rules\Password::defaults()], // Ensure password confirmation matches
-            ]);
+        $request->validate([
+            'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
+            'name' => ['required', 'string', 'max:255'],
+            'cellphone' => ['required', 'string', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email_confirmation' => ['required', 'same:email'], // Ensure email confirmation matches
+            'password' => ['required', 'confirmed', Rules\Password::defaults()], // Ensure password confirmation matches
+        ]);
 
-            $user = User::create([
-                'username' => $request->username,
-                'name' => $request->name,
-                'cellphone' => $request->cellphone,
-                'cellphone_verified_at' => null, // Default to null
-                'profile_picture' => null, // Default to null
-                'email' => $request->email,
-                'email_verified_at' => null, // Default to null
-                'password' => Hash::make($request->password),
-            ]);
+        $user = User::create([
+            'username' => $request->username,
+            'name' => $request->name,
+            'cellphone' => $request->cellphone,
+            'cellphone_verified_at' => null, // Default to null
+            'profile_picture' => null, // Default to null
+            'email' => $request->email,
+            'email_verified_at' => null, // Default to null
+            'password' => Hash::make($request->password),
+        ]);
 
-            event(new Registered($user));
+        event(new Registered($user));
 
-            Auth::login($user);
+        Auth::login($user);
 
-            return redirect(route('dashboard', absolute: false));
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Log validation errors for debugging
-            \Log::error('Validation failed: ', $e->errors());
-            return back()->withErrors($e->errors())->withInput();
-        }
+        return redirect(route('dashboard', absolute: false));
     }
 }
