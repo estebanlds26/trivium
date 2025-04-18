@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" x-data="mainApp" x-init="init()">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="mainApp" x-init="init()">
 
 <head>
     <meta charset="UTF-8" />
@@ -13,9 +13,6 @@
 </head>
 
 <body>
-    @auth
-    haosdihoasd
-    @endauth
     <aside class="content" @scroll="handleScroll($event.target, document.querySelector('.background'))">
         <section class="bottom">
             <figure>
