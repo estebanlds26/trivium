@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="mainApp" x-init="init()">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="dashboardApp">
 
 <head>
     <meta charset="UTF-8" />
@@ -15,17 +15,35 @@
 <body>
     <aside class="dashboard">
         <section class="header">
-            <a href="#">
+            <a class="link active" id="home-link" @click="navigateToSection($event.target)">
                 <img src="{{ asset('images/welcome/TRIVIUM_recortado.png') }}" alt="">
             </a>
             <input type="text" placeholder="Busca en nuestra plataforma aquí" class="search" id="main-search"/>
-            <div class="user">
+            <div class="user" @click="triggerProfileLink">
                 <img src="{{ asset('images/welcome/TRIVIUM-1.jpeg') }}" alt="" class="avatar">
-                <i class="fa-solid fa-chevron-down"></i>
+                <i class="fa-solid" :class="openProfileLink?'fa-chevron-up':'fa-chevron-down'"></i>
+            </div>
+            <div class="profile" x-show="openProfileLink">
+                <div class="profile-info">
+                    <span class="name">{{ Auth::user()->name }}</span>
+
+                </div>
+                <div class="profile-options">
+                    <form action="{{ route('logout') }}" method="POST" class="logout-form" id="logout-form">
+                        @csrf
+                        <button type="submit" class="logout">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            Cerrar sesión
+                        </button>
+                    </form>
+                </div>
             </div>
         </section>
         <section class="sidebar">
             @yield('sidebar')
+        </section>
+        <section class="content">
+            @yield('content')
         </section>
     </aside>
     <img class="background" src="{{ asset('images/welcome/3cervezastrivium.jpg') }}" alt="Tres cervezas Trivium">

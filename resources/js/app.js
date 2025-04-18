@@ -3,7 +3,7 @@ import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;
 
-Alpine.data('mainApp', () => ({
+Alpine.data('welcomeApp', () => ({
     open: false,
     routes: {
         home: '',
@@ -58,7 +58,6 @@ Alpine.data('mainApp', () => ({
     },
     navigateToSection(link) {
         const section = document.querySelector(`#${link.id.replace("-link", "")}`);
-        this.autoScrollHeaderTop();
         document.querySelector(".relevant-content.active")?.classList.remove("active");
         document.querySelector(".link.active").classList.remove("active");
         link.classList.add("active");
@@ -68,6 +67,7 @@ Alpine.data('mainApp', () => ({
         if (link.id === "home-link") {
             this.autoScrollHeaderBottom();
         } else {
+            this.autoScrollHeaderTop();
             this.previousSection = section ?? this.previousSection;
         }
     },
@@ -218,7 +218,46 @@ Alpine.data('productos', () => ({
     }
 
 }))
+Alpine.data('dashboardApp', () => ({
+    section: 'home',
+    openProfileLink: false,
 
+    routes: {
+        home: '',
+        store: 'tienda',
+        contact: 'contacto',
+        settings: 'ajustes',
+        help: 'ayuda',
+    },
+    routesInverse: {
+        '/': 'home',
+        '/tienda': 'store',
+        '/contacto': 'contact',
+        '/ajustes': 'settings',
+        '/ayuda': 'help',
+    },
+    init(){
+        this.$nextTick(() => {
+            let section= window.location.pathname;
+            let link=`.link#${this.routesInverse[section]}-link`
+            document.querySelector(link).click();
+        });
+    },
+    triggerProfileLink(){
+        this.openProfileLink = !this.openProfileLink;
+    },
+    closeProfileLink(){
+        this.openProfileLink = false;
+    },
+    navigateToSection(target) {
+        let link= target.closest(".link")
+        this.section = link.id.replace("-link", "");
+        console.log(this.section, document.querySelector(`.link.active`), link);
+        document.querySelector(".link.active").classList.remove("active");
+        link.classList.add("active");
+        history.pushState({ page: 1 }, "", `/${this.routes[this.section]}`);
+    },
+}))
 Alpine.data('producto', () => ({
     quantity: 0
 }))
