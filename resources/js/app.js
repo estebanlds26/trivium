@@ -243,10 +243,12 @@ Alpine.data('dashboardApp', () => ({
             document.querySelector(link).click();
         });
     },
-    triggerProfileLink(){
+    triggerProfileLink(target){
+        if(target.closest(".profile")!= null)return
         this.openProfileLink = !this.openProfileLink;
     },
-    closeProfileLink(){
+    closeProfileLink(target){
+        if(target.closest(".profile")!= null)return
         this.openProfileLink = false;
     },
     navigateToSection(target) {
@@ -260,5 +262,27 @@ Alpine.data('dashboardApp', () => ({
 }))
 Alpine.data('producto', () => ({
     quantity: 0
+}))
+
+//Accordion which only one item can be open at a time
+Alpine.data('accordionItem', () => ({
+    open: false,
+    toggle() {
+        this.open = !this.open;
+        if (this.open) {
+            this.$dispatch('accordion:open', { item: this });
+        } else {
+            this.$dispatch('accordion:close', { item: this });
+        }
+    },
+}))
+Alpine.data('accordion', () => ({
+    openItem: null,
+    toggleItem(index){
+        this.openItem= this.openItem== index? null: index;
+    },
+    isOpen(index) {
+        return this.openItem == index;
+    }
 }))
 Alpine.start();

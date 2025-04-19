@@ -19,23 +19,24 @@
                 <img src="{{ asset('images/welcome/TRIVIUM_recortado.png') }}" alt="">
             </a>
             <input type="text" placeholder="Busca en nuestra plataforma aquí" class="search" id="main-search"/>
-            <div class="user" @click="triggerProfileLink">
+            
+            <div class="user" @click="triggerProfileLink($event.target)" x-on:click.outside="closeProfileLink($event.target)">
                 <img src="{{ asset('images/welcome/TRIVIUM-1.jpeg') }}" alt="" class="avatar">
-                <i class="fa-solid" :class="openProfileLink?'fa-chevron-up':'fa-chevron-down'"></i>
-            </div>
-            <div class="profile" x-show="openProfileLink">
-                <div class="profile-info">
-                    <span class="name">{{ Auth::user()->name }}</span>
-
-                </div>
-                <div class="profile-options">
-                    <form action="{{ route('logout') }}" method="POST" class="logout-form" id="logout-form">
-                        @csrf
-                        <button type="submit" class="logout">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            Cerrar sesión
-                        </button>
-                    </form>
+                <i class="fa-solid fa-chevron-down" :class="openProfileLink?'open':''"></i>
+                <div class="profile" :class="openProfileLink?'open':''">
+                    <div class="profile-info">
+                        <span class="name">{{ Auth::user()->name }}</span>
+    
+                    </div>
+                    <div class="profile-options">
+                        <form action="{{ route('logout') }}" method="POST" class="logout-form" id="logout-form">
+                            @csrf
+                            <button type="submit" class="logout">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                                Cerrar sesión
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </section>
