@@ -915,6 +915,7 @@ body {
           padding-left: 2rem;
           min-height: 120px;
           font-size: 1.6em;
+          width: 100%;
           &:not(:last-child){
             border-bottom: 1px solid #535353;
           }
@@ -926,9 +927,9 @@ body {
             color: #ddd;
             border-bottom: 1px solid #7d818e;
             padding: 0;
-            width: 600px;
+            max-width: 600px;
+            flex-grow: 1;
             margin-left: 1em;
-            flex-shrink: 1;
           }
         }
       }
