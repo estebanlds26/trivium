@@ -848,7 +848,7 @@ body {
   & .accordion-search {
     padding: 1.1rem 1.7rem;
     border: 2px solid #434343;
-    & #settings-search {
+    & .search {
       background: none;
       outline: none;
       border: none;
@@ -937,6 +937,6 @@ body {
   }
 }
 
-#settings {
+#settings, #help {
   padding: 2rem;
 }

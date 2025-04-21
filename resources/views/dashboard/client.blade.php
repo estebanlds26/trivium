@@ -250,8 +250,60 @@
                     </div>
                 </div>
             </div>
+        </div>
     </template>
     <template x-if="section =='help'">
-        <a href="">F33</a>
+        <div id="help" class="relevant-content">
+            <div class="accordion" x-data="accordion">
+                <div class="accordion-search">
+                    <input type="text" placeholder="Buscar ayuda" class="search" id="settings-search">
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" @click="toggleItem(0)">
+                        <h1>¿Cómo puedo crear una cuenta?</h1>
+                        <i class="fa-solid fa-chevron-down" :class="openItem == 0 ? 'open' : ''"></i>
+                    </div>
+                    <div class="accordion-body" :class="openItem == 0 ? 'open' : ''">
+                        zxczxc
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" @click="toggleItem(1)">
+                        <h1>¿Cómo restablezco mi contraseña?</h1>
+                        <i class="fa-solid fa-chevron-down" :class="openItem == 1 ? 'open' : ''"></i>
+                    </div>
+                    <div class="accordion-body" :class="openItem == 1 ? 'open' : ''">
+                        asdasd
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" @click="toggleItem(2)">
+                        <h1>¿Cómo puedo contactar al servicio de atención al cliente?</h1>
+                        <i class="fa-solid fa-chevron-down" :class="openItem == 2 ? 'open' : ''"></i>
+                    </div>
+                    <div class="accordion-body" :class="openItem == 2 ? 'open' : ''">
+                        asdasd
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" @click="toggleItem(3)">
+                        <h1>¿Puedo cancelar o modificar mi pedido?</h1>
+                        <i class="fa-solid fa-chevron-down" :class="openItem == 3 ? 'open' : ''"></i>
+                    </div>
+                    <div class="accordion-body" :class="openItem == 3 ? 'open' : ''">
+                        asdasd
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" @click="toggleItem(4)">
+                        <h1>¿Ofrecen servicios de entrega internacional?</h1>
+                        <i class="fa-solid fa-chevron-down" :class="openItem == 4 ? 'open' : ''"></i>
+                    </div>
+                    <div class="accordion-body" :class="openItem == 4 ? 'open' : ''">
+                        asdasd
+                    </div>
+                </div>
+            </div>
+        </div>
     </template>
 @endsection
