@@ -32,21 +32,57 @@ Route::get('/registrarse', function () {
 });
 
 Route::get('/contacto', function () {
-    return view('dashboard.client')->with('section', 'contact');
+    switch (Auth::user()->rol_id) {
+        case 1:
+            return view('dashboard.admin')->with('section', 'contact');
+        case 2:
+            return view('dashboard.client')->with('section', 'contact');
+        case 3:
+            return view('dashboard.producer')->with('section', 'contact');
+    }
 })->middleware(['auth'])->name('contact');
+
 Route::get('/tienda', function () {
-    return view('dashboard.client')->with('section', 'store');
+    switch (Auth::user()->rol_id) {
+        case 1:
+            return view('dashboard.admin')->with('section', 'store');
+        case 2:
+            return view('dashboard.client')->with('section', 'store');
+        case 3:
+            return view('dashboard.producer')->with('section', 'store');
+    }
 })->middleware(['auth'])->name('store');
 Route::get('/ajustes', function () {
-    return view('dashboard.client')->with('section', 'settings');
+    switch (Auth::user()->rol_id) {
+        case 1:
+            return view('dashboard.admin')->with('section', 'settings');
+        case 2:
+            return view('dashboard.client')->with('section', 'settings');
+        case 3:
+            return view('dashboard.producer')->with('section', 'settings');
+    }
 })->middleware(['auth'])->name('settings');
 Route::get('/ayuda', function () {
-    return view('dashboard.client')->with('section', 'help');
+    switch (Auth::user()->rol_id) {
+        case 1:
+            return view('dashboard.admin')->with('section', 'help');
+        case 2:
+            return view('dashboard.client')->with('section', 'help');
+        case 3:
+            return view('dashboard.producer')->with('section', 'help');
+    }
 })->middleware(['auth'])->name('help');
 
 Route::get('/', function () {
     if (Auth::check()) {
-        return view('dashboard.client');
+        switch (Auth::user()->rol_id) {
+            case 1:
+                return view('dashboard.admin');
+            case 2:
+                return view('dashboard.client');
+            case 3:
+                return view('dashboard.producer');
+        }
     } else {
         return view('welcome', ['section' => 'home']);
     }
