@@ -22,15 +22,15 @@
             <article class="relevant">
                 <nav>
                     <div>
-                        <a data-title="Iniciar Sesión" data-link="login" id="login-link" class="link"
+                        <a id="login-link" class="link"
                             @click.prevent="navigateToSection($event.target)">Iniciar Sesión</a>
                         <a data-title="Productos" data-link="products" id="products-link" class="link"
                             @click.prevent="navigateToSection($event.target)">Ver Productos</a>
                     </div>
                     <div>
-                        <a data-title="Acerca De" data-link="about" id="about-link" class="link"
+                        <a id="about-link" class="link"
                             @click.prevent="navigateToSection($event.target)">Acerca De</a>
-                        <a id="register-link" data-title="Registrarse" data-link="register" class="link"
+                        <a id="register-link" class="link"
                             @click.prevent="navigateToSection($event.target)">Registrarse</a>
                     </div>
                 </nav>

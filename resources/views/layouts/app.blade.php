@@ -20,7 +20,7 @@
             </a>
             <input type="text" placeholder="Busca en nuestra plataforma aquí" class="search" id="main-search"/>
             
-            <div class="user" @click="triggerProfileLink($event.target)" x-on:click.outside="closeProfileLink($event.target)">
+            <div class="user" @click="triggerProfileLink($event.target)" x-on:click.outside="closeProfileLink()">
                 <img src="{{ asset('images/welcome/TRIVIUM-1.jpeg') }}" alt="" class="avatar">
                 <i class="fa-solid fa-chevron-down" :class="openProfileLink?'open':''"></i>
                 <div class="profile" :class="openProfileLink?'open':''">

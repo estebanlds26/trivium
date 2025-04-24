@@ -221,20 +221,33 @@ Alpine.data('productos', () => ({
 Alpine.data('dashboardApp', () => ({
     section: 'home',
     openProfileLink: false,
+    productionSteps: [
+        { type: 'simple', text:"Inicio"},
+        { type: 'checklist', items: ["insumo", "insumo", "insumo", "insumo"]},
+        { type: 'simple', text:"Se pone a calentar el agua"},
+        { type: 'simple', text:"Molienda de la cebada"},
+        { type: 'simple', text:"Mezcla y macerado"},
+        { type: 'simple', text:"Extracción del mosto"},
+        { type: 'time', text:"Cocción", milliseconds: 900000},
 
+    ],
     routes: {
         home: '',
+        production: 'produccion',
         store: 'tienda',
         contact: 'contacto',
         settings: 'ajustes',
         help: 'ayuda',
+        inventory: 'inventario',
     },
     routesInverse: {
         '/': 'home',
+        '/produccion': 'production',
         '/tienda': 'store',
         '/contacto': 'contact',
         '/ajustes': 'settings',
         '/ayuda': 'help',
+        '/inventario': 'inventory',
     },
     init(){
         this.$nextTick(() => {
@@ -247,14 +260,12 @@ Alpine.data('dashboardApp', () => ({
         if(target.closest(".profile")!= null)return
         this.openProfileLink = !this.openProfileLink;
     },
-    closeProfileLink(target){
-        if(target.closest(".profile")!= null)return
+    closeProfileLink(){
         this.openProfileLink = false;
     },
     navigateToSection(target) {
         let link= target.closest(".link")
         this.section = link.id.replace("-link", "");
-        console.log(this.section, document.querySelector(`.link.active`), link);
         document.querySelector(".link.active").classList.remove("active");
         link.classList.add("active");
         history.pushState({ page: 1 }, "", `/${this.routes[this.section]}`);

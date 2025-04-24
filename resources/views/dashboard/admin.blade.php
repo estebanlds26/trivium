@@ -11,6 +11,14 @@
             <span>Tienda</span>
         </a>
     </div>
+    <div class="link" id="production-link" @click="navigateToSection($event.target)">
+        <a>
+            <div class="link-icon">
+                <i class="fa-solid fa-cubes-stacked"></i>
+            </div>
+            <span>Producción</span>
+        </a>
+    </div>
     <div class="link" id="contact-link" @click="navigateToSection($event.target)">
         <a>
             <div class="link-icon">
@@ -35,11 +43,22 @@
             <span>Preguntas frecuentes</span>
         </a>
     </div>
+    <div class="link" id="inventory-link" @click="navigateToSection($event.target)">
+        <a>
+            <div class="link-icon">
+                <i class="fa-solid fa-calculator"></i>
+            </div>
+            <span>Inventario</span>
+        </a>
+    </div>
 @endsection
 
 @section('content')
     <template x-if="section =='home'">
         <a href="">home</a>
+    </template>
+    <template x-if="section =='production'">
+        <a href="">Producción</a>
     </template>
     <template x-if="section =='store'">
         <section id="products" class="relevant-content" x-data="productos">
@@ -305,5 +324,8 @@
                 </div>
             </div>
         </div>
+    </template>
+    <template x-if="section =='inventory'">
+        <a href="">Inventario</a>
     </template>
 @endsection
