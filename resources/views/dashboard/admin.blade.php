@@ -58,7 +58,15 @@
         <a href="">home</a>
     </template>
     <template x-if="section =='production'">
-        <a href="">Producción</a>
+        <div class="proceso">
+            <template x-for="(step, index) in productionSteps" :key="index">
+                <template x-if="step.type == 'simple'">
+                    <div class="step simple">
+                        <span class="step-text" x-text="step.text"></span>
+                    </div>
+                </template>
+            </template> 
+        </div>
     </template>
     <template x-if="section =='store'">
         <section id="products" class="relevant-content" x-data="productos">
