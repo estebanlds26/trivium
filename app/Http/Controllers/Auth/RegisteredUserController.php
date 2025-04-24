@@ -29,14 +29,33 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
-            'name' => ['required', 'string', 'max:255'],
-            'cellphone' => ['required', 'string', 'max:255', 'unique:'.User::class],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'email_confirmation' => ['required', 'same:email'], // Ensure email confirmation matches
-            'password' => ['required', 'confirmed', Rules\Password::defaults()], // Ensure password confirmation matches
-        ]);
+        // Check if the user is authenticated
+        if (Auth::check()) {
+            // Allow authenticated users to provide a role ID, but validate it
+            $request->validate([
+                'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
+                'name' => ['required', 'string', 'max:255'],
+                'cellphone' => ['required', 'string', 'max:255', 'unique:'.User::class],
+                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+                'email_confirmation' => ['required', 'same:email'], // Ensure email confirmation matches
+                'password' => ['required', 'confirmed', Rules\Password::defaults()], // Ensure password confirmation matches
+                'rol_id' => ['required', 'exists:roles,id'], // Validate that the role exists
+            ]);
+
+            $rolId = $request->rol_id; // Use the provided role ID
+        } else {
+            // For unauthenticated users, force rol_id to 2
+            $request->validate([
+                'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
+                'name' => ['required', 'string', 'max:255'],
+                'cellphone' => ['required', 'string', 'max:255', 'unique:'.User::class],
+                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+                'email_confirmation' => ['required', 'same:email'], // Ensure email confirmation matches
+                'password' => ['required', 'confirmed', Rules\Password::defaults()], // Ensure password confirmation matches
+            ]);
+
+            $rolId = 2; // Force role ID to 2 for unauthenticated users
+        }
 
         $user = User::create([
             'username' => $request->username,
@@ -47,12 +66,13 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'email_verified_at' => null, // Default to null
             'password' => Hash::make($request->password),
+            'rol_id' => $rolId, // Assign the role ID
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('home', absolute: false));
     }
 }

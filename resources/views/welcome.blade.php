@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" x-data="mainApp" x-init="init()">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="welcomeApp">
 
 <head>
     <meta charset="UTF-8" />
@@ -12,10 +12,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body>
-    @auth
-    haosdihoasd
-    @endauth
+<body class="welcome">
     <aside class="content" @scroll="handleScroll($event.target, document.querySelector('.background'))">
         <section class="bottom">
             <figure>

@@ -29,7 +29,7 @@ class AuthenticatedSessionController extends Controller
 
             $request->session()->regenerate();
 
-            return redirect()->intended(route('dashboard', absolute: false));
+            return redirect()->intended(route('home', absolute: false));
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors(['login' => 'Invalid credentials provided.'])->withInput();
         }
