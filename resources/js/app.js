@@ -307,4 +307,13 @@ Alpine.data('accordion', () => ({
         return this.openItem == index;
     }
 }))
+Alpine.data('managementData', () => ({
+    section: 'Productos',
+    setSection(section){
+        this.section = section;
+    },
+    addAvailable(section){
+        return ["Productos"].includes(section);
+    }
+}))
 Alpine.start();

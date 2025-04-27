@@ -334,6 +334,129 @@
         </div>
     </template>
     <template x-if="section =='inventory'">
-        <a href="">Inventario</a>
+        <div class="inventory">
+            <section class="management" x-data="managementData">
+                <aside class="management-header">
+                    <div class="left">
+                        <img src="{{ asset('images/welcome/TRIVIUM_recortado.png') }}" alt="Trivium" class="logo-triviumn">
+                        <h1 x-text="section"></h1>
+                    </div>
+                    <div class="right">
+                        <div class="search action">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" placeholder="Buscar en Productos" class="search">
+                        </div>
+                        <div class="select-multiple action">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div class="refresh action">
+                            <i class="fa-solid fa-arrows-rotate"></i>
+                        </div>
+                    </div>
+                </aside>
+                <aside class="management-content">
+                    <template x-if="section== 'Productos'">
+                        <div class="table">
+                        <table class="productos-table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Stock</th>
+                                    <th>Precio</th>
+                                    <th>Producidas</th>
+                                    <th>Vendidas</th>
+                                    <th>Producción</th>
+                                    <th>Ventas</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Golden Ale</td>
+                                <td>100</td>
+                                <td>9000</td>
+                                <td>898</td>
+                                <td>732</td>
+                                <td>Detalles (209) ›</td>
+                                <td>Detalles (460) ›</td>
+                                <td>
+                                    <div class="actions">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <i class="fa-solid fa-print"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Golden Ale</td>
+                                <td>100</td>
+                                <td>9000</td>
+                                <td>898</td>
+                                <td>732</td>
+                                <td>Detalles (209) ›</td>
+                                <td>Detalles (460) ›</td>
+                                <td>
+                                    <div class="actions">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <i class="fa-solid fa-print"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Golden Ale</td>
+                                <td>100</td>
+                                <td>9000</td>
+                                <td>898</td>
+                                <td>732</td>
+                                <td>Detalles (209) ›</td>
+                                <td>Detalles (460) ›</td>
+                                <td>
+                                    <div class="actions">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <i class="fa-solid fa-print"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    </template>
+                    <button class="add big-action" x-show="addAvailable(section)">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </aside>
+                <aside class="management-sections">
+                    <div class="section entrada-de-material" :class="section== 'Entrada de Material' ? 'active' : ''" @click="setSection('Entrada de Material')">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i >
+                        <h1>Entrada de Material</h1>
+                    </div>
+                    <div class="section materia-prima" :class="section == 'Materia Prima' ?'active':''" @click="setSection('Materia Prima')">
+                        <i class="fa-solid fa-box"></i>
+                        <h1>Materia Prima</h1>
+                    </div>
+                    <div class="section productos" :class="section == 'Productos' ?'active':''" @click="setSection('Productos')">
+                        <i class="fa-solid fa-box-open"></i>
+                        <h1>Productos</h1>
+                    </div>
+                    <div class="section ventas" :class="section== 'Ventas' ? 'active' : ''" @click="setSection('Ventas')">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <h1>Ventas</h1>
+                    </div>
+                    <div class="section procesos" :class="section== 'Procesos' ? 'active' : ''" @click="setSection('Procesos')">
+                        <i class="fa-solid fa-cubes-stacked"></i>
+                        <h1>Procesos</h1>
+                    </div>
+                    <div class="section stock-bajo" :class="section== 'Stock Bajo' ? 'active' : ''" @click="setSection('Stock Bajo')">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <h1>Stock Bajo</h1>
+                    </div>
+                    <div class="section estadisticas" :class="section== 'Estadísticas' ? 'active' : ''" @click="setSection('Estadísticas')">
+                        <i class="fa-solid fa-chart-simple"></i>
+                        <h1>Estadísticas</h1>
+                    </div>
+                </aside>
+            </section>
+        </div> 
     </template>
 @endsection
