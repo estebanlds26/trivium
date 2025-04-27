@@ -998,7 +998,7 @@ body {
     border-radius: 13px;
     color: #4D4C49;
     user-select: none;
-
+    overflow: hidden;
     & .management-header {
       display: flex;
       justify-content: space-between;
