@@ -223,7 +223,7 @@ Alpine.data('dashboardApp', () => ({
     openProfileLink: false,
     productionSteps: [
         { type: 'simple', text:"Inicio"},
-        { type: 'checklist', items: ["insumo", "insumo", "insumo", "insumo"]},
+        { type: 'checklist', text:"Se verifica la materia prima", items: ["insumo", "insumo", "insumo", "insumo"]},
         { type: 'simple', text:"Se pone a calentar el agua"},
         { type: 'simple', text:"Molienda de la cebada"},
         { type: 'simple', text:"Mezcla y macerado"},
@@ -242,6 +242,7 @@ Alpine.data('dashboardApp', () => ({
         { type: 'simple', text:"Enbotellado"},
         { type: 'simple', text:"Fin"},
     ],
+    activeStep: 0,
     routes: {
         home: '',
         production: 'produccion',
@@ -309,11 +310,15 @@ Alpine.data('accordion', () => ({
 }))
 Alpine.data('managementData', () => ({
     section: 'Productos',
+    subsection: 'index',
     setSection(section){
         this.section = section;
     },
     addAvailable(section){
         return ["Productos"].includes(section);
+    },
+    edit(){
+        this.subsection = "edit";
     }
 }))
 Alpine.start();
