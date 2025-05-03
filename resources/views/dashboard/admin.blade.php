@@ -58,34 +58,66 @@
         <a href="">home</a>
     </template>
     <template x-if="section =='production'">
-        <div class="proceso" onWheel= "this.scrollLeft+=event.deltaY>0?140:-140">
-            <div>
-                <template x-for="(step, index) in productionSteps" :key="index">
-                    <div class="step" :class="step.type" :class="index == activeStep ? 'active' : ''">
-                        <template x-if="step.type == 'simple'">
-                            <div>
+        <div class="produccion" x-data="produccion">
+        <template x-for="(proceso, indexProceso) in procesos" :key="indexProceso">
+            <div class="proceso-container">
+                <div class="proceso-header">
+                    Proceso # <span x-text="proceso.procesoId"></span> | <span x-text="proceso.productionSteps[proceso.activeStep].text"></span>
+                </div>
+                <div class="proceso" onWheel= "this.scrollLeft+=event.deltaY>0?140:-140">
+                    <div>
+                        <template x-for="(step, index) in proceso.productionSteps" :key="index">
+                            <div class="step" :class="[step.type, index == proceso.activeStep ? 'active' : '']">
                                 <span class="step-text" x-text="step.text"></span>
-                                <div class="controls">
-                                    <div class="continue">
-                                        <i class="fa-solid fa-check"></i>
+                                <template x-if="step.type == 'simple'">
+                                    <div>
+                                        <div class="controls">
+                                            <div class="continue" @click="continuar(index + 1, $el, step, indexProceso)">
+                                                <i class="fa-solid fa-check"></i>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                </template>
+                                <template x-if="step.type == 'checklist'">
+                                    <div>
+                                        <div class="checklist-items">
+
+                                            <template x-for="(item, index) in step.items" :key="index">
+                                                <div class="checklist-item">
+                                                    <label :for="`checklist-item-${index}_${indexProceso}`"><span x-text="item[0]"></span><input type="checkbox" :id="`checklist-item-${index}_${indexProceso}`" :value="item[0]" x-model="item[1]"></label>
+                                                </div>
+                                            </template>
+                                        </div>
+
+                                        <div class="controls">
+                                            <div class="continue" :class="!todoChuleado(step)? 'disabled':''" @click="continuar(index + 1, $el, step, indexProceso)">
+                                                <i class="fa-solid fa-check"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template x-if="step.type == 'time'">
+                                    <div>
+                                        <p x-text="formatTime(step.milliseconds)"></p>
+                                        <div class="controls">
+                                            <div class="start" :class="!!step.startTime?'disabled':''" @click="startTimer(step, indexProceso)">
+                                                <i class="fa-solid fa-play"></i>
+                                            </div>
+                                            <div class="continue" :class="step.milliseconds!= 0? 'disabled':''" @click="continuar(index + 1, $el, step, indexProceso)">
+                                                <i class="fa-solid fa-check"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
                             </div>
                         </template>
-                        <template x-if="step.type == 'checklist'">
-                            <div>
-                                <span class="step-text" x-text="step.text"></span>
-                                <div class="controls">
-                                    <div class="continue">
-                                        <i class="fa-solid fa-check"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-                </template>
-            </div> 
+                    </div> 
+                </div>
+            </div>
+        </template>
+
         </div>
+
     </template>
     <template x-if="section =='store'">
         <section id="products" class="relevant-content" x-data="productos">
@@ -357,8 +389,8 @@
             <section class="management" x-data="managementData">
                 <aside class="management-header">
                     <div class="left">
-                        <img src="{{ asset('images/welcome/TRIVIUM_recortado.png') }}" alt="Trivium" class="logo-triviumn">
-                        <div class="return" x-show="subsection != 'index'">
+                        <img src="{{ asset('images/welcome/TRIVIUM_recortado.png') }}" alt="Trivium" class="logo-trivium">
+                        <div class="return" @click="goBack()" x-show="subsection != 'index'">
                             <i class="fa-solid fa-chevron-left"></i>
                         </div>
                         <h1 x-text="section"></h1>
@@ -381,6 +413,42 @@
                         <div class="productos-management">
                             <template x-if="subsection=='edit'">
                                 <div class="edit">
+                                    <label for="nombre-producto-edit">
+                                        Nombre
+                                        <input type="text" id="nombre-producto-edit" value="Golden Ale">
+                                    </label>
+                                    <label for="precio-producto-edit">
+                                        Precio
+                                        <input type="text" id="precio-producto-edit" value="4000">
+                                    </label>
+                                    <div class="buttons">
+                                        <div class="btn green">Actualizar</div>
+                                        <div class="btn grey">Descartar</div>                     
+                                    </div>
+                                    <div class="buttons">
+                                    </div>
+                                </div>
+                            </template>
+                            <template x-if="subsection=='create'">
+                                <div class="create">
+                                    <label for="nombre-producto-create">
+                                        Nombre
+                                        <input type="text" id="nombre-producto-create" value="">
+                                    </label>
+                                    <label for="precio-producto-create">
+                                        Precio
+                                        <input type="text" id="precio-producto-create" value="">
+                                    </label>
+                                    <div class="buttons">
+                                        <div class="btn green">Crear</div>
+                                        <div class="btn grey">Descartar</div>                     
+                                    </div>
+                                    <div class="buttons">
+                                    </div>
+                                </div>
+                            </template>
+                            <template x-if="subsection=='view'">
+                                <div class="view">
                                     <label for="nombre-producto">
                                         Nombre
                                         <p id="nombre-producto">Golden Ale</p>
@@ -501,7 +569,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -517,7 +585,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -533,7 +601,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -549,7 +617,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -565,7 +633,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -581,7 +649,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -597,7 +665,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -613,7 +681,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -629,7 +697,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -645,7 +713,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -661,7 +729,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -677,7 +745,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -693,7 +761,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -709,7 +777,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -725,7 +793,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -741,7 +809,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -757,7 +825,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -773,7 +841,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -789,7 +857,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -805,7 +873,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -821,7 +889,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -837,7 +905,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -853,7 +921,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -869,7 +937,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -885,7 +953,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr @click="view()">
                                             <td>Golden Ale</td>
                                             <td>100</td>
                                             <td>9000</td>
@@ -907,7 +975,7 @@
 
                         </div>
                     </template>
-                    <button class="add big-action" x-show="subsection=='index'">
+                    <button class="add big-action" x-show="subsection=='index'" @click="create()">
                         <i class="fa-solid fa-plus"></i>
                     </button>
                 </aside>

@@ -21,17 +21,17 @@ Alpine.data('welcomeApp', () => ({
     },
     previousSection: null,
     scrollTop: 0,
-    
+
     init() {
         this.previousSection = document.querySelector("#about.relevant-content");
         this.updateFigure();
         window.addEventListener("resize", this.updateFigure);
         this.$nextTick(() => {
-            let section= window.location.pathname;
-            let link=`.link#${this.routesInverse[section]}-link`
+            let section = window.location.pathname;
+            let link = `.link#${this.routesInverse[section]}-link`
             document.querySelector(link).click();
         });
-        
+
     },
     toggle() {
         this.open = !this.open;
@@ -94,7 +94,7 @@ Alpine.data('welcomeApp', () => ({
             figureImg.style.width = "160px";
         }
     },
-    
+
 }));
 
 Alpine.data('productos', () => ({
@@ -129,36 +129,36 @@ Alpine.data('productos', () => ({
                         complejidad y carácter único, al tiempo que honramos
                         y celebramos la herencia cervecera que inspiró su
                         creación.`,
-                price: 9000,
-                images: [
-                    "/images/welcome/TRIVIUM-25.jpg",
-                    "/images/welcome/TRIVIUM-28.jpg",
-                    "/images/welcome/TRIVIUM-25.jpg",
-                    "/images/welcome/TRIVIUM-28.jpg",
-                    "/images/welcome/TRIVIUM-25.jpg",
-                    "/images/welcome/TRIVIUM-28.jpg",
-                    "/images/welcome/TRIVIUM-25.jpg",
-                    "/images/welcome/TRIVIUM-28.jpg",
-                    "/images/welcome/TRIVIUM-25.jpg",
-                    "/images/welcome/TRIVIUM-28.jpg",
-                    "/images/welcome/TRIVIUM-25.jpg",
-                    "/images/welcome/TRIVIUM-28.jpg",
-                    "/images/welcome/TRIVIUM-25.jpg",
-                    "/images/welcome/TRIVIUM-28.jpg",
-                ],
+            price: 9000,
+            images: [
+                "/images/welcome/TRIVIUM-25.jpg",
+                "/images/welcome/TRIVIUM-28.jpg",
+                "/images/welcome/TRIVIUM-25.jpg",
+                "/images/welcome/TRIVIUM-28.jpg",
+                "/images/welcome/TRIVIUM-25.jpg",
+                "/images/welcome/TRIVIUM-28.jpg",
+                "/images/welcome/TRIVIUM-25.jpg",
+                "/images/welcome/TRIVIUM-28.jpg",
+                "/images/welcome/TRIVIUM-25.jpg",
+                "/images/welcome/TRIVIUM-28.jpg",
+                "/images/welcome/TRIVIUM-25.jpg",
+                "/images/welcome/TRIVIUM-28.jpg",
+                "/images/welcome/TRIVIUM-25.jpg",
+                "/images/welcome/TRIVIUM-28.jpg",
+            ],
         }
     ],
     showProductDetail: false,
     productDetail: null,
     intervalThumbnails: null,
     intervalScroll: null,
-    closeProductDetail(){
+    closeProductDetail() {
         this.showProductDetail = false;
         this.productDetail = null;
     },
-    setProductDetail(producto){
+    setProductDetail(producto) {
         this.productDetail = producto;
-        this.showProductDetail= true;
+        this.showProductDetail = true;
     },
     nextSlideshowImage() {
         this.slideshowIndex = (this.slideshowIndex + 1) % this.productDetail.images.length;
@@ -168,43 +168,43 @@ Alpine.data('productos', () => ({
         this.slideshowIndex = (this.slideshowIndex - 1 + this.productDetail.images.length) % this.productDetail.images.length;
         this.updateSlideshow();
     },
-    appearControls(){
+    appearControls() {
         const controls = document.querySelector(".controls");
-        const scrollRightControls= document.querySelector(".scroll-right-controls")
-        const scrollLeftControls= document.querySelector(".scroll-left-controls")
+        const scrollRightControls = document.querySelector(".scroll-right-controls")
+        const scrollLeftControls = document.querySelector(".scroll-left-controls")
         clearTimeout(this.intervalThumbnails)
         controls.classList.add("visible")
         scrollRightControls.classList.add("visible")
         scrollLeftControls.classList.add("visible")
-        this.intervalThumbnails= setTimeout(function(){
+        this.intervalThumbnails = setTimeout(function () {
             controls.classList.remove("visible")
             scrollRightControls.classList.remove("visible")
             scrollLeftControls.classList.remove("visible")
         }, 984)
     },
-    scrollLeft () {
+    scrollLeft() {
         clearInterval(this.intervalScroll)
-        this.intervalScroll= setInterval(function(){
-            controls.scrollLeft-= 1
+        this.intervalScroll = setInterval(function () {
+            controls.scrollLeft -= 1
             this.appearControls()
 
         }, 2)
     },
-    scrollRight () {
+    scrollRight() {
         clearInterval(this.intervalScroll)
-        this.intervalScroll= setInterval(function(){
-            controls.scrollLeft+= 1
+        this.intervalScroll = setInterval(function () {
+            controls.scrollLeft += 1
             this.appearControls()
         }, 2)
     },
     updateSlideshow(index) {
         const slideshowContainer = document.querySelector(".slideshow-container");
-        
+
         const slideshowImgs = slideshowContainer.querySelectorAll(".slideshow img");
         const thumbnails = Array.from(document.querySelectorAll(".controls img"));
-        
-        
-        if(typeof index != "undefined"){
+
+
+        if (typeof index != "undefined") {
             this.slideshowIndex = index;
             this.appearControls()
         }
@@ -218,31 +218,134 @@ Alpine.data('productos', () => ({
     }
 
 }))
+Alpine.data('produccion', () => ({
+    procesos: [{
+        productionSteps: [
+            { type: 'simple', text: "Inicio" },
+            { type: 'checklist', text: "Se verifica la materia prima", items: [["insumo", false], ["insumo", false], ["insumo", true], ["insumo", false]] },
+            { type: 'simple', text: "Se pone a calentar el agua" },
+            { type: 'simple', text: "Molienda de la cebada" },
+            { type: 'simple', text: "Mezcla y macerado" },
+            { type: 'simple', text: "Extracción del mosto" },
+            { type: 'time', text: "Cocción", milliseconds: 10000, startTime: null, endTime: null },
+            { type: 'simple', text: "Se le hecha lúpulo" },
+            { type: 'time', text: "Cocción", milliseconds: 2700000, startTime: null, endTime: null },
+            { type: 'simple', text: "Se le hecha más lúpulo" },
+            { type: 'simple', text: "Whirlpool" },
+            { type: 'simple', text: "Enfriado" },
+            { type: 'time', text: "Fermentación", milliseconds: 864000000, startTime: null, endTime: null },
+            { type: 'simple', text: "Enbarrilado" },
+            { type: 'time', text: "Reposo del enbarrilado", milliseconds: 86400000, startTime: null, endTime: null },
+            { type: 'simple', text: "Gasificado" },
+            { type: 'time', text: "Reposo del gasificado", milliseconds: 86400000, startTime: null, endTime: null },
+            { type: 'simple', text: "Enbotellado" },
+            { type: 'simple', text: "Fin" },
+        ],
+        procesoId: 56,
+        procesoName: null,
+        activeStep: 0,
+    },
+    {
+        productionSteps: [
+            { type: 'simple', text: "Inicio" },
+            { type: 'checklist', text: "Se verifica la materia prima", items: [["insumo", false], ["insumo", false], ["insumo", true], ["insumo", false]] },
+            { type: 'simple', text: "Se pone a calentar el agua" },
+            { type: 'simple', text: "Molienda de la cebada" },
+            { type: 'simple', text: "Mezcla y macerado" },
+            { type: 'simple', text: "Extracción del mosto" },
+            { type: 'time', text: "Cocción", milliseconds: 10000, startTime: null, endTime: null },
+            { type: 'simple', text: "Se le hecha lúpulo" },
+            { type: 'time', text: "Cocción", milliseconds: 2700000, startTime: null, endTime: null },
+            { type: 'simple', text: "Se le hecha más lúpulo" },
+            { type: 'simple', text: "Whirlpool" },
+            { type: 'simple', text: "Enfriado" },
+            { type: 'time', text: "Fermentación", milliseconds: 864000000, startTime: null, endTime: null },
+            { type: 'simple', text: "Enbarrilado" },
+            { type: 'time', text: "Reposo del enbarrilado", milliseconds: 86400000, startTime: null, endTime: null },
+            { type: 'simple', text: "Gasificado" },
+            { type: 'time', text: "Reposo del gasificado", milliseconds: 86400000, startTime: null, endTime: null },
+            { type: 'simple', text: "Enbotellado" },
+            { type: 'simple', text: "Fin" },
+        ],
+        procesoId: 56,
+        procesoName: null,
+        activeStep: 0,
+    }],
+
+    init() {
+        document.querySelector(".step.active")?.scrollIntoView({ behavior: "smooth", inline: "center" });
+    },
+    continuar(nextStep, target, step, process) {
+        switch (step.type) {
+            case "checklist":
+                if (this.todoChuleado(step)) {
+                    this.procesos[process].activeStep = nextStep;
+                    console.log(target)
+                    target
+                        .parentElement
+                        .parentElement
+                        .parentElement
+                        .nextElementSibling
+                        .scrollIntoView({ behavior: "smooth", inline: "center" });
+                }
+                break;
+            case "simple":
+                this.procesos[process].activeStep = nextStep;
+                target
+                    .parentElement
+                    .parentElement
+                    .parentElement
+                    .nextElementSibling
+                    .scrollIntoView({ behavior: "smooth", inline: "center" });
+                break;
+            case "time":
+                if (step.milliseconds <= 0) {
+                    this.procesos[process].activeStep = nextStep;
+                    target
+                        .parentElement
+                        .parentElement
+                        .parentElement
+                        .nextElementSibling
+                        .scrollIntoView({ behavior: "smooth", inline: "center" });
+                }
+                break;
+        }
+    },
+    todoChuleado(step) {
+        let todosChuleados = true;
+        step.items.forEach((item) => {
+            if (item[1] == false) {
+                todosChuleados = false;
+            }
+        });
+        return todosChuleados;
+    },
+    formatTime(milliseconds) {
+        const pad = (num) => String(num).padStart(2, '0');
+        const seconds = pad(Math.floor((milliseconds / 1000) % 60));
+        const minutes = pad(Math.floor((milliseconds / (1000 * 60)) % 60));
+        const hours = pad(Math.floor((milliseconds / (1000 * 60 * 60)) % 24));
+        const days = pad(Math.floor(milliseconds / (1000 * 60 * 60 * 24)));
+        return `${days}:${hours}:${minutes}:${seconds}`;
+    },
+    startTimer(step) {
+        if (!step.startTime) {
+            step.startTime = Date.now();
+            step.endTime = step.startTime + step.milliseconds;
+            let timer = setInterval(() => {
+                const remainingTime = step.endTime - Date.now();
+                step.milliseconds = remainingTime > 0 ? remainingTime : 0;
+                if (step.milliseconds <= 0) {
+                    step.milliseconds = 0;
+                    clearInterval(timer);
+                }
+            }, 1000);
+        }
+    },
+}))
 Alpine.data('dashboardApp', () => ({
     section: 'home',
     openProfileLink: false,
-    productionSteps: [
-        { type: 'simple', text:"Inicio"},
-        { type: 'checklist', text:"Se verifica la materia prima", items: ["insumo", "insumo", "insumo", "insumo"]},
-        { type: 'simple', text:"Se pone a calentar el agua"},
-        { type: 'simple', text:"Molienda de la cebada"},
-        { type: 'simple', text:"Mezcla y macerado"},
-        { type: 'simple', text:"Extracción del mosto"},
-        { type: 'time', text:"Cocción", milliseconds: 900000},
-        { type: 'simple', text:"Se le hecha lúpulo"},
-        { type: 'time', text:"Cocción", milliseconds: 2700000},
-        { type: 'simple', text:"Se le hecha más lúpulo"},
-        { type: 'simple', text:"Whirlpool"},
-        { type: 'simple', text:"Enfriado"},
-        { type: 'time', text:"Fermentación", milliseconds: 864000000},
-        { type: 'simple', text:"Enbarrilado"},
-        { type: 'time', text:"Reposo del enbarrilado", milliseconds: 86400000},
-        { type: 'simple', text:"Gasificado"},
-        { type: 'time', text:"Reposo del gasificado", milliseconds: 86400000},
-        { type: 'simple', text:"Enbotellado"},
-        { type: 'simple', text:"Fin"},
-    ],
-    activeStep: 0,
     routes: {
         home: '',
         production: 'produccion',
@@ -261,22 +364,23 @@ Alpine.data('dashboardApp', () => ({
         '/ayuda': 'help',
         '/inventario': 'inventory',
     },
-    init(){
+    init() {
         this.$nextTick(() => {
-            let section= window.location.pathname;
-            let link=`.link#${this.routesInverse[section]}-link`
+            let section = window.location.pathname;
+            let link = `.link#${this.routesInverse[section]}-link`
             document.querySelector(link).click();
         });
     },
-    triggerProfileLink(target){
-        if(target.closest(".profile")!= null)return
+
+    triggerProfileLink(target) {
+        if (target.closest(".profile") != null) return
         this.openProfileLink = !this.openProfileLink;
     },
-    closeProfileLink(){
+    closeProfileLink() {
         this.openProfileLink = false;
     },
     navigateToSection(target) {
-        let link= target.closest(".link")
+        let link = target.closest(".link")
         this.section = link.id.replace("-link", "");
         document.querySelector(".link.active").classList.remove("active");
         link.classList.add("active");
@@ -301,8 +405,8 @@ Alpine.data('accordionItem', () => ({
 }))
 Alpine.data('accordion', () => ({
     openItem: null,
-    toggleItem(index){
-        this.openItem= this.openItem== index? null: index;
+    toggleItem(index) {
+        this.openItem = this.openItem == index ? null : index;
     },
     isOpen(index) {
         return this.openItem == index;
@@ -311,14 +415,46 @@ Alpine.data('accordion', () => ({
 Alpine.data('managementData', () => ({
     section: 'Productos',
     subsection: 'index',
-    setSection(section){
+    sections: [
+        {
+            plural: 'productos',
+            singular: 'producto',
+            columns:[
+                ['Nombre', 
+                    'nombre', 'string', ['index', 'create', 'edit', 'view']],
+                ['Descripción', 
+                    'descripcion', 'longstring', ['create', 'edit', 'view']],
+                ['Stock', 
+                    ['Producidas', '-', 'Vendidas'], 'dynamic', ['index', 'view']],
+                ['Precio', 
+                    'precio', 'number', ['index', 'create', 'edit', 'view']],
+                ['Imagenes', 
+                    'imagenes', 'images', ['create', 'edit']],
+                ['Producción',
+                    'producciones', 'relationship', ['index', 'create', 'edit'], 'Producidas'],
+                ['Ventas',
+                    'ventas', 'relationship', ['index', 'create', 'edit'], 'Vendidas'],
+            ],
+        }
+    ],
+    setSection(section) {
         this.section = section;
     },
-    addAvailable(section){
+    addAvailable(section) {
         return ["Productos"].includes(section);
     },
-    edit(){
+    edit() {
         this.subsection = "edit";
+    },
+    view() {
+        this.subsection = "view";
+    },
+    goBack(){
+        this.subsection = "index";
+    },
+    create(){
+        this.subsection = "create";
     }
+
 }))
 Alpine.start();

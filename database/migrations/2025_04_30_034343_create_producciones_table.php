@@ -13,13 +13,9 @@ return new class extends Migration
             $table->id();
             $table->date('fecha');
             $table->integer('cantidad');
-            $table->unsignedBigInteger('productos_id');
-            $table->unsignedBigInteger('productores_id');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('producto_id')->constrained('productos')->onDelete('cascade');
             $table->timestamps();
-
-            // Claves foráneas
-            $table->foreign('productos_id')->references('id')->on('productos')->onDelete('cascade');
-            $table->foreign('productores_id')->references('id')->on('productores')->onDelete('cascade');
         });
     }
 
