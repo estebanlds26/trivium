@@ -42,6 +42,26 @@ Route::get('/contacto', function () {
     }
 })->middleware(['auth'])->name('contact');
 
+Route::get('/inventario', function () {
+    switch (Auth::user()->rol_id) {
+        case 1:
+            return view('dashboard.admin')->with('section', 'inventory');
+        case 2:
+            return view('dashboard.client')->with('section', 'inventory');
+        case 3:
+            return view('dashboard.producer')->with('section', 'inventory');
+    }
+})->middleware(['auth'])->name('store');
+Route::get('/produccion', function () {
+    switch (Auth::user()->rol_id) {
+        case 1:
+            return view('dashboard.admin')->with('section', 'production');
+        case 2:
+            return view('dashboard.client')->with('section', 'production');
+        case 3:
+            return view('dashboard.producer')->with('section', 'production');
+    }
+})->middleware(['auth'])->name('store');
 Route::get('/tienda', function () {
     switch (Auth::user()->rol_id) {
         case 1:

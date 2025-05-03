@@ -12,7 +12,7 @@ class Producto extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nombre', 'descripcion', 'imagen', 'precio'];
+    protected $fillable = ['nombre', 'descripcion', 'imagenes', 'precio'];
 
     // Relaciones
     public function producciones()

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->timestamps();
 
             // Clave foránea
-            $table->foreign('cliente_id')->references('id')->on('clientes')->onDelete('cascade');
         });
     }
 

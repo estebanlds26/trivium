@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nombre', 45);
             $table->string('descripcion', 45);
-            $table->string('imagen', 200)->nullable();
+            $table->json('imagenes')->nullable();
             $table->decimal('precio', 10, 2);
             $table->timestamps();
         });
