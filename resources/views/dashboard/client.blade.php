@@ -268,22 +268,7 @@
                         Completa el formulario con tu nombre, correo electrónico y una contraseña segura. 
                         Una vez enviado, recibirás un correo de confirmación para activar tu cuenta.
                     </div>
-                    <div class="accordion-body" :class="openItem == 1 ? 'open' : ''">
-                        Si olvidaste tu contraseña, ve a la página de inicio de sesión y haz clic en “¿Olvidaste tu contraseña?”. 
-                        Ingresa tu correo electrónico y te enviaremos un enlace para que puedas establecer una nueva contraseña de forma segura.
-                    </div>
-                    <div class="accordion-body" :class="openItem == 2 ? 'open' : ''">
-                        Puedes contactarnos directamente a través del formulario en la sección Contacto, por WhatsApp escaneando nuestro código QR, 
-                        o enviándonos un correo electrónico. Estamos disponibles para ayudarte con cualquier consulta o inconveniente.
-                    </div>
-                    <div class="accordion-body" :class="openItem == 3 ? 'open' : ''">
-                        Sí, puedes cancelar o modificar tu pedido antes de que sea despachado. 
-                        Por favor contáctanos lo antes posible a través del servicio de atención al cliente para gestionar el cambio.
-                    </div>
-                    <div class="accordion-body" :class="openItem == 4 ? 'open' : ''">
-                        Actualmente nuestras entregas están limitadas al territorio nacional. 
-                        Sin embargo, estamos trabajando para habilitar envíos internacionales próximamente. ¡Te mantendremos informado!
-                    </div>
+                   
                     
                 </div>
                 <div class="accordion-item">
@@ -292,7 +277,8 @@
                         <i class="fa-solid fa-chevron-down" :class="openItem == 1 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 1 ? 'open' : ''">
-                        asdasd
+                        Si olvidaste tu contraseña, ve a la página de inicio de sesión y haz clic en “¿Olvidaste tu contraseña?”. 
+                        Ingresa tu correo electrónico y te enviaremos un enlace para que puedas establecer una nueva contraseña de forma segura.
                     </div>
                 </div>
                 <div class="accordion-item">
@@ -301,7 +287,8 @@
                         <i class="fa-solid fa-chevron-down" :class="openItem == 2 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 2 ? 'open' : ''">
-                        asdasd
+                        Puedes contactarnos directamente a través del formulario en la sección Contacto, por WhatsApp escaneando nuestro código QR, 
+                        o enviándonos un correo electrónico. Estamos disponibles para ayudarte con cualquier consulta o inconveniente.
                     </div>
                 </div>
                 <div class="accordion-item">
@@ -310,7 +297,8 @@
                         <i class="fa-solid fa-chevron-down" :class="openItem == 3 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 3 ? 'open' : ''">
-                        asdasd
+                        Sí, puedes cancelar o modificar tu pedido antes de que sea despachado. 
+                        Por favor contáctanos lo antes posible a través del servicio de atención al cliente para gestionar el cambio.
                     </div>
                 </div>
                 <div class="accordion-item">
@@ -319,7 +307,8 @@
                         <i class="fa-solid fa-chevron-down" :class="openItem == 4 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 4 ? 'open' : ''">
-                        asdasd
+                        Actualmente nuestras entregas están limitadas al territorio nacional. 
+                        Sin embargo, estamos trabajando para habilitar envíos internacionales próximamente. ¡Te mantendremos informado!
                     </div>
                 </div>
             </div>
