@@ -13,11 +13,9 @@ return new class extends Migration
             $table->id();
             $table->date('fecha');
             $table->integer('cantidad');
-            $table->unsignedBigInteger('insumos_id');
+            $table->foreignId('insumo_id')->constrained('insumos')->onDelete('cascade');
+            $table->integer('precio_unitario');
             $table->timestamps();
-
-            // Clave foránea
-            $table->foreign('insumos_id')->references('id')->on('insumos')->onDelete('cascade');
         });
     }
 

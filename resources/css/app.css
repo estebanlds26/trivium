@@ -1304,7 +1304,7 @@ body {
           color: #878787;
           display: flex;
           flex-direction: column;
-          & input {
+          & input, & textarea {
             font-size: 0.9rem;
             color: #4D4C49;
             margin-top: 0.4em;
@@ -1318,6 +1318,10 @@ body {
               border-color:transparent;
               outline: 2px solid #859ef9;
             }
+          }
+          & textarea{
+            width: 230px;
+            max-height: 4em;
           }
         }
         & .buttons {

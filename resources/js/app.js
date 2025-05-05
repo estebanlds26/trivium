@@ -222,7 +222,7 @@ Alpine.data('produccion', () => ({
     procesos: [{
         productionSteps: [
             { type: 'simple', text: "Inicio" },
-            { type: 'checklist', text: "Se verifica la materia prima", items: [["insumo", false], ["insumo", false], ["insumo", true], ["insumo", false]] },
+            { type: 'checklist', text: "Se verifica la materia prima", items: [["insumo", false], ["insumo", false], ["insumo", false], ["insumo", false]] },
             { type: 'simple', text: "Se pone a calentar el agua" },
             { type: 'simple', text: "Molienda de la cebada" },
             { type: 'simple', text: "Mezcla y macerado" },
@@ -248,7 +248,7 @@ Alpine.data('produccion', () => ({
     {
         productionSteps: [
             { type: 'simple', text: "Inicio" },
-            { type: 'checklist', text: "Se verifica la materia prima", items: [["insumo", false], ["insumo", false], ["insumo", true], ["insumo", false]] },
+            { type: 'checklist', text: "Se verifica la materia prima", items: [["insumo", false], ["insumo", false], ["insumo", false], ["insumo", false]] },
             { type: 'simple', text: "Se pone a calentar el agua" },
             { type: 'simple', text: "Molienda de la cebada" },
             { type: 'simple', text: "Mezcla y macerado" },
@@ -273,7 +273,7 @@ Alpine.data('produccion', () => ({
     }],
 
     init() {
-        document.querySelector(".step.active")?.scrollIntoView({ behavior: "smooth", inline: "center" });
+        document.querySelector(".step.active")?.scrollIntoView({ behavior: "smooth", inline: "center", block: "center" });
     },
     continuar(nextStep, target, step, process) {
         switch (step.type) {
@@ -286,7 +286,7 @@ Alpine.data('produccion', () => ({
                         .parentElement
                         .parentElement
                         .nextElementSibling
-                        .scrollIntoView({ behavior: "smooth", inline: "center" });
+                        .scrollIntoView({ behavior: "smooth", inline: "center", block: "center" });
                 }
                 break;
             case "simple":
@@ -296,7 +296,7 @@ Alpine.data('produccion', () => ({
                     .parentElement
                     .parentElement
                     .nextElementSibling
-                    .scrollIntoView({ behavior: "smooth", inline: "center" });
+                    .scrollIntoView({ behavior: "smooth", inline: "center", block: "center" });
                 break;
             case "time":
                 if (step.milliseconds <= 0) {
@@ -306,7 +306,7 @@ Alpine.data('produccion', () => ({
                         .parentElement
                         .parentElement
                         .nextElementSibling
-                        .scrollIntoView({ behavior: "smooth", inline: "center" });
+                        .scrollIntoView({ behavior: "smooth", inline: "center", block: "center" });
                 }
                 break;
         }
@@ -413,48 +413,157 @@ Alpine.data('accordion', () => ({
     }
 }))
 Alpine.data('managementData', () => ({
-    section: 'Productos',
+    section: 'productos',
     subsection: 'index',
-    sections: [
-        {
-            plural: 'productos',
-            singular: 'producto',
-            columns:[
-                ['Nombre', 
-                    'nombre', 'string', ['index', 'create', 'edit', 'view']],
-                ['Descripción', 
-                    'descripcion', 'longstring', ['create', 'edit', 'view']],
-                ['Stock', 
-                    ['Producidas', '-', 'Vendidas'], 'dynamic', ['index', 'view']],
-                ['Precio', 
-                    'precio', 'number', ['index', 'create', 'edit', 'view']],
-                ['Imagenes', 
-                    'imagenes', 'images', ['create', 'edit']],
-                ['Producción',
-                    'producciones', 'relationship', ['index', 'create', 'edit'], 'Producidas'],
-                ['Ventas',
-                    'ventas', 'relationship', ['index', 'create', 'edit'], 'Vendidas'],
-            ],
+    sections: {
+        'productos': {
+            api: 'producto',
+            pluralName: 'productos',
+            singularName: 'producto',
+            rows: null,
+            details: {},
         }
-    ],
+    },
+    init() {
+        this.load(this.section);
+        this.$watch('section', (value) => {
+            this.load(value);
+        });
+    },
+    async load(section) {
+        this.sections[this.section].rows = null;
+        const response = await fetch(`http://localhost:8000/api/${this.sections[this.section].api}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                this.sections[this.section].rows = data.data
+            })
+            .catch(error => console.error('Error:', error));
+    },
     setSection(section) {
         this.section = section;
     },
+    capitalize(text){
+        return text.charAt(0).toUpperCase() + text.slice(1);
+    },
+    countProductions(items){
+        let count = 0;
+        items.forEach((item) => {
+            count += 1
+        });
+        return count;
+    },
+    countQuantityProductions(items){
+        let count = 0;
+        items.forEach((item) => {
+            count += item.cantidad
+        });
+        return count;
+    },
+    countSales(items){
+        let count = 0;
+        items.forEach((item) => {
+            count += 1
+        });
+        return count;
+    },
+    countQuantitySales(items){
+        let count = 0;
+        items.forEach((item) => {
+            count += item.pivot.cantidad
+        });
+        return count;
+    },
+    sumInsumos(insumos){
+        let sum= 0
+        insumos.forEach(insumo=>{
+            sum+= insumo.unidad * insumo.pivot.cantidad_usada
+        })
+        return sum;
+    },
     addAvailable(section) {
-        return ["Productos"].includes(section);
+        return ["productos"].includes(section);
     },
-    edit() {
+    edit(item) {
         this.subsection = "edit";
+        this.sections[this.section].details= item
     },
-    view() {
+    view(item) {
         this.subsection = "view";
+        this.sections[this.section].details= item
     },
-    goBack(){
+    goBack() {
         this.subsection = "index";
     },
-    create(){
+    create() {
         this.subsection = "create";
-    }
+    },
 
+    update(){
+        let nombre = document.querySelector("#nombre-producto-edit").value;
+        let precio = document.querySelector("#precio-producto-edit").value;
+        let descripcion = document.querySelector("#descripcion-producto-edit").value
+        let data = {
+            nombre,
+            precio,
+            descripcion
+        }
+        fetch(`http://localhost:8000/api/${this.sections[this.section].api}/${this.sections[this.section].details.id}`, {
+            method: 'PUT',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => response.json())
+        .then(updatedData => {
+            console.log('Updated successfully:', updatedData);
+            this.load(this.section);
+            this.goBack();
+        })
+        .catch(error => console.error('Error updating:', error));
+    },
+    add(){
+        let nombre = document.querySelector("#nombre-producto-create").value;
+        let precio = document.querySelector("#precio-producto-create").value;
+        let descripcion = document.querySelector("#descripcion-producto-create").value
+        let data = {
+            nombre,
+            precio,
+            descripcion
+        }
+        fetch(`http://localhost:8000/api/${this.sections[this.section].api}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Created successfully:', data);
+            this.load(this.section);
+            this.goBack();
+        })
+        .catch(error => console.error('Error creating:', error));
+    },
+    destroy(id){
+        fetch(`http://localhost:8000/api/${this.sections[this.section].api}/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Deleted successfully:', data);
+            this.load(this.section);
+        })
+        .catch(error => console.error('Error deleting:', error));
+    }
 }))
 Alpine.start();
