@@ -518,42 +518,24 @@
                                             <table class="productos-table">
                                                 <thead>
                                                     <tr>
-                                                        <th>Precio</th>
-                                                        <th>Producto</th>
+                                                        <th>Fecha</th>
                                                         <th>Cantidad</th>
-                                                        <th>Unidades</th>
+                                                        <th>Estado</th>
+                                                        <th>Cliente</th>
                                                         <th>Importe</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
-                                                        <td>$4.000</td>
-                                                        <td>Golden Ale</td>
-                                                        <td>217</td>
-                                                        <td>Botella</td>
-                                                        <td>$868.000</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>$4.000</td>
-                                                        <td>Golden Ale</td>
-                                                        <td>217</td>
-                                                        <td>Botella</td>
-                                                        <td>$868.000</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>$4.000</td>
-                                                        <td>Golden Ale</td>
-                                                        <td>217</td>
-                                                        <td>Botella</td>
-                                                        <td>$868.000</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>$4.000</td>
-                                                        <td>Golden Ale</td>
-                                                        <td>217</td>
-                                                        <td>Botella</td>
-                                                        <td>$868.000</td>
-                                                    </tr>
+                                                    <template x-for="(pedido, index) in sections.productos.details.pedidos"
+                                                        :key="index">
+                                                        <tr>
+                                                            <td x-text="pedido.fecha"></td>
+                                                            <td x-text="pedido.pivot.cantidad"></td>
+                                                            <td x-text="pedido.estado"></td>
+                                                            <td x-text="pedido.user.name"></td>
+                                                            <td x-text="pedido.pivot.importe"></td>
+                                                        </tr>
+                                                    </template>
                                             </table>
                                         </div>
                                     </label>

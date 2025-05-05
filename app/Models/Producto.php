@@ -22,7 +22,10 @@ class Producto extends Model
 
     public function pedidos()
     {
-        return $this->belongsToMany(Pedido::class, 'pedidos_has_productos')->withPivot('cantidad');
+        return $this->belongsToMany(Pedido::class, 'pedidos_has_productos')
+        ->using(PedidoHasProducto::class)
+        ->withPivot('cantidad', 'importe')
+        ->withTimestamps();
     }
 
     public function stock()

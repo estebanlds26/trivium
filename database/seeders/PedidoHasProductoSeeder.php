@@ -17,6 +17,7 @@ class PedidoHasProductoSeeder extends Seeder
                 'pedido_id' => 1,
                 'producto_id' => 1, // Irish Red Ale
                 'cantidad' => 10,
+                'importe' => 90000,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -24,6 +25,7 @@ class PedidoHasProductoSeeder extends Seeder
                 'pedido_id' => 1,
                 'producto_id' => 2, // Golden Ale
                 'cantidad' => 5,
+                'importe' => 45000,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -31,6 +33,7 @@ class PedidoHasProductoSeeder extends Seeder
                 'pedido_id' => 2,
                 'producto_id' => 3, // Porter
                 'cantidad' => 8,
+                'importe' => 72000,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -38,6 +41,7 @@ class PedidoHasProductoSeeder extends Seeder
                 'pedido_id' => 3,
                 'producto_id' => 1, // Irish Red Ale
                 'cantidad' => 12,
+                'importe' => 108000,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

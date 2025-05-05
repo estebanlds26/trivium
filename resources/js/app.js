@@ -485,6 +485,7 @@ Alpine.data('managementData', () => ({
         })
         return sum;
     },
+   
     addAvailable(section) {
         return ["productos"].includes(section);
     },
