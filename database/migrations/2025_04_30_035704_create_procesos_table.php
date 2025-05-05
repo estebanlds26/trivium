@@ -14,11 +14,8 @@ return new class extends Migration
             $table->string('nombre');
             $table->text('descripcion')->nullable();
             $table->date('fecha');
-            $table->unsignedBigInteger('produccion_id');
+            $table->foreignId('produccion_id')->constrained('producciones')->onDelete('cascade');
             $table->timestamps();
-
-            // Clave foránea
-            $table->foreign('produccion_id')->references('id')->on('producciones')->onDelete('cascade');
 
         });
     }

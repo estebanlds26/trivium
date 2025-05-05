@@ -13,10 +13,8 @@ return new class extends Migration
             $table->id();
             $table->date('fecha');
             $table->string('estado')->default('pendiente');
-            $table->unsignedBigInteger('cliente_id');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
-
-            // Clave foránea
         });
     }
 

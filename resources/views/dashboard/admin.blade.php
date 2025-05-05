@@ -59,62 +59,70 @@
     </template>
     <template x-if="section =='production'">
         <div class="produccion" x-data="produccion">
-        <template x-for="(proceso, indexProceso) in procesos" :key="indexProceso">
-            <div class="proceso-container">
-                <div class="proceso-header">
-                    Proceso # <span x-text="proceso.procesoId"></span> | <span x-text="proceso.productionSteps[proceso.activeStep].text"></span>
-                </div>
-                <div class="proceso" onWheel= "this.scrollLeft+=event.deltaY>0?140:-140">
-                    <div>
-                        <template x-for="(step, index) in proceso.productionSteps" :key="index">
-                            <div class="step" :class="[step.type, index == proceso.activeStep ? 'active' : '']">
-                                <span class="step-text" x-text="step.text"></span>
-                                <template x-if="step.type == 'simple'">
-                                    <div>
-                                        <div class="controls">
-                                            <div class="continue" @click="continuar(index + 1, $el, step, indexProceso)">
-                                                <i class="fa-solid fa-check"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </template>
-                                <template x-if="step.type == 'checklist'">
-                                    <div>
-                                        <div class="checklist-items">
-
-                                            <template x-for="(item, index) in step.items" :key="index">
-                                                <div class="checklist-item">
-                                                    <label :for="`checklist-item-${index}_${indexProceso}`"><span x-text="item[0]"></span><input type="checkbox" :id="`checklist-item-${index}_${indexProceso}`" :value="item[0]" x-model="item[1]"></label>
+            <template x-for="(proceso, indexProceso) in procesos" :key="indexProceso">
+                <div class="proceso-container">
+                    <div class="proceso-header">
+                        Proceso # <span x-text="proceso.procesoId"></span> | <span
+                            x-text="proceso.productionSteps[proceso.activeStep].text"></span>
+                    </div>
+                    <div class="proceso" onWheel= "this.scrollLeft+=event.deltaY>0?140:-140">
+                        <div>
+                            <template x-for="(step, index) in proceso.productionSteps" :key="index">
+                                <div class="step" :class="[step.type, index == proceso.activeStep ? 'active' : '']">
+                                    <span class="step-text" x-text="step.text"></span>
+                                    <template x-if="step.type == 'simple'">
+                                        <div>
+                                            <div class="controls">
+                                                <div class="continue"
+                                                    @click="continuar(index + 1, $el, step, indexProceso)">
+                                                    <i class="fa-solid fa-check"></i>
                                                 </div>
-                                            </template>
+                                            </div>
                                         </div>
+                                    </template>
+                                    <template x-if="step.type == 'checklist'">
+                                        <div>
+                                            <div class="checklist-items">
 
-                                        <div class="controls">
-                                            <div class="continue" :class="!todoChuleado(step)? 'disabled':''" @click="continuar(index + 1, $el, step, indexProceso)">
-                                                <i class="fa-solid fa-check"></i>
+                                                <template x-for="(item, index) in step.items" :key="index">
+                                                    <div class="checklist-item">
+                                                        <label :for="`checklist-item-${index}_${indexProceso}`"><span
+                                                                x-text="item[0]"></span><input type="checkbox"
+                                                                :id="`checklist-item-${index}_${indexProceso}`"
+                                                                :value="item[0]" x-model="item[1]"></label>
+                                                    </div>
+                                                </template>
+                                            </div>
+
+                                            <div class="controls">
+                                                <div class="continue" :class="!todoChuleado(step) ? 'disabled' : ''"
+                                                    @click="continuar(index + 1, $el, step, indexProceso)">
+                                                    <i class="fa-solid fa-check"></i>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </template>
-                                <template x-if="step.type == 'time'">
-                                    <div>
-                                        <p x-text="formatTime(step.milliseconds)"></p>
-                                        <div class="controls">
-                                            <div class="start" :class="!!step.startTime?'disabled':''" @click="startTimer(step, indexProceso)">
-                                                <i class="fa-solid fa-play"></i>
-                                            </div>
-                                            <div class="continue" :class="step.milliseconds!= 0? 'disabled':''" @click="continuar(index + 1, $el, step, indexProceso)">
-                                                <i class="fa-solid fa-check"></i>
+                                    </template>
+                                    <template x-if="step.type == 'time'">
+                                        <div>
+                                            <p x-text="formatTime(step.milliseconds)"></p>
+                                            <div class="controls">
+                                                <div class="start" :class="!!step.startTime ? 'disabled' : ''"
+                                                    @click="startTimer(step, indexProceso)">
+                                                    <i class="fa-solid fa-play"></i>
+                                                </div>
+                                                <div class="continue" :class="step.milliseconds != 0 ? 'disabled' : ''"
+                                                    @click="continuar(index + 1, $el, step, indexProceso)">
+                                                    <i class="fa-solid fa-check"></i>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </template>
-                            </div>
-                        </template>
-                    </div> 
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </template>
+            </template>
 
         </div>
 
@@ -178,8 +186,8 @@
                         <div class="info">
                             <div class="left"><span class="price" x-text="`$ ${product.price}`"></span></div>
                             <div class="right">
-                                <input type="number" x-model="quantity" name="quantity" class="quantity" value="1"
-                                    autocomplete="off">
+                                <input type="number" x-model="quantity" name="quantity" class="quantity"
+                                    value="1" autocomplete="off">
                                 <div class="add-to-cart" @click="addToCart(product, quantity)">
                                     <i class="fa-solid fa-cart-shopping"></i>
                                 </div>
@@ -389,11 +397,12 @@
             <section class="management" x-data="managementData">
                 <aside class="management-header">
                     <div class="left">
-                        <img src="{{ asset('images/welcome/TRIVIUM_recortado.png') }}" alt="Trivium" class="logo-trivium">
+                        <img src="{{ asset('images/welcome/TRIVIUM_recortado.png') }}" alt="Trivium"
+                            class="logo-trivium">
                         <div class="return" @click="goBack()" x-show="subsection != 'index'">
                             <i class="fa-solid fa-chevron-left"></i>
                         </div>
-                        <h1 x-text="section"></h1>
+                        <h1 x-text="capitalize(sections[section].pluralName)"></h1>
                     </div>
                     <div class="right">
                         <div class="search action">
@@ -403,29 +412,31 @@
                         <div class="select-multiple action">
                             <i class="fa-solid fa-check"></i>
                         </div>
-                        <div class="refresh action">
+                        <div class="refresh action" @click="load(section)">
                             <i class="fa-solid fa-arrows-rotate"></i>
                         </div>
                     </div>
                 </aside>
                 <aside class="management-content">
-                    <template x-if="section== 'Productos'">
+                    <template x-if="section== 'productos'">
                         <div class="productos-management">
                             <template x-if="subsection=='edit'">
                                 <div class="edit">
                                     <label for="nombre-producto-edit">
                                         Nombre
-                                        <input type="text" id="nombre-producto-edit" value="Golden Ale">
+                                        <input type="text" id="nombre-producto-edit" :value="sections.productos.details.nombre">
+                                    </label>
+                                    <label for="nombre-producto-edit">
+                                        Descripción
+                                        <textarea type="text" id="descripcion-producto-edit" x-text="sections.productos.details.descripcion">lorem ipsum...</textarea>
                                     </label>
                                     <label for="precio-producto-edit">
                                         Precio
-                                        <input type="text" id="precio-producto-edit" value="4000">
+                                        <input type="text" id="precio-producto-edit" :value="sections.productos.details.precio">
                                     </label>
                                     <div class="buttons">
-                                        <div class="btn green">Actualizar</div>
-                                        <div class="btn grey">Descartar</div>                     
-                                    </div>
-                                    <div class="buttons">
+                                        <div class="btn green" @click="update()">Actualizar</div>
+                                        <div class="btn grey" @click="goBack()">Descartar</div>
                                     </div>
                                 </div>
                             </template>
@@ -435,15 +446,17 @@
                                         Nombre
                                         <input type="text" id="nombre-producto-create" value="">
                                     </label>
+                                    <label for="descripcion-producto-create">
+                                        Descripción
+                                        <textarea type="text" id="descripcion-producto-create"></textarea>
+                                    </label>
                                     <label for="precio-producto-create">
                                         Precio
                                         <input type="text" id="precio-producto-create" value="">
                                     </label>
                                     <div class="buttons">
-                                        <div class="btn green">Crear</div>
-                                        <div class="btn grey">Descartar</div>                     
-                                    </div>
-                                    <div class="buttons">
+                                        <div class="btn green" @click="add()">Crear</div>
+                                        <div class="btn grey" @click="goBack()">Descartar</div>
                                     </div>
                                 </div>
                             </template>
@@ -451,15 +464,23 @@
                                 <div class="view">
                                     <label for="nombre-producto">
                                         Nombre
-                                        <p id="nombre-producto">Golden Ale</p>
+                                        <p id="nombre-producto" x-text="sections.productos.details.nombre"></p>
+                                    </label>
+                                    <label for="descripcion-producto">
+                                        Descripción
+                                        <p id="descripcion-producto" x-text="sections.productos.details.descripcion"></p>
+                                    </label>
+                                    <label for="precio-producto">
+                                        Precio
+                                        <p id="precio-producto" x-text="sections.productos.details.precio"></p>
                                     </label>
                                     <label for="stock-producto">
                                         Stock disponible
-                                        <p id="stock-producto">136</p>
+                                        <p id="stock-producto" x-text="countQuantityProductions(sections.productos.details.producciones) - countQuantitySales(sections.productos.details.pedidos)">136</p>
                                     </label>
                                     <label for="produccion-producto">
                                         Producción
-                                        <p id="produccion-producto">868</p>
+                                        <p id="produccion-producto" x-text="countQuantityProductions(sections.productos.details.producciones)"></p>
                                     </label>
                                     <label for="detalles-produccion-producto">
                                         Detalles producción
@@ -467,44 +488,29 @@
                                             <table class="productos-table">
                                                 <thead>
                                                     <tr>
-                                                        <th>Precio</th>
-                                                        <th>Producto</th>
+                                                        <th>Fecha</th>
                                                         <th>Cantidad</th>
-                                                        <th>Unidades</th>
+                                                        <th>Producto</th>
                                                         <th>Importe</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                <tr>
-                                                    <td>$4.000</td>
-                                                    <td>Golden Ale</td>
-                                                    <td>217</td>
-                                                    <td>Botella</td>
-                                                    <td>$868.000</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>$4.000</td>
-                                                    <td>Golden Ale</td>
-                                                    <td>217</td>
-                                                    <td>Botella</td>
-                                                    <td>$868.000</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>$4.000</td>
-                                                    <td>Golden Ale</td>
-                                                    <td>217</td>
-                                                    <td>Botella</td>
-                                                    <td>$868.000</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>$4.000</td>
-                                                    <td>Golden Ale</td>
-                                                    <td>217</td>
-                                                    <td>Botella</td>
-                                                    <td>$868.000</td>
-                                                </tr>
+                                                    <template x-for="(produccion, index) in sections.productos.details.producciones"
+                                                        :key="index">
+                                                        <tr>
+                                                            <td x-text="produccion.fecha"></td>
+                                                            <td x-text="produccion.cantidad"></td>
+                                                            <td x-text="produccion.producto.nombre"></td>
+                                                            <td x-text="sumInsumos(produccion.insumos)"></td>
+                                                        </tr>
+                                                    </template>
+                                                    
                                             </table>
                                         </div>
+                                    </label>
+                                    <label for="ventas-producto">
+                                        Ventas
+                                        <p id="ventas-producto" x-text="countQuantitySales(sections.productos.details.pedidos)"></p>
                                     </label>
                                     <label for="detalles-ventas-producto">
                                         Detalles ventas
@@ -520,34 +526,34 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                <tr>
-                                                    <td>$4.000</td>
-                                                    <td>Golden Ale</td>
-                                                    <td>217</td>
-                                                    <td>Botella</td>
-                                                    <td>$868.000</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>$4.000</td>
-                                                    <td>Golden Ale</td>
-                                                    <td>217</td>
-                                                    <td>Botella</td>
-                                                    <td>$868.000</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>$4.000</td>
-                                                    <td>Golden Ale</td>
-                                                    <td>217</td>
-                                                    <td>Botella</td>
-                                                    <td>$868.000</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>$4.000</td>
-                                                    <td>Golden Ale</td>
-                                                    <td>217</td>
-                                                    <td>Botella</td>
-                                                    <td>$868.000</td>
-                                                </tr>
+                                                    <tr>
+                                                        <td>$4.000</td>
+                                                        <td>Golden Ale</td>
+                                                        <td>217</td>
+                                                        <td>Botella</td>
+                                                        <td>$868.000</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>$4.000</td>
+                                                        <td>Golden Ale</td>
+                                                        <td>217</td>
+                                                        <td>Botella</td>
+                                                        <td>$868.000</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>$4.000</td>
+                                                        <td>Golden Ale</td>
+                                                        <td>217</td>
+                                                        <td>Botella</td>
+                                                        <td>$868.000</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>$4.000</td>
+                                                        <td>Golden Ale</td>
+                                                        <td>217</td>
+                                                        <td>Botella</td>
+                                                        <td>$868.000</td>
+                                                    </tr>
                                             </table>
                                         </div>
                                     </label>
@@ -568,407 +574,48 @@
                                                 <th>Acciones</th>
                                             </tr>
                                         </thead>
+                                        <template x-if="sections.productos.rows == null">
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="8">Cargando</td>
+                                                </tr>
+                                            </tbody>
+                                        </template>
+                                        <template x-if="sections.productos.rows != null && sections.productos.rows.length == 0">
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="8">No hay productos</td>
+                                                </tr>
+                                            </tbody>
+                                        </template>
+                                        <template x-if="sections.productos.rows != null && sections.productos.rows.length != 0">
+
                                         <tbody>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr @click="view()">
-                                            <td>Golden Ale</td>
-                                            <td>100</td>
-                                            <td>9000</td>
-                                            <td>898</td>
-                                            <td>732</td>
-                                            <td>Detalles (209) ›</td>
-                                            <td>Detalles (460) ›</td>
-                                            <td>
-                                                <div class="actions">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                    <i @click="edit()" class="fa-solid fa-pen-to-square"></i>
-                                                    <i class="fa-solid fa-print"></i>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                            <template x-for="(producto, index) in sections.productos.rows"
+                                                :key="index">
+                                                <tr @click="view(producto)">
+                                                    <td x-text="producto.nombre"></td>
+                                                    <td x-text="countQuantityProductions(producto.producciones) - countQuantitySales(producto.pedidos)">100</td>
+                                                    <td x-text="producto.precio"></td>
+                                                    <td x-text="countQuantityProductions(producto.producciones)"></td>
+                                                    <td x-text="countQuantitySales(producto.pedidos)"></td>
+                                                    <td>Detalles (<span
+                                                            x-text="countProductions(producto.producciones)"></span>) ›
+                                                    </td>
+                                                    <td>Detalles (<span
+                                                            x-text="countProductions(producto.pedidos)"></span>) ›</td>
+                                                    <td>
+                                                        <div class="actions">
+                                                            <i @click.stop="destroy(producto.id)" class="fa-solid fa-trash-can"></i>
+                                                            <i @click.stop="edit(producto)" class="fa-solid fa-pen-to-square"></i>
+                                                            <i class="fa-solid fa-print"></i>
+                                                             
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </template>
                                     </table>
                                 </div>
                             </template>
@@ -980,36 +627,43 @@
                     </button>
                 </aside>
                 <aside class="management-sections">
-                    <div class="section entrada-de-material" :class="section== 'Entrada de Material' ? 'active' : ''" @click="setSection('Entrada de Material')">
-                        <i class="fa-solid fa-arrow-right-arrow-left"></i >
+                    <div class="section entrada-de-material" :class="section == 'Entrada de Material' ? 'active' : ''"
+                        @click="setSection('Entrada de Material')">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
                         <h1>Entrada de Material</h1>
                     </div>
-                    <div class="section materia-prima" :class="section == 'Materia Prima' ?'active':''" @click="setSection('Materia Prima')">
+                    <div class="section materia-prima" :class="section == 'Materia Prima' ? 'active' : ''"
+                        @click="setSection('Materia Prima')">
                         <i class="fa-solid fa-box"></i>
                         <h1>Materia Prima</h1>
                     </div>
-                    <div class="section productos" :class="section == 'Productos' ?'active':''" @click="setSection('Productos')">
+                    <div class="section productos" :class="section == 'Productos' ? 'active' : ''"
+                        @click="setSection('Productos')">
                         <i class="fa-solid fa-box-open"></i>
                         <h1>Productos</h1>
                     </div>
-                    <div class="section ventas" :class="section== 'Ventas' ? 'active' : ''" @click="setSection('Ventas')">
+                    <div class="section ventas" :class="section == 'Ventas' ? 'active' : ''"
+                        @click="setSection('Ventas')">
                         <i class="fa-solid fa-cart-shopping"></i>
                         <h1>Ventas</h1>
                     </div>
-                    <div class="section procesos" :class="section== 'Procesos' ? 'active' : ''" @click="setSection('Procesos')">
+                    <div class="section procesos" :class="section == 'Procesos' ? 'active' : ''"
+                        @click="setSection('Procesos')">
                         <i class="fa-solid fa-cubes-stacked"></i>
                         <h1>Procesos</h1>
                     </div>
-                    <div class="section stock-bajo" :class="section== 'Stock Bajo' ? 'active' : ''" @click="setSection('Stock Bajo')">
+                    <div class="section stock-bajo" :class="section == 'Stock Bajo' ? 'active' : ''"
+                        @click="setSection('Stock Bajo')">
                         <i class="fa-solid fa-triangle-exclamation"></i>
                         <h1>Stock Bajo</h1>
                     </div>
-                    <div class="section estadisticas" :class="section== 'Estadísticas' ? 'active' : ''" @click="setSection('Estadísticas')">
+                    <div class="section estadisticas" :class="section == 'Estadísticas' ? 'active' : ''"
+                        @click="setSection('Estadísticas')">
                         <i class="fa-solid fa-chart-simple"></i>
                         <h1>Estadísticas</h1>
                     </div>
                 </aside>
             </section>
-        </div> 
+        </div>
     </template>
 @endsection
