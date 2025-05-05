@@ -16,7 +16,7 @@
             <div class="link-icon">
                 <i class="fa-solid fa-comments"></i>
             </div>
-            <span>Contacto</span>
+            <span>Contáctanos</span>
         </a>
     </div>
     <div class="link" id="settings-link" @click="navigateToSection($event.target)">
@@ -24,7 +24,7 @@
             <div class="link-icon">
                 <i class="fa-solid fa-cog"></i>
             </div>
-            <span>Configuración</span>
+            <span>Ajustes</span>
         </a>
     </div>
     <div class="link" id="help-link" @click="navigateToSection($event.target)">
@@ -32,7 +32,7 @@
             <div class="link-icon">
                 <i class="fa-solid fa-circle-question"></i>
             </div>
-            <span>Ayuda</span>
+            <span>Preguntas frecuentes</span>
         </a>
     </div>
 @endsection

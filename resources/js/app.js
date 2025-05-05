@@ -21,17 +21,17 @@ Alpine.data('welcomeApp', () => ({
     },
     previousSection: null,
     scrollTop: 0,
-    
+
     init() {
         this.previousSection = document.querySelector("#about.relevant-content");
         this.updateFigure();
         window.addEventListener("resize", this.updateFigure);
         this.$nextTick(() => {
-            let section= window.location.pathname;
-            let link=`.link#${this.routesInverse[section]}-link`
+            let section = window.location.pathname;
+            let link = `.link#${this.routesInverse[section]}-link`
             document.querySelector(link).click();
         });
-        
+
     },
     toggle() {
         this.open = !this.open;
@@ -94,7 +94,7 @@ Alpine.data('welcomeApp', () => ({
             figureImg.style.width = "160px";
         }
     },
-    
+
 }));
 
 Alpine.data('productos', () => ({
@@ -129,36 +129,36 @@ Alpine.data('productos', () => ({
                         complejidad y carácter único, al tiempo que honramos
                         y celebramos la herencia cervecera que inspiró su
                         creación.`,
-                price: 9000,
-                images: [
-                    "/images/welcome/TRIVIUM-25.jpg",
-                    "/images/welcome/TRIVIUM-28.jpg",
-                    "/images/welcome/TRIVIUM-25.jpg",
-                    "/images/welcome/TRIVIUM-28.jpg",
-                    "/images/welcome/TRIVIUM-25.jpg",
-                    "/images/welcome/TRIVIUM-28.jpg",
-                    "/images/welcome/TRIVIUM-25.jpg",
-                    "/images/welcome/TRIVIUM-28.jpg",
-                    "/images/welcome/TRIVIUM-25.jpg",
-                    "/images/welcome/TRIVIUM-28.jpg",
-                    "/images/welcome/TRIVIUM-25.jpg",
-                    "/images/welcome/TRIVIUM-28.jpg",
-                    "/images/welcome/TRIVIUM-25.jpg",
-                    "/images/welcome/TRIVIUM-28.jpg",
-                ],
+            price: 9000,
+            images: [
+                "/images/welcome/TRIVIUM-25.jpg",
+                "/images/welcome/TRIVIUM-28.jpg",
+                "/images/welcome/TRIVIUM-25.jpg",
+                "/images/welcome/TRIVIUM-28.jpg",
+                "/images/welcome/TRIVIUM-25.jpg",
+                "/images/welcome/TRIVIUM-28.jpg",
+                "/images/welcome/TRIVIUM-25.jpg",
+                "/images/welcome/TRIVIUM-28.jpg",
+                "/images/welcome/TRIVIUM-25.jpg",
+                "/images/welcome/TRIVIUM-28.jpg",
+                "/images/welcome/TRIVIUM-25.jpg",
+                "/images/welcome/TRIVIUM-28.jpg",
+                "/images/welcome/TRIVIUM-25.jpg",
+                "/images/welcome/TRIVIUM-28.jpg",
+            ],
         }
     ],
     showProductDetail: false,
     productDetail: null,
     intervalThumbnails: null,
     intervalScroll: null,
-    closeProductDetail(){
+    closeProductDetail() {
         this.showProductDetail = false;
         this.productDetail = null;
     },
-    setProductDetail(producto){
+    setProductDetail(producto) {
         this.productDetail = producto;
-        this.showProductDetail= true;
+        this.showProductDetail = true;
     },
     nextSlideshowImage() {
         this.slideshowIndex = (this.slideshowIndex + 1) % this.productDetail.images.length;
@@ -168,43 +168,43 @@ Alpine.data('productos', () => ({
         this.slideshowIndex = (this.slideshowIndex - 1 + this.productDetail.images.length) % this.productDetail.images.length;
         this.updateSlideshow();
     },
-    appearControls(){
+    appearControls() {
         const controls = document.querySelector(".controls");
-        const scrollRightControls= document.querySelector(".scroll-right-controls")
-        const scrollLeftControls= document.querySelector(".scroll-left-controls")
+        const scrollRightControls = document.querySelector(".scroll-right-controls")
+        const scrollLeftControls = document.querySelector(".scroll-left-controls")
         clearTimeout(this.intervalThumbnails)
         controls.classList.add("visible")
         scrollRightControls.classList.add("visible")
         scrollLeftControls.classList.add("visible")
-        this.intervalThumbnails= setTimeout(function(){
+        this.intervalThumbnails = setTimeout(function () {
             controls.classList.remove("visible")
             scrollRightControls.classList.remove("visible")
             scrollLeftControls.classList.remove("visible")
         }, 984)
     },
-    scrollLeft () {
+    scrollLeft() {
         clearInterval(this.intervalScroll)
-        this.intervalScroll= setInterval(function(){
-            controls.scrollLeft-= 1
+        this.intervalScroll = setInterval(function () {
+            controls.scrollLeft -= 1
             this.appearControls()
 
         }, 2)
     },
-    scrollRight () {
+    scrollRight() {
         clearInterval(this.intervalScroll)
-        this.intervalScroll= setInterval(function(){
-            controls.scrollLeft+= 1
+        this.intervalScroll = setInterval(function () {
+            controls.scrollLeft += 1
             this.appearControls()
         }, 2)
     },
     updateSlideshow(index) {
         const slideshowContainer = document.querySelector(".slideshow-container");
-        
+
         const slideshowImgs = slideshowContainer.querySelectorAll(".slideshow img");
         const thumbnails = Array.from(document.querySelectorAll(".controls img"));
-        
-        
-        if(typeof index != "undefined"){
+
+
+        if (typeof index != "undefined") {
             this.slideshowIndex = index;
             this.appearControls()
         }
@@ -218,43 +218,170 @@ Alpine.data('productos', () => ({
     }
 
 }))
+Alpine.data('produccion', () => ({
+    procesos: [{
+        productionSteps: [
+            { type: 'simple', text: "Inicio" },
+            { type: 'checklist', text: "Se verifica la materia prima", items: [["insumo", false], ["insumo", false], ["insumo", false], ["insumo", false]] },
+            { type: 'simple', text: "Se pone a calentar el agua" },
+            { type: 'simple', text: "Molienda de la cebada" },
+            { type: 'simple', text: "Mezcla y macerado" },
+            { type: 'simple', text: "Extracción del mosto" },
+            { type: 'time', text: "Cocción", milliseconds: 10000, startTime: null, endTime: null },
+            { type: 'simple', text: "Se le hecha lúpulo" },
+            { type: 'time', text: "Cocción", milliseconds: 2700000, startTime: null, endTime: null },
+            { type: 'simple', text: "Se le hecha más lúpulo" },
+            { type: 'simple', text: "Whirlpool" },
+            { type: 'simple', text: "Enfriado" },
+            { type: 'time', text: "Fermentación", milliseconds: 864000000, startTime: null, endTime: null },
+            { type: 'simple', text: "Enbarrilado" },
+            { type: 'time', text: "Reposo del enbarrilado", milliseconds: 86400000, startTime: null, endTime: null },
+            { type: 'simple', text: "Gasificado" },
+            { type: 'time', text: "Reposo del gasificado", milliseconds: 86400000, startTime: null, endTime: null },
+            { type: 'simple', text: "Enbotellado" },
+            { type: 'simple', text: "Fin" },
+        ],
+        procesoId: 56,
+        procesoName: null,
+        activeStep: 0,
+    },
+    {
+        productionSteps: [
+            { type: 'simple', text: "Inicio" },
+            { type: 'checklist', text: "Se verifica la materia prima", items: [["insumo", false], ["insumo", false], ["insumo", false], ["insumo", false]] },
+            { type: 'simple', text: "Se pone a calentar el agua" },
+            { type: 'simple', text: "Molienda de la cebada" },
+            { type: 'simple', text: "Mezcla y macerado" },
+            { type: 'simple', text: "Extracción del mosto" },
+            { type: 'time', text: "Cocción", milliseconds: 10000, startTime: null, endTime: null },
+            { type: 'simple', text: "Se le hecha lúpulo" },
+            { type: 'time', text: "Cocción", milliseconds: 2700000, startTime: null, endTime: null },
+            { type: 'simple', text: "Se le hecha más lúpulo" },
+            { type: 'simple', text: "Whirlpool" },
+            { type: 'simple', text: "Enfriado" },
+            { type: 'time', text: "Fermentación", milliseconds: 864000000, startTime: null, endTime: null },
+            { type: 'simple', text: "Enbarrilado" },
+            { type: 'time', text: "Reposo del enbarrilado", milliseconds: 86400000, startTime: null, endTime: null },
+            { type: 'simple', text: "Gasificado" },
+            { type: 'time', text: "Reposo del gasificado", milliseconds: 86400000, startTime: null, endTime: null },
+            { type: 'simple', text: "Enbotellado" },
+            { type: 'simple', text: "Fin" },
+        ],
+        procesoId: 56,
+        procesoName: null,
+        activeStep: 0,
+    }],
+
+    init() {
+        document.querySelector(".step.active")?.scrollIntoView({ behavior: "smooth", inline: "center", block: "center" });
+    },
+    continuar(nextStep, target, step, process) {
+        switch (step.type) {
+            case "checklist":
+                if (this.todoChuleado(step)) {
+                    this.procesos[process].activeStep = nextStep;
+                    console.log(target)
+                    target
+                        .parentElement
+                        .parentElement
+                        .parentElement
+                        .nextElementSibling
+                        .scrollIntoView({ behavior: "smooth", inline: "center", block: "center" });
+                }
+                break;
+            case "simple":
+                this.procesos[process].activeStep = nextStep;
+                target
+                    .parentElement
+                    .parentElement
+                    .parentElement
+                    .nextElementSibling
+                    .scrollIntoView({ behavior: "smooth", inline: "center", block: "center" });
+                break;
+            case "time":
+                if (step.milliseconds <= 0) {
+                    this.procesos[process].activeStep = nextStep;
+                    target
+                        .parentElement
+                        .parentElement
+                        .parentElement
+                        .nextElementSibling
+                        .scrollIntoView({ behavior: "smooth", inline: "center", block: "center" });
+                }
+                break;
+        }
+    },
+    todoChuleado(step) {
+        let todosChuleados = true;
+        step.items.forEach((item) => {
+            if (item[1] == false) {
+                todosChuleados = false;
+            }
+        });
+        return todosChuleados;
+    },
+    formatTime(milliseconds) {
+        const pad = (num) => String(num).padStart(2, '0');
+        const seconds = pad(Math.floor((milliseconds / 1000) % 60));
+        const minutes = pad(Math.floor((milliseconds / (1000 * 60)) % 60));
+        const hours = pad(Math.floor((milliseconds / (1000 * 60 * 60)) % 24));
+        const days = pad(Math.floor(milliseconds / (1000 * 60 * 60 * 24)));
+        return `${days}:${hours}:${minutes}:${seconds}`;
+    },
+    startTimer(step) {
+        if (!step.startTime) {
+            step.startTime = Date.now();
+            step.endTime = step.startTime + step.milliseconds;
+            let timer = setInterval(() => {
+                const remainingTime = step.endTime - Date.now();
+                step.milliseconds = remainingTime > 0 ? remainingTime : 0;
+                if (step.milliseconds <= 0) {
+                    step.milliseconds = 0;
+                    clearInterval(timer);
+                }
+            }, 1000);
+        }
+    },
+}))
 Alpine.data('dashboardApp', () => ({
     section: 'home',
     openProfileLink: false,
-
     routes: {
         home: '',
+        production: 'produccion',
         store: 'tienda',
         contact: 'contacto',
         settings: 'ajustes',
         help: 'ayuda',
+        inventory: 'inventario',
     },
     routesInverse: {
         '/': 'home',
+        '/produccion': 'production',
         '/tienda': 'store',
         '/contacto': 'contact',
         '/ajustes': 'settings',
         '/ayuda': 'help',
+        '/inventario': 'inventory',
     },
-    init(){
+    init() {
         this.$nextTick(() => {
-            let section= window.location.pathname;
-            let link=`.link#${this.routesInverse[section]}-link`
+            let section = window.location.pathname;
+            let link = `.link#${this.routesInverse[section]}-link`
             document.querySelector(link).click();
         });
     },
-    triggerProfileLink(target){
-        if(target.closest(".profile")!= null)return
+
+    triggerProfileLink(target) {
+        if (target.closest(".profile") != null) return
         this.openProfileLink = !this.openProfileLink;
     },
-    closeProfileLink(target){
-        if(target.closest(".profile")!= null)return
+    closeProfileLink() {
         this.openProfileLink = false;
     },
     navigateToSection(target) {
-        let link= target.closest(".link")
+        let link = target.closest(".link")
         this.section = link.id.replace("-link", "");
-        console.log(this.section, document.querySelector(`.link.active`), link);
         document.querySelector(".link.active").classList.remove("active");
         link.classList.add("active");
         history.pushState({ page: 1 }, "", `/${this.routes[this.section]}`);
@@ -278,11 +405,165 @@ Alpine.data('accordionItem', () => ({
 }))
 Alpine.data('accordion', () => ({
     openItem: null,
-    toggleItem(index){
-        this.openItem= this.openItem== index? null: index;
+    toggleItem(index) {
+        this.openItem = this.openItem == index ? null : index;
     },
     isOpen(index) {
         return this.openItem == index;
+    }
+}))
+Alpine.data('managementData', () => ({
+    section: 'productos',
+    subsection: 'index',
+    sections: {
+        'productos': {
+            api: 'producto',
+            pluralName: 'productos',
+            singularName: 'producto',
+            rows: null,
+            details: {},
+        }
+    },
+    init() {
+        this.load(this.section);
+        this.$watch('section', (value) => {
+            this.load(value);
+        });
+    },
+    async load(section) {
+        this.sections[this.section].rows = null;
+        const response = await fetch(`http://localhost:8000/api/${this.sections[this.section].api}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                this.sections[this.section].rows = data.data
+            })
+            .catch(error => console.error('Error:', error));
+    },
+    setSection(section) {
+        this.section = section;
+    },
+    capitalize(text){
+        return text.charAt(0).toUpperCase() + text.slice(1);
+    },
+    countProductions(items){
+        let count = 0;
+        items.forEach((item) => {
+            count += 1
+        });
+        return count;
+    },
+    countQuantityProductions(items){
+        let count = 0;
+        items.forEach((item) => {
+            count += item.cantidad
+        });
+        return count;
+    },
+    countSales(items){
+        let count = 0;
+        items.forEach((item) => {
+            count += 1
+        });
+        return count;
+    },
+    countQuantitySales(items){
+        let count = 0;
+        items.forEach((item) => {
+            count += item.pivot.cantidad
+        });
+        return count;
+    },
+    sumInsumos(insumos){
+        let sum= 0
+        insumos.forEach(insumo=>{
+            sum+= insumo.unidad * insumo.pivot.cantidad_usada
+        })
+        return sum;
+    },
+    addAvailable(section) {
+        return ["productos"].includes(section);
+    },
+    edit(item) {
+        this.subsection = "edit";
+        this.sections[this.section].details= item
+    },
+    view(item) {
+        this.subsection = "view";
+        this.sections[this.section].details= item
+    },
+    goBack() {
+        this.subsection = "index";
+    },
+    create() {
+        this.subsection = "create";
+    },
+
+    update(){
+        let nombre = document.querySelector("#nombre-producto-edit").value;
+        let precio = document.querySelector("#precio-producto-edit").value;
+        let descripcion = document.querySelector("#descripcion-producto-edit").value
+        let data = {
+            nombre,
+            precio,
+            descripcion
+        }
+        fetch(`http://localhost:8000/api/${this.sections[this.section].api}/${this.sections[this.section].details.id}`, {
+            method: 'PUT',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => response.json())
+        .then(updatedData => {
+            console.log('Updated successfully:', updatedData);
+            this.load(this.section);
+            this.goBack();
+        })
+        .catch(error => console.error('Error updating:', error));
+    },
+    add(){
+        let nombre = document.querySelector("#nombre-producto-create").value;
+        let precio = document.querySelector("#precio-producto-create").value;
+        let descripcion = document.querySelector("#descripcion-producto-create").value
+        let data = {
+            nombre,
+            precio,
+            descripcion
+        }
+        fetch(`http://localhost:8000/api/${this.sections[this.section].api}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Created successfully:', data);
+            this.load(this.section);
+            this.goBack();
+        })
+        .catch(error => console.error('Error creating:', error));
+    },
+    destroy(id){
+        fetch(`http://localhost:8000/api/${this.sections[this.section].api}/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Deleted successfully:', data);
+            this.load(this.section);
+        })
+        .catch(error => console.error('Error deleting:', error));
     }
 }))
 Alpine.start();
