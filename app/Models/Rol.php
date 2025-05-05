@@ -12,6 +12,7 @@ class Rol extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
+    protected $fillable = ['nombre'];
     public function users(): HasMany
     {
         return $this->hasMany(User::class, 'rol_id');
