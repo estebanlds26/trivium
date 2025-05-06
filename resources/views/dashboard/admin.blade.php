@@ -419,20 +419,22 @@
                 </aside>
                 <aside class="management-content">
                     <template x-if="section== 'productos'">
-                        <div class="productos-management">
+                        <div class="productos management-section">
                             <template x-if="subsection=='edit'">
                                 <div class="edit">
                                     <label for="nombre-producto-edit">
                                         Nombre
-                                        <input type="text" id="nombre-producto-edit" :value="sections.productos.details.nombre">
+                                        <input type="text" x-ref="nombreProductoEdit"
+                                            :value="sections.productos.details.nombre">
                                     </label>
                                     <label for="nombre-producto-edit">
                                         Descripción
-                                        <textarea type="text" id="descripcion-producto-edit" x-text="sections.productos.details.descripcion">lorem ipsum...</textarea>
+                                        <textarea type="text" x-ref="descripcionProductoEdit" x-text="sections.productos.details.descripcion">lorem ipsum...</textarea>
                                     </label>
                                     <label for="precio-producto-edit">
                                         Precio
-                                        <input type="text" id="precio-producto-edit" :value="sections.productos.details.precio">
+                                        <input type="text" x-ref="precioProductoEdit"
+                                            :value="sections.productos.details.precio">
                                     </label>
                                     <div class="buttons">
                                         <div class="btn green" @click="update()">Actualizar</div>
@@ -444,15 +446,15 @@
                                 <div class="create">
                                     <label for="nombre-producto-create">
                                         Nombre
-                                        <input type="text" id="nombre-producto-create" value="">
+                                        <input type="text" x-ref="nombreProductoCreate" value="">
                                     </label>
                                     <label for="descripcion-producto-create">
                                         Descripción
-                                        <textarea type="text" id="descripcion-producto-create"></textarea>
+                                        <textarea type="text" x-ref="descripcionProductoCreate"></textarea>
                                     </label>
                                     <label for="precio-producto-create">
                                         Precio
-                                        <input type="text" id="precio-producto-create" value="">
+                                        <input type="text" x-ref="precioProductoCreate" value="">
                                     </label>
                                     <div class="buttons">
                                         <div class="btn green" @click="add()">Crear</div>
@@ -476,11 +478,14 @@
                                     </label>
                                     <label for="stock-producto">
                                         Stock disponible
-                                        <p id="stock-producto" x-text="countQuantityProductions(sections.productos.details.producciones) - countQuantitySales(sections.productos.details.pedidos)">136</p>
+                                        <p id="stock-producto"
+                                            x-text="countQuantityProductions(sections.productos.details.producciones) - countQuantitySales(sections.productos.details.pedidos)">
+                                            136</p>
                                     </label>
                                     <label for="produccion-producto">
                                         Producción
-                                        <p id="produccion-producto" x-text="countQuantityProductions(sections.productos.details.producciones)"></p>
+                                        <p id="produccion-producto"
+                                            x-text="countQuantityProductions(sections.productos.details.producciones)"></p>
                                     </label>
                                     <label for="detalles-produccion-producto">
                                         Detalles producción
@@ -495,7 +500,8 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <template x-for="(produccion, index) in sections.productos.details.producciones"
+                                                    <template
+                                                        x-for="(produccion, index) in sections.productos.details.producciones"
                                                         :key="index">
                                                         <tr>
                                                             <td x-text="produccion.fecha"></td>
@@ -504,13 +510,14 @@
                                                             <td x-text="sumInsumos(produccion.insumos)"></td>
                                                         </tr>
                                                     </template>
-                                                    
+                                                </tbody>
                                             </table>
                                         </div>
                                     </label>
                                     <label for="ventas-producto">
                                         Ventas
-                                        <p id="ventas-producto" x-text="countQuantitySales(sections.productos.details.pedidos)"></p>
+                                        <p id="ventas-producto"
+                                            x-text="countQuantitySales(sections.productos.details.pedidos)"></p>
                                     </label>
                                     <label for="detalles-ventas-producto">
                                         Detalles ventas
@@ -563,41 +570,248 @@
                                                 </tr>
                                             </tbody>
                                         </template>
-                                        <template x-if="sections.productos.rows != null && sections.productos.rows.length == 0">
+                                        <template
+                                            x-if="sections.productos.rows != null && sections.productos.rows.length == 0">
                                             <tbody>
                                                 <tr>
                                                     <td colspan="8">No hay productos</td>
                                                 </tr>
                                             </tbody>
                                         </template>
-                                        <template x-if="sections.productos.rows != null && sections.productos.rows.length != 0">
+                                        <template
+                                            x-if="sections.productos.rows != null && sections.productos.rows.length != 0">
 
-                                        <tbody>
-                                            <template x-for="(producto, index) in sections.productos.rows"
-                                                :key="index">
-                                                <tr @click="view(producto)">
-                                                    <td x-text="producto.nombre"></td>
-                                                    <td x-text="countQuantityProductions(producto.producciones) - countQuantitySales(producto.pedidos)">100</td>
-                                                    <td x-text="producto.precio"></td>
-                                                    <td x-text="countQuantityProductions(producto.producciones)"></td>
-                                                    <td x-text="countQuantitySales(producto.pedidos)"></td>
-                                                    <td>Detalles (<span
-                                                            x-text="countProductions(producto.producciones)"></span>) ›
-                                                    </td>
-                                                    <td>Detalles (<span
-                                                            x-text="countProductions(producto.pedidos)"></span>) ›</td>
-                                                    <td>
-                                                        <div class="actions">
-                                                            <i @click.stop="destroy(producto.id)" class="fa-solid fa-trash-can"></i>
-                                                            <i @click.stop="edit(producto)" class="fa-solid fa-pen-to-square"></i>
-                                                            <i class="fa-solid fa-print"></i>
-                                                             
-                                                        </div>
-                                                    </td>
-                                                </tr>
+                                            <tbody>
+                                                <template x-for="(producto, index) in sections.productos.rows"
+                                                    :key="index">
+                                                    <tr @click="view(producto)">
+                                                        <td x-text="producto.nombre"></td>
+                                                        <td
+                                                            x-text="countQuantityProductions(producto.producciones) - countQuantitySales(producto.pedidos)">
+                                                            100</td>
+                                                        <td x-text="producto.precio"></td>
+                                                        <td x-text="countQuantityProductions(producto.producciones)"></td>
+                                                        <td x-text="countQuantitySales(producto.pedidos)"></td>
+                                                        <td>Detalles (<span
+                                                                x-text="countProductions(producto.producciones)"></span>) ›
+                                                        </td>
+                                                        <td>Detalles (<span
+                                                                x-text="countProductions(producto.pedidos)"></span>) ›</td>
+                                                        <td>
+                                                            <div class="actions">
+                                                                <i @click.stop="destroy(producto.id)"
+                                                                    class="fa-solid fa-trash-can"></i>
+                                                                <i @click.stop="edit(producto)"
+                                                                    class="fa-solid fa-pen-to-square"></i>
+                                                                <i class="fa-solid fa-print"></i>
+
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </template>
+                                    </table>
+                                </div>
+                            </template>
+
+                        </div>
+                    </template>
+                    <template x-if="section== 'ventas'">
+                        <div class="ventas management-section">
+                            <template x-if="subsection=='edit'">
+                                <div class="edit">
+                                    <label for="estado-pedido-edit">
+                                        Estado del pedido
+                                        <select x-ref="estadoPedidoEdit">
+                                            <option :selected="sections.ventas.details.estado== 'pendiente'" value="pendiente">Pendiente</option>
+                                            <option :selected="sections.ventas.details.estado== 'enviado'" value="enviado">Enviado</option>
+                                            <option :selected="sections.ventas.details.estado== 'completado'" value="completado">Completado</option>
+                                            <option :selected="sections.ventas.details.estado== 'cancelado'" value="cancelado">Cancelado</option>
+                                        </select>
+                                        
+                                    <div class="buttons">
+                                        <div class="btn green" @click="update()">Actualizar</div>
+                                        <div class="btn grey" @click="goBack()">Descartar</div>
+                                    </div>
+                                </div>
+                            </template>
+                            <template x-if="subsection=='create'">
+                                <div class="create">
+                                    <label for="fecha-pedido-create">
+                                        Fecha del pedido
+                                        <input type="date" x-ref="fechaPedidoCreate" value="">
+                                    </label>
+                                    <label for="estado-pedido-create">
+                                        Estado del pedido
+                                        <select x-ref="estadoPedidoCreate">
+                                            <option value="pendiente">Pendiente</option>
+                                            <option value="enviado">Enviado</option>
+                                            <option value="completado">Completado</option>
+                                            <option value="cancelado">Cancelado</option>
+                                        </select>
+                                    </label>
+                                    <label for="cliente-pedido-create">
+                                        Cliente
+                                        <input type="number" x-ref="clientePedidoCreate" placeholder="ID del cliente" :value="{{ Auth::user()->id }}">
+                                    </label>
+                                    <label for="productos-pedido-create">
+                                        Productos
+                                        <div class="productos-list">
+                                            <template x-for="product in sections.ventas.availableProducts" :key="product.id">
+                                                <div class="producto-item">
+                                                    <input type="checkbox" :id="`producto-${product.id}`" :value="product.id" x-model="sections.ventas.selectedProducts">
+                                                    <label :for="`producto-${product.id}`">
+                                                        <span x-text="product.nombre"></span>
+                                                        <input type="number" placeholder="Cantidad" x-model="sections.ventas.productQuantities[product.id]" min="1">
+                                                    </label>
+                                                </div>
                                             </template>
-                                        </tbody>
-                                    </template>
+                                        </div>
+                                    </label>
+                                    <div class="buttons">
+                                        <div class="btn green" @click="add()">Crear</div>
+                                        <div class="btn grey" @click="goBack()">Descartar</div>
+                                    </div>
+                                </div>
+                            </template>
+                            <template x-if="subsection=='view'">
+                                <div class="view">
+                                    <label for="nombre-producto">
+                                        Nombre
+                                        <p id="nombre-producto" x-text="sections.productos.details.nombre"></p>
+                                    </label>
+                                    <label for="descripcion-producto">
+                                        Descripción
+                                        <p id="descripcion-producto" x-text="sections.productos.details.descripcion"></p>
+                                    </label>
+                                    <label for="precio-producto">
+                                        Precio
+                                        <p id="precio-producto" x-text="sections.productos.details.precio"></p>
+                                    </label>
+                                    <label for="stock-producto">
+                                        Stock disponible
+                                        <p id="stock-producto"
+                                            x-text="countQuantityProductions(sections.productos.details.producciones) - countQuantitySales(sections.productos.details.pedidos)">
+                                            136</p>
+                                    </label>
+                                    <label for="produccion-producto">
+                                        Producción
+                                        <p id="produccion-producto"
+                                            x-text="countQuantityProductions(sections.productos.details.producciones)"></p>
+                                    </label>
+                                    <label for="detalles-produccion-producto">
+                                        Detalles producción
+                                        <div class="table">
+                                            <table class="productos-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Fecha</th>
+                                                        <th>Cantidad</th>
+                                                        <th>Producto</th>
+                                                        <th>Importe</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <template
+                                                        x-for="(produccion, index) in sections.productos.details.producciones"
+                                                        :key="index">
+                                                        <tr>
+                                                            <td x-text="produccion.fecha"></td>
+                                                            <td x-text="produccion.cantidad"></td>
+                                                            <td x-text="produccion.producto.nombre"></td>
+                                                            <td x-text="sumInsumos(produccion.insumos)"></td>
+                                                        </tr>
+                                                    </template>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </label>
+                                    <label for="ventas-producto">
+                                        Ventas
+                                        <p id="ventas-producto"
+                                            x-text="countQuantitySales(sections.productos.details.pedidos)"></p>
+                                    </label>
+                                    <label for="detalles-ventas-producto">
+                                        Detalles ventas
+                                        <div class="table">
+                                            <table class="productos-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Fecha</th>
+                                                        <th>Cantidad</th>
+                                                        <th>Estado</th>
+                                                        <th>Cliente</th>
+                                                        <th>Importe</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <template x-for="(pedido, index) in sections.productos.details.pedidos"
+                                                        :key="index">
+                                                        <tr>
+                                                            <td x-text="pedido.fecha"></td>
+                                                            <td x-text="pedido.pivot.cantidad"></td>
+                                                            <td x-text="pedido.estado"></td>
+                                                            <td x-text="pedido.user.name"></td>
+                                                            <td x-text="pedido.pivot.importe"></td>
+                                                        </tr>
+                                                    </template>
+                                            </table>
+                                        </div>
+                                    </label>
+                                </div>
+                            </template>
+                            <template x-if="subsection=='index'">
+                                <div class="table">
+                                    <table class="pedidos-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Fecha</th>
+                                                <th>Cantidad</th>
+                                                <th>Estado</th>
+                                                <th>Cliente</th>
+                                                <th>Importe</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <template x-if="sections.ventas.rows == null">
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="8">Cargando</td>
+                                                </tr>
+                                            </tbody>
+                                        </template>
+                                        <template x-if="sections.ventas.rows != null && sections.ventas.rows.length == 0">
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="8">No hay ventas</td>
+                                                </tr>
+                                            </tbody>
+                                        </template>
+                                        <template x-if="sections.ventas.rows != null && sections.ventas.rows.length != 0">
+                                            <tbody>
+                                                <template x-for="(pedido, index) in sections.ventas.rows"
+                                                    :key="index">
+                                                    <tr>
+                                                        <td x-text="pedido.fecha"></td>
+                                                        <td x-text="getListQuantitiesProducts(pedido.productos)"></td>
+                                                        <td x-text="pedido.estado"></td>
+                                                        <td x-text="pedido.user.name"></td>
+                                                        <td x-text="getTotalProducts(pedido.productos)"></td>
+                                                        <td>
+                                                            <div class="actions">
+                                                                <i @click.stop="destroy(pedido.id)"
+                                                                    class="fa-solid fa-trash-can"></i>
+                                                                <i @click.stop="edit(pedido)"
+                                                                    class="fa-solid fa-pen-to-square"></i>
+                                                                <i class="fa-solid fa-print"></i>
+
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </template>
                                     </table>
                                 </div>
                             </template>
@@ -619,13 +833,13 @@
                         <i class="fa-solid fa-box"></i>
                         <h1>Materia Prima</h1>
                     </div>
-                    <div class="section productos" :class="section == 'Productos' ? 'active' : ''"
-                        @click="setSection('Productos')">
+                    <div class="section productos" :class="section == 'productos' ? 'active' : ''"
+                        @click="setSection('productos')">
                         <i class="fa-solid fa-box-open"></i>
                         <h1>Productos</h1>
                     </div>
-                    <div class="section ventas" :class="section == 'Ventas' ? 'active' : ''"
-                        @click="setSection('Ventas')">
+                    <div class="section ventas" :class="section == 'ventas' ? 'active' : ''"
+                        @click="setSection('ventas')">
                         <i class="fa-solid fa-cart-shopping"></i>
                         <h1>Ventas</h1>
                     </div>

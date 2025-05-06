@@ -422,6 +422,16 @@ Alpine.data('managementData', () => ({
             singularName: 'producto',
             rows: null,
             details: {},
+            availableProducts: null
+        },
+        'ventas': {
+            api: 'pedido',
+            pluralName: 'ventas',
+            singularName: 'venta',
+            rows: null,
+            details: {},
+            selectedProducts: [],
+            productQuantities: {},
         }
     },
     init() {
@@ -431,8 +441,8 @@ Alpine.data('managementData', () => ({
         });
     },
     async load(section) {
-        this.sections[this.section].rows = null;
-        const response = await fetch(`http://localhost:8000/api/${this.sections[this.section].api}`, {
+        this.sections[section].rows = null;
+        const response = await fetch(`http://localhost:8000/api/${this.sections[section].api}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -440,12 +450,40 @@ Alpine.data('managementData', () => ({
         })
             .then(response => response.json())
             .then(data => {
-                this.sections[this.section].rows = data.data
+                this.sections[section].rows = data.data
             })
             .catch(error => console.error('Error:', error));
+            if(section == 'ventas'){
+                this.sections['ventas'].availableProducts = null;
+        const response = await fetch(`http://localhost:8000/api/producto`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                this.sections['ventas'].availableProducts = data.data
+            })
+            .catch(error => console.error('Error:', error));
+            }
     },
     setSection(section) {
         this.section = section;
+    },
+    getListQuantitiesProducts(items) {
+        let list = []
+        items.forEach((item) => {
+            list.push(`${item.nombre} (${item.pivot.cantidad})`)
+        });
+        return list.join("  |  ");
+    },
+    getTotalProducts(items){
+        let total = 0
+        items.forEach((item) => {
+            total += item.pivot.importe
+        });
+        return total;
     },
     capitalize(text){
         return text.charAt(0).toUpperCase() + text.slice(1);
@@ -505,9 +543,11 @@ Alpine.data('managementData', () => ({
     },
 
     update(){
-        let nombre = document.querySelector("#nombre-producto-edit").value;
-        let precio = document.querySelector("#precio-producto-edit").value;
-        let descripcion = document.querySelector("#descripcion-producto-edit").value
+        switch(this.section){
+            case "productos":
+        let nombre = this.$refs.nombreProductoEdit.value;
+        let precio = this.$refs.precioProductoEdit.value;
+        let descripcion = this.$refs.descripcionProductoEdit.value
         let data = {
             nombre,
             precio,
@@ -527,11 +567,37 @@ Alpine.data('managementData', () => ({
             this.goBack();
         })
         .catch(error => console.error('Error updating:', error));
+        break;
+        case "ventas":
+            
+            let estado = this.$refs.estadoPedidoEdit.value;
+            let data1 = {
+                estado
+            }
+            fetch(`http://localhost:8000/api/${this.sections[this.section].api}/${this.sections[this.section].details.id}`, {
+                method: 'PUT',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data1),
+            })
+            .then(response => response.json())
+            .then(updatedData => {
+                console.log('Updated successfully:', updatedData);
+                this.load(this.section);
+                this.goBack();
+            })
+            .catch(error => console.error('Error updating:', error));
+            break;
+    }
+
     },
     add(){
-        let nombre = document.querySelector("#nombre-producto-create").value;
-        let precio = document.querySelector("#precio-producto-create").value;
-        let descripcion = document.querySelector("#descripcion-producto-create").value
+        switch(this.section){
+            case "productos":
+        let nombre = this.$refs.nombreProductoCreate.value;
+        let precio = this.$refs.precioProductoCreate.value;
+        let descripcion = this.$refs.descripcionProductoCreate.value
         let data = {
             nombre,
             precio,
@@ -551,6 +617,59 @@ Alpine.data('managementData', () => ({
             this.goBack();
         })
         .catch(error => console.error('Error creating:', error));
+        break;
+        case "ventas":
+            let fecha = this.$refs.fechaPedidoCreate.value;
+            let estado = this.$refs.estadoPedidoCreate.value;
+            let user_id = this.$refs.clientePedidoCreate.value;
+
+            // Collect selected products and their quantities
+            let productos = this.sections.ventas.selectedProducts.map(productId => {
+                return {
+                    producto_id: productId,
+                    cantidad: this.sections.ventas.productQuantities[productId],
+                    importe: this.sections.ventas.productQuantities[productId] * this.sections['ventas'].availableProducts.find(p => p.id == productId).precio
+                };
+            });
+
+            // Create the pedido
+            fetch(`http://localhost:8000/api/${this.sections[this.section].api}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ fecha, estado, user_id })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Add products to the pivot table
+                        let pedido_id = data.data.id;
+                        productos.forEach(producto => {
+                            fetch(`http://localhost:8000/api/pedido/${pedido_id}/productos`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(producto)
+                            })
+                                .then(response => response.json())
+                                .then(productData => {
+                                    console.log('Producto agregado:', productData);
+                                })
+                                .catch(error => console.error('Error agregando producto:', error));
+                        });
+
+                        console.log('Pedido creado exitosamente:', data);
+                        this.load(this.section);
+                        this.goBack();
+                    } else {
+                        console.error('Error creando pedido:', data);
+                    }
+                })
+                .catch(error => console.error('Error creando pedido:', error));
+            break;
+    }
     },
     destroy(id){
         fetch(`http://localhost:8000/api/${this.sections[this.section].api}/${id}`, {

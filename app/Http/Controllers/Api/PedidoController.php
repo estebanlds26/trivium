@@ -15,7 +15,7 @@ class PedidoController extends Controller
      */
     public function index()
     {
-        $pedidos = Pedido::with(['productos', 'user'])->all();
+        $pedidos = Pedido::with(['productos', 'user'])->get();
 
         return response()->json([
             'success' => true,
@@ -31,7 +31,7 @@ class PedidoController extends Controller
         $validator = Validator::make($request->all(), [
             'fecha' => 'required|date',
             'estado' => 'required|string|max:255',
-            'cliente_id' => 'required|exists:clientes,id',
+            'user_id' => 'required|exists:users,id',
         ]);
 
         if ($validator->fails()) {
@@ -41,7 +41,7 @@ class PedidoController extends Controller
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $pedido = Pedido::with(['productos', 'user'])->create($request->all());
+        $pedido = Pedido::create($request->all());
 
         return response()->json([
             'success' => true,
@@ -75,7 +75,7 @@ class PedidoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $pedido = Pedido::with(['productos', 'user'])->find($id);
+        $pedido = Pedido::find($id);
 
         if (!$pedido) {
             return response()->json([
@@ -87,7 +87,7 @@ class PedidoController extends Controller
         $validator = Validator::make($request->all(), [
             'fecha' => 'sometimes|required|date',
             'estado' => 'sometimes|required|string|max:255',
-            'cliente_id' => 'sometimes|required|exists:clientes,id',
+            'user_id' => 'sometimes|required|exists:users,id',
         ]);
 
         if ($validator->fails()) {
@@ -112,7 +112,7 @@ class PedidoController extends Controller
      */
     public function destroy(string $id)
     {
-        $pedido = Pedido::with(['productos', 'user'])->find($id);
+        $pedido = Pedido::find($id);
 
         if (!$pedido) {
             return response()->json([
@@ -126,6 +126,45 @@ class PedidoController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Pedido eliminado exitosamente',
+        ], Response::HTTP_OK);
+    }
+
+    /**
+     * Add a product to the specified pedido.
+     */
+    public function addProduct(Request $request, $pedidoId)
+    {
+        $validator = Validator::make($request->all(), [
+            'producto_id' => 'required|exists:productos,id',
+            'cantidad' => 'required|integer|min:1',
+            'importe' => 'required|numeric|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $validator->errors(),
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $pedido = Pedido::find($pedidoId);
+
+        if (!$pedido) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pedido no encontrado',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $pedido->productos()->attach($request->producto_id, [
+            'cantidad' => $request->cantidad,
+            'importe' => $request->importe,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Producto agregado al pedido exitosamente',
         ], Response::HTTP_OK);
     }
 }

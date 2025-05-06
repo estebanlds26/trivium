@@ -11,7 +11,7 @@ class Pedido extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['fecha', 'estado', 'cliente_id'];
+    protected $fillable = ['fecha', 'estado', 'user_id'];
 
     public function user()
     {

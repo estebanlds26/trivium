@@ -15,6 +15,8 @@ Route::apiResource('proceso', ProcesoController::class);
 
 Route::apiResource('pedido', PedidoController::class);
 
+Route::post('pedido/{pedido}/productos', [PedidoController::class, 'addProduct']);
+
 Route::apiResource('insumo', InsumoController::class);
 
 Route::apiResource('cliente', ClienteController::class);
