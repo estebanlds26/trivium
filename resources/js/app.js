@@ -280,7 +280,6 @@ Alpine.data('produccion', () => ({
             case "checklist":
                 if (this.todoChuleado(step)) {
                     this.procesos[process].activeStep = nextStep;
-                    console.log(target)
                     target
                         .parentElement
                         .parentElement
@@ -391,18 +390,6 @@ Alpine.data('producto', () => ({
     quantity: 0
 }))
 
-//Accordion which only one item can be open at a time
-Alpine.data('accordionItem', () => ({
-    open: false,
-    toggle() {
-        this.open = !this.open;
-        if (this.open) {
-            this.$dispatch('accordion:open', { item: this });
-        } else {
-            this.$dispatch('accordion:close', { item: this });
-        }
-    },
-}))
 Alpine.data('accordion', () => ({
     openItem: null,
     toggleItem(index) {

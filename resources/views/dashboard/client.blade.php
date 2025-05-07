@@ -39,7 +39,7 @@
 
 @section('content')
     <template x-if="section =='home'">
-        <a href="">home</a>
+        <a href=""></a>
     </template>
     <template x-if="section =='store'">
         <section id="products" class="relevant-content" x-data="productos">
@@ -261,9 +261,9 @@
                 <div class="accordion-item">
                     <div class="accordion-header" @click="toggleItem(0)">
                         <h1>¿Cómo puedo crear una cuenta?</h1>
-                        <i class="fa-solid fa-chevron-down" :class="openItem == 0 ? 'open' : ''"></i>
+                        <i class="fa-solid fa-chevron-down" :class="isOpen(0) ? 'open' : ''"></i>
                     </div>
-                    <div class="accordion-body" :class="openItem == 0 ? 'open' : ''">
+                    <div class="accordion-body" :class="isOpen(0)? 'open' : ''">
                         <div>
                             Puedes crear una cuenta haciendo clic en el botón “Registrarse” en la parte superior de la página.
                             Completa el formulario con tu nombre, correo electrónico y una contraseña segura.

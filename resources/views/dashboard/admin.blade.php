@@ -55,7 +55,7 @@
 
 @section('content')
     <template x-if="section =='home'">
-        <a href="">home</a>
+        <a href=""></a>
     </template>
     <template x-if="section =='production'">
         <div class="produccion" x-data="produccion">
@@ -84,12 +84,15 @@
                                         <div>
                                             <div class="checklist-items">
 
-                                                <template x-for="(item, index) in step.items" :key="index">
+                                                <template x-for="(item, indexItem) in step.items" :key="indexItem">
                                                     <div class="checklist-item">
-                                                        <label :for="`checklist-item-${index}_${indexProceso}`"><span
-                                                                x-text="item[0]"></span><input type="checkbox"
-                                                                :id="`checklist-item-${index}_${indexProceso}`"
-                                                                :value="item[0]" x-model="item[1]"></label>
+                                                        <label :for="`checklist-item-${indexItem}_${indexProceso}`">
+                                                            <span
+                                                                x-text="item[0]"></span>
+                                                            <input type="checkbox" :disabled="index != proceso.activeStep"
+                                                                :id="`checklist-item-${indexItem}_${indexProceso}`"
+                                                                x-model="item[1]">
+                                                        </label>
                                                     </div>
                                                 </template>
                                             </div>
@@ -118,6 +121,7 @@
                                         </div>
                                     </template>
                                 </div>
+                                
                             </template>
                         </div>
                     </div>
