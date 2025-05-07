@@ -13,6 +13,7 @@ return new class extends Migration
             $table->foreignId('produccion_id')->constrained('producciones')->onDelete('cascade');
             $table->foreignId('insumo_id')->constrained('insumos')->onDelete('cascade');
             $table->integer('cantidad_usada');
+            $table->integer('precio_unitario');
             $table->timestamps();
 
             // Evitar duplicados

@@ -264,8 +264,13 @@
                         <i class="fa-solid fa-chevron-down" :class="openItem == 0 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 0 ? 'open' : ''">
-                        zxczxc
+                        <div>
+                            Puedes crear una cuenta haciendo clic en el botón “Registrarse” en la parte superior de la página.
+                            Completa el formulario con tu nombre, correo electrónico y una contraseña segura.
+                            Una vez enviado, recibirás un correo de confirmación para activar tu cuenta.
+                        </div>
                     </div>
+                    
                 </div>
                 <div class="accordion-item">
                     <div class="accordion-header" @click="toggleItem(1)">
@@ -273,7 +278,10 @@
                         <i class="fa-solid fa-chevron-down" :class="openItem == 1 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 1 ? 'open' : ''">
-                        asdasd
+                        <div>
+                            Si olvidaste tu contraseña, ve a la página de inicio de sesión y haz clic en “¿Olvidaste tu contraseña?”.
+                            Ingresa tu correo electrónico y te enviaremos un enlace para que puedas establecer una nueva contraseña de forma segura.
+                        </div>
                     </div>
                 </div>
                 <div class="accordion-item">
@@ -282,7 +290,10 @@
                         <i class="fa-solid fa-chevron-down" :class="openItem == 2 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 2 ? 'open' : ''">
-                        asdasd
+                        <div>    
+                            Puedes contactarnos directamente a través del formulario en la sección Contacto, por WhatsApp escaneando nuestro código QR,
+                            o enviándonos un correo electrónico. Estamos disponibles para ayudarte con cualquier consulta o inconveniente.
+                        </div>
                     </div>
                 </div>
                 <div class="accordion-item">
@@ -291,7 +302,10 @@
                         <i class="fa-solid fa-chevron-down" :class="openItem == 3 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 3 ? 'open' : ''">
-                        asdasd
+                        <div>
+                            Sí, puedes cancelar o modificar tu pedido antes de que sea despachado.
+                            Por favor contáctanos lo antes posible a través del servicio de atención al cliente para gestionar el cambio.
+                        </div>
                     </div>
                 </div>
                 <div class="accordion-item">
@@ -300,7 +314,10 @@
                         <i class="fa-solid fa-chevron-down" :class="openItem == 4 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 4 ? 'open' : ''">
-                        asdasd
+                        <div>
+                            Actualmente nuestras entregas están limitadas al territorio nacional.
+                            Sin embargo, estamos trabajando para habilitar envíos internacionales próximamente. ¡Te mantendremos informado!
+                        </div>
                     </div>
                 </div>
             </div>

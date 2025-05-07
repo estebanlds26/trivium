@@ -432,7 +432,19 @@ Alpine.data('managementData', () => ({
             details: {},
             selectedProducts: [],
             productQuantities: {},
-        }
+        },
+        'produccion': {
+            api: 'produccion',
+            pluralName: 'producciones',
+            singularName: 'producción',
+            rows: null,
+            details: {},
+            selectedInsumos: [], // Array to store selected insumos
+        },
+        'insumos': {
+            api: 'insumo',
+            rows: null, // List of available insumos
+        },
     },
     init() {
         this.load(this.section);
@@ -453,20 +465,46 @@ Alpine.data('managementData', () => ({
                 this.sections[section].rows = data.data
             })
             .catch(error => console.error('Error:', error));
-            if(section == 'ventas'){
-                this.sections['ventas'].availableProducts = null;
-        const response = await fetch(`http://localhost:8000/api/producto`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                this.sections['ventas'].availableProducts = data.data
+        if (section == 'ventas') {
+            this.sections['ventas'].availableProducts = null;
+            const response = await fetch(`http://localhost:8000/api/producto`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             })
-            .catch(error => console.error('Error:', error));
-            }
+                .then(response => response.json())
+                .then(data => {
+                    this.sections['ventas'].availableProducts = data.data
+                })
+                .catch(error => console.error('Error:', error));
+        }
+        if (section == 'produccion') {
+            this.sections.productos.rows = null;
+            const response = await fetch(`http://localhost:8000/api/producto`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    this.sections.productos.rows = data.data
+                })
+                .catch(error => console.error('Error:', error));
+            this.sections.insumos.rows = null;
+            const response2 = await fetch(`http://localhost:8000/api/insumo`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    this.sections.insumos.rows = data.data
+                })
+                .catch(error => console.error('Error:', error));
+        }
     },
     setSection(section) {
         this.section = section;
@@ -478,62 +516,89 @@ Alpine.data('managementData', () => ({
         });
         return list.join("  |  ");
     },
-    getTotalProducts(items){
+    getListQuantitiesInsumos(items) {
+        let list = []
+        items.forEach((item) => {
+            list.push(`${item.nombre} (${item.pivot.cantidad_usada})`)
+        });
+        return list.join("  |  ");
+    },
+    getTotalProducts(items) {
         let total = 0
         items.forEach((item) => {
             total += item.pivot.importe
         });
         return total;
     },
-    capitalize(text){
+    getTotalInsumos(items) {
+        let total = 0
+        items.forEach((item) => {
+            total += item.pivot.precio_unitario * item.pivot.cantidad_usada
+        });
+        return total;
+    },
+    capitalize(text) {
         return text.charAt(0).toUpperCase() + text.slice(1);
     },
-    countProductions(items){
+    countProductions(items) {
         let count = 0;
         items.forEach((item) => {
             count += 1
         });
         return count;
     },
-    countQuantityProductions(items){
+    countQuantityProductions(items) {
         let count = 0;
         items.forEach((item) => {
             count += item.cantidad
         });
         return count;
     },
-    countSales(items){
+    countSales(items) {
         let count = 0;
         items.forEach((item) => {
             count += 1
         });
         return count;
     },
-    countQuantitySales(items){
+    countQuantitySales(items) {
         let count = 0;
         items.forEach((item) => {
             count += item.pivot.cantidad
         });
         return count;
     },
-    sumInsumos(insumos){
-        let sum= 0
-        insumos.forEach(insumo=>{
-            sum+= insumo.unidad * insumo.pivot.cantidad_usada
+    sumInsumos(insumos) {
+        let sum = 0
+        insumos.forEach(insumo => {
+            sum += insumo.unidad * insumo.pivot.cantidad_usada
         })
         return sum;
     },
-   
+    setDate(date, el) {
+        switch (date) {
+            case "today":
+                let today = new Date().toISOString();
+                el.value = today;
+                break;
+        }
+    },
     addAvailable(section) {
         return ["productos"].includes(section);
     },
+    addInsumo() {
+        this.sections.produccion.selectedInsumos.push({ insumo_id: '', cantidad_usada: 1 });
+    },
+    removeInsumo(index) {
+        this.sections.produccion.selectedInsumos.splice(index, 1);
+    },
     edit(item) {
         this.subsection = "edit";
-        this.sections[this.section].details= item
+        this.sections[this.section].details = item
     },
     view(item) {
         this.subsection = "view";
-        this.sections[this.section].details= item
+        this.sections[this.section].details = item
     },
     goBack() {
         this.subsection = "index";
@@ -542,148 +607,244 @@ Alpine.data('managementData', () => ({
         this.subsection = "create";
     },
 
-    update(){
-        switch(this.section){
+    update() {
+        switch (this.section) {
             case "productos":
-        let nombre = this.$refs.nombreProductoEdit.value;
-        let precio = this.$refs.precioProductoEdit.value;
-        let descripcion = this.$refs.descripcionProductoEdit.value
-        let data = {
-            nombre,
-            precio,
-            descripcion
-        }
-        fetch(`http://localhost:8000/api/${this.sections[this.section].api}/${this.sections[this.section].details.id}`, {
-            method: 'PUT',
-            headers: {
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
-        .then(response => response.json())
-        .then(updatedData => {
-            console.log('Updated successfully:', updatedData);
-            this.load(this.section);
-            this.goBack();
-        })
-        .catch(error => console.error('Error updating:', error));
-        break;
-        case "ventas":
-            
-            let estado = this.$refs.estadoPedidoEdit.value;
-            let data1 = {
-                estado
-            }
-            fetch(`http://localhost:8000/api/${this.sections[this.section].api}/${this.sections[this.section].details.id}`, {
-                method: 'PUT',
-                headers: {
-                'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data1),
-            })
-            .then(response => response.json())
-            .then(updatedData => {
-                console.log('Updated successfully:', updatedData);
-                this.load(this.section);
-                this.goBack();
-            })
-            .catch(error => console.error('Error updating:', error));
-            break;
-    }
-
-    },
-    add(){
-        switch(this.section){
-            case "productos":
-        let nombre = this.$refs.nombreProductoCreate.value;
-        let precio = this.$refs.precioProductoCreate.value;
-        let descripcion = this.$refs.descripcionProductoCreate.value
-        let data = {
-            nombre,
-            precio,
-            descripcion
-        }
-        fetch(`http://localhost:8000/api/${this.sections[this.section].api}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Created successfully:', data);
-            this.load(this.section);
-            this.goBack();
-        })
-        .catch(error => console.error('Error creating:', error));
-        break;
-        case "ventas":
-            let fecha = this.$refs.fechaPedidoCreate.value;
-            let estado = this.$refs.estadoPedidoCreate.value;
-            let user_id = this.$refs.clientePedidoCreate.value;
-
-            // Collect selected products and their quantities
-            let productos = this.sections.ventas.selectedProducts.map(productId => {
-                return {
-                    producto_id: productId,
-                    cantidad: this.sections.ventas.productQuantities[productId],
-                    importe: this.sections.ventas.productQuantities[productId] * this.sections['ventas'].availableProducts.find(p => p.id == productId).precio
-                };
-            });
-
-            // Create the pedido
-            fetch(`http://localhost:8000/api/${this.sections[this.section].api}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ fecha, estado, user_id })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Add products to the pivot table
-                        let pedido_id = data.data.id;
-                        productos.forEach(producto => {
-                            fetch(`http://localhost:8000/api/pedido/${pedido_id}/productos`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(producto)
-                            })
-                                .then(response => response.json())
-                                .then(productData => {
-                                    console.log('Producto agregado:', productData);
-                                })
-                                .catch(error => console.error('Error agregando producto:', error));
-                        });
-
-                        console.log('Pedido creado exitosamente:', data);
+                let nombre = this.$refs.nombreProductoEdit.value;
+                let precio = this.$refs.precioProductoEdit.value;
+                let descripcion = this.$refs.descripcionProductoEdit.value
+                let data = {
+                    nombre,
+                    precio,
+                    descripcion
+                }
+                fetch(`http://localhost:8000/api/${this.sections[this.section].api}/${this.sections[this.section].details.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                })
+                    .then(response => response.json())
+                    .then(updatedData => {
+                        console.log('Updated successfully:', updatedData);
                         this.load(this.section);
                         this.goBack();
-                    } else {
-                        console.error('Error creando pedido:', data);
-                    }
+                    })
+                    .catch(error => console.error('Error updating:', error));
+                break;
+            case "ventas":
+
+                let estado = this.$refs.estadoPedidoEdit.value;
+                let data1 = {
+                    estado
+                }
+                fetch(`http://localhost:8000/api/${this.sections[this.section].api}/${this.sections[this.section].details.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data1),
                 })
-                .catch(error => console.error('Error creando pedido:', error));
-            break;
-    }
+                    .then(response => response.json())
+                    .then(updatedData => {
+                        console.log('Updated successfully:', updatedData);
+                        this.load(this.section);
+                        this.goBack();
+                    })
+                    .catch(error => console.error('Error updating:', error));
+                break;
+                case "produccion":
+                    let fechaProduccion = this.$refs.fechaProduccionEdit.value;
+                    let cantidadProduccion = this.$refs.cantidadProduccionEdit.value;
+                    let productoIdProduccion = this.$refs.productoProduccionEdit.value;
+                    let insumosProduccion = this.sections.produccion.selectedInsumos;
+
+                    let produccionData = {
+                        fecha: fechaProduccion,
+                        cantidad: cantidadProduccion,
+                        producto_id: productoIdProduccion,
+                        user_id: 1, // Replace with the logged-in user ID
+                    };
+
+                    fetch(`http://localhost:8000/api/${this.sections[this.section].api}/${this.sections[this.section].details.id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(produccionData),
+                    })
+                        .then(response => response.json())
+                        .then(updatedData => {
+                            if (updatedData.success) {
+                                const produccionId = updatedData.data.id;
+
+                                // Update insumos for the produccion
+                                insumosProduccion.forEach(insumo => {
+                                    fetch(`http://localhost:8000/api/produccion/${produccionId}/insumos`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify(insumo),
+                                    })
+                                        .then(response => response.json())
+                                        .then(insumoData => {
+                                            console.log('Insumo actualizado:', insumoData);
+                                        })
+                                        .catch(error => console.error('Error actualizando insumo:', error));
+                                });
+
+                                console.log('Producción actualizada exitosamente:', updatedData);
+                                this.load(this.section);
+                                this.goBack();
+                            } else {
+                                console.error('Error actualizando producción:', updatedData);
+                            }
+                        })
+                        .catch(error => console.error('Error actualizando producción:', error));
+                    break;
+        }
+
     },
-    destroy(id){
+    add() {
+        let fecha= "";
+        switch (this.section) {
+            case "productos":
+                let nombre = this.$refs.nombreProductoCreate.value;
+                let precio = this.$refs.precioProductoCreate.value;
+                let descripcion = this.$refs.descripcionProductoCreate.value
+                let data = {
+                    nombre,
+                    precio,
+                    descripcion
+                }
+                fetch(`http://localhost:8000/api/${this.sections[this.section].api}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Created successfully:', data);
+                        this.load(this.section);
+                        this.goBack();
+                    })
+                    .catch(error => console.error('Error creating:', error));
+                break;
+            case "ventas":
+                fecha = this.$refs.fechaPedidoCreate.value;
+                let estado = this.$refs.estadoPedidoCreate.value;
+                let user_id = this.$refs.clientePedidoCreate.value;
+
+                // Collect selected products and their quantities
+                let productos = this.sections.ventas.selectedProducts.map(productId => {
+                    return {
+                        producto_id: productId,
+                        cantidad: this.sections.ventas.productQuantities[productId],
+                        importe: this.sections.ventas.productQuantities[productId] * this.sections['ventas'].availableProducts.find(p => p.id == productId).precio
+                    };
+                });
+
+                // Create the pedido
+                fetch(`http://localhost:8000/api/${this.sections[this.section].api}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ fecha, estado, user_id })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Add products to the pivot table
+                            let pedido_id = data.data.id;
+                            productos.forEach(producto => {
+                                fetch(`http://localhost:8000/api/pedido/${pedido_id}/productos`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(producto)
+                                })
+                                    .then(response => response.json())
+                                    .then(productData => {
+                                        console.log('Producto agregado:', productData);
+                                    })
+                                    .catch(error => console.error('Error agregando producto:', error));
+                            });
+
+                            console.log('Pedido creado exitosamente:', data);
+                            this.load(this.section);
+                            this.goBack();
+                        } else {
+                            console.error('Error creando pedido:', data);
+                        }
+                    })
+                    .catch(error => console.error('Error creando pedido:', error));
+                break;
+            case "produccion":
+                    fecha = this.$refs.fechaProduccionCreate.value;
+                    let cantidad = this.$refs.cantidadProduccionCreate.value;
+                    let producto_id = this.$refs.productoProduccionCreate.value;
+                    let insumos = this.sections.produccion.selectedInsumos;
+                    // Create the produccion
+                    fetch(`http://localhost:8000/api/produccion`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ fecha, cantidad, producto_id, user_id: 1 }), // Replace user_id with the logged-in user
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                const produccionId = data.data.id;
+            
+                                // Add insumos to the produccion
+                                insumos.forEach(insumo => {
+                                    console.log(insumo)
+            window.insumos= insumo
+                                    fetch(`http://localhost:8000/api/produccion/${produccionId}/insumos`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify(insumo),
+                                    })
+                                        .then(response => response.json())
+                                        .then(insumoData => {
+                                            console.log('Insumo agregado:', insumoData);
+                                        })
+                                        .catch(error => console.error('Error agregando insumo:', error));
+                                });
+            
+                                console.log('Producción creada exitosamente:', data);
+                                this.load(this.section);
+                                this.goBack();
+                            } else {
+                                console.error('Error creando producción:', data);
+                            }
+                        })
+                        .catch(error => console.error('Error creando producción:', error));
+                        break;
+        }
+    },
+    destroy(id) {
         fetch(`http://localhost:8000/api/${this.sections[this.section].api}/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
             }
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Deleted successfully:', data);
-            this.load(this.section);
-        })
-        .catch(error => console.error('Error deleting:', error));
+            .then(response => response.json())
+            .then(data => {
+                console.log('Deleted successfully:', data);
+                this.load(this.section);
+            })
+            .catch(error => console.error('Error deleting:', error));
     }
 }))
 Alpine.start();
