@@ -15,7 +15,7 @@ class InsumoController extends Controller
      */
     public function index()
     {
-        $insumos = Insumo::with(['producciones'])->all();
+        $insumos = Insumo::with(['producciones'])->get();
         return response()->json([
             'success' => true,
             'data' => $insumos

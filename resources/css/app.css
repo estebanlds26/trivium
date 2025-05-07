@@ -896,9 +896,16 @@ body {
       border: 0px solid #434343;
       border-left: 2px solid #434343;
       border-right: 2px solid #434343;
-      transition: max-height 0.4s ease-in-out, border 0.25s 0.1s linear;
+      transition: all 0.4s ease-in-out, border 0.25s 0.1s linear;
       overflow: hidden;
-
+      font-size: 1.3em;
+      line-height: 1.1;
+      color: #dbdbdb;
+      background: #2B2B2B;
+      & > div{
+        padding: 1em;
+        width: 100%;
+      }
       &.open {
         max-height: 2000px;
         border: 2px solid #434343;
@@ -1327,9 +1334,11 @@ body {
             color: #4D4C49;
             margin-top: 0.4em;
             margin-bottom: 0.9em;
-            width: 135px;
             padding: 5px 9px;
             border-radius: 0.3em;
+            &:not([type="datetime-local"]){
+              width: 135px;
+            }
             &:focus {
               outline: none;
               box-shadow: none;
