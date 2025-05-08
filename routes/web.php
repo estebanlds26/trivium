@@ -10,86 +10,86 @@ Route::get('/acerca-de', function () {
     if (Auth::check()) {
         return redirect()->route('home');
     }
-    return view('welcome')->with('section', 'about');
+    return view('welcome');
 });
 Route::get('/productos', function () {
     if (Auth::check()) {
         return redirect()->route('home');
     }
-    return view('welcome')->with('section', 'products');
+    return view('welcome');
 });
 Route::get('/iniciar-sesion', function () {
     if (Auth::check()) {
         return redirect()->route('home');
     }
-    return view('welcome')->with('section', 'login');
+    return view('welcome');
 });
 Route::get('/registrarse', function () {
     if (Auth::check()) {
         return redirect()->route('home');
     }
-    return view('welcome')->with('section', 'register');
+    return view('welcome');
 });
 
 Route::get('/contacto', function () {
     switch (Auth::user()->rol_id) {
         case 1:
-            return view('dashboard.admin')->with('section', 'contact');
+            return view('dashboard.admin');
         case 2:
-            return view('dashboard.client')->with('section', 'contact');
+            return view('dashboard.client');
         case 3:
-            return view('dashboard.producer')->with('section', 'contact');
+            return view('dashboard.producer');
     }
 })->middleware(['auth'])->name('contact');
 
 Route::get('/inventario', function () {
     switch (Auth::user()->rol_id) {
         case 1:
-            return view('dashboard.admin')->with('section', 'inventory');
+            return view('dashboard.admin');
         case 2:
-            return view('dashboard.client')->with('section', 'inventory');
+            return view('dashboard.client');
         case 3:
-            return view('dashboard.producer')->with('section', 'inventory');
+            return view('dashboard.producer');
     }
 })->middleware(['auth'])->name('store');
 Route::get('/produccion', function () {
     switch (Auth::user()->rol_id) {
         case 1:
-            return view('dashboard.admin')->with('section', 'production');
+            return view('dashboard.admin');
         case 2:
-            return view('dashboard.client')->with('section', 'production');
+            return view('dashboard.client');
         case 3:
-            return view('dashboard.producer')->with('section', 'production');
+            return view('dashboard.producer');
     }
 })->middleware(['auth'])->name('store');
 Route::get('/tienda', function () {
     switch (Auth::user()->rol_id) {
         case 1:
-            return view('dashboard.admin')->with('section', 'store');
+            return view('dashboard.admin');
         case 2:
-            return view('dashboard.client')->with('section', 'store');
+            return view('dashboard.client');
         case 3:
-            return view('dashboard.producer')->with('section', 'store');
+            return view('dashboard.producer');
     }
 })->middleware(['auth'])->name('store');
 Route::get('/ajustes', function () {
     switch (Auth::user()->rol_id) {
         case 1:
-            return view('dashboard.admin')->with('section', 'settings');
+            return view('dashboard.admin');
         case 2:
-            return view('dashboard.client')->with('section', 'settings');
+            return view('dashboard.client');
         case 3:
-            return view('dashboard.producer')->with('section', 'settings');
+            return view('dashboard.producer');
     }
 })->middleware(['auth'])->name('settings');
 Route::get('/ayuda', function () {
     switch (Auth::user()->rol_id) {
         case 1:
-            return view('dashboard.admin')->with('section', 'help');
+            return view('dashboard.admin');
         case 2:
-            return view('dashboard.client')->with('section', 'help');
+            return view('dashboard.client');
         case 3:
-            return view('dashboard.producer')->with('section', 'help');
+            return view('dashboard.producer');
     }
 })->middleware(['auth'])->name('help');
 

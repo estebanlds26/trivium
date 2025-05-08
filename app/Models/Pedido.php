@@ -11,15 +11,18 @@ class Pedido extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['fecha', 'estado', 'cliente_id'];
+    protected $fillable = ['fecha', 'estado', 'user_id'];
 
-    public function cliente()
+    public function user()
     {
-        return $this->belongsTo(Cliente::class);
+        return $this->belongsTo(User::class);
     }
 
     public function productos()
     {
-        return $this->belongsToMany(Producto::class, 'pedidos_has_productos')->withPivot('cantidad');
+        return $this->belongsToMany(Producto::class, 'pedidos_has_productos')
+        ->using(PedidoHasProducto::class)
+        ->withPivot('cantidad', 'importe')
+        ->withTimestamps();
     }
 }

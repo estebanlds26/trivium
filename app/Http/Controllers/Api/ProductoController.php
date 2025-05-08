@@ -15,7 +15,7 @@ class ProductoController extends Controller
      */
     public function index()
     {
-        $productos = Producto::with(['producciones.producto', 'producciones.insumos','pedidos'])->get();
+        $productos = Producto::with(['producciones.producto', 'producciones.insumos','pedidos.user'])->get();
 
         return response()->json([
             'success' => true,
@@ -58,6 +58,7 @@ class ProductoController extends Controller
     public function show(string $id)
     {
         $producto = Producto::with(['producciones.producto', 'producciones.insumos', 'pedidos'])->find($id);
+
 
         if (!$producto) {
             return response()->json([

@@ -8,9 +8,21 @@ class Produccion extends Model
 {
     protected $table= "producciones";
 
-    public function insumos()
+
+    protected $fillable = [
+        'fecha',
+        'cantidad',
+        'user_id',
+        'producto_id',
+    ];
+        public function insumos()
 {
-    return $this->belongsToMany(Insumo::class, 'producciones_has_insumos')->withPivot('cantidad_usada');
+    return $this->belongsToMany(Insumo::class, 'producciones_has_insumos')->withPivot('cantidad_usada', 'precio_unitario');
+}
+
+public function user()
+{
+    return $this->belongsTo(User::class);
 }
 
 public function procesos()
