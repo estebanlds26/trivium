@@ -307,11 +307,8 @@ body {
   overflow-y: auto;
 }
 
-.welcome .relevant-content {
-  display: none;
-}
 
-.relevant-content.active {
+.relevant-content {
   display: block;
   height: 100%;
 
@@ -419,10 +416,7 @@ body {
 }
 
 #login.relevant-content {
-  &.active {
-    display: grid;
-  }
-
+  display: grid;
   grid-template-columns: 57% 43%;
   align-items: center;
   justify-content: center;
@@ -482,10 +476,7 @@ body {
   align-items: center;
   justify-content: center;
   flex-grow: 1;
-
-  &.active {
-    display: grid;
-  }
+  display: grid;
 }
 
 #register form {

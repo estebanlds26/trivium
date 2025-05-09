@@ -12,64 +12,57 @@ Alpine.data('welcomeApp', () => ({
         login: 'iniciar-sesion',
         register: 'registrarse',
     },
-    routesInverse: {
-        '/': 'home',
-        '/acerca-de': 'about',
-        '/productos': 'products',
-        '/iniciar-sesion': 'login',
-        '/registrarse': 'register',
-    },
-    previousSection: null,
+    routesInverse: {},
+    section: 'home',
+    previousSection: "about",
     scrollTop: 0,
 
     init() {
-        this.previousSection = document.querySelector("#about.relevant-content");
+        this.routesInverse = Object.fromEntries(
+            Object.entries(this.routes).map(([key, value]) => [`/${value}`, key])
+        );
+
+
+        console.log(this.routesInverse)
         this.updateFigure();
         window.addEventListener("resize", this.updateFigure);
         this.$nextTick(() => {
-            let section = window.location.pathname;
-            let link = `.link#${this.routesInverse[section]}-link`
-            document.querySelector(link).click();
+            this.section= this.routesInverse[window.location.pathname];
+            this.setSection(this.section)
         });
 
     },
     toggle() {
         this.open = !this.open;
     },
-    handleScroll(content, background) {
-        this.scrollTop = content.scrollTop;
-        background.style.filter = `blur(${this.scrollTop / 74}px)`;
+    handleScroll() {
+        this.scrollTop = this.$refs.content.scrollTop;
+        this.$refs.background.style.filter = `blur(${this.scrollTop / 74}px)`;
         this.updateFigure();
         if (this.scrollTop > 230) {
-            if (document.querySelector(".link.active")?.id === "home-link") {
-                document.querySelector(".link.active").classList.remove("active");
-                document.querySelector(`.link#${this.previousSection.id}-link`).classList.add("active");
-                document.querySelector(".relevant-content.active")?.classList.remove("active");
-                this.previousSection.classList.add("active");
-                history.pushState({ page: 1 }, "", `/${this.routes[this.previousSection.id]}`);
-            }
+            
+            this.$nextTick(()=>{
+                if (this.section == "home") {
+                    this.setSection(this.previousSection, "no-auto-scroll")
+                }
+            })
         } else {
-            this.previousSection = document.querySelector(".relevant-content.active") ?? this.previousSection;
-            this.previousSection.classList.remove("active");
-            document.querySelector(".link.active")?.classList.remove("active");
-            document.querySelector(".link#home-link").classList.add("active");
-            history.pushState({ page: 1 }, "", `/${this.routes["home"]}`);
+            this.setSection("home", "no-auto-scroll")
         }
     },
-    navigateToSection(link) {
-        const section = document.querySelector(`#${link.id.replace("-link", "")}`);
-        document.querySelector(".relevant-content.active")?.classList.remove("active");
-        document.querySelector(".link.active").classList.remove("active");
-        link.classList.add("active");
-        section?.classList.add("active");
-        if (section) section.scrollTop = 0;
-        history.pushState({ page: 1 }, "", `/${this.routes[link.id.replace("-link", "")]}`);
-        if (link.id === "home-link") {
-            this.autoScrollHeaderBottom();
-        } else {
-            this.autoScrollHeaderTop();
-            this.previousSection = section ?? this.previousSection;
-        }
+    handleInnerScroll(element){
+        console.log(element.scrollTop)
+    },
+    setSection(section, mode){
+        this.previousSection= this.section == "home"? this.previousSection: this.section;
+        this.section= section;
+        this.$nextTick(()=>{
+                history.pushState({ page: 1 }, "", `/${this.routes[section]??''}`);
+        })
+        if(typeof mode != "undefined" && mode == "no-auto-scroll") return
+        section == "home"?
+        this.autoScrollHeaderBottom():
+        this.autoScrollHeaderTop();
     },
     autoScrollHeaderTop() {
         document.querySelector(".relevant nav").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -79,12 +72,11 @@ Alpine.data('welcomeApp', () => ({
         document.querySelector(".relevant nav").scrollIntoView({ behavior, block: "end" });
     },
     updateFigure() {
-        const e = document.querySelector(".content");
+        const e = this.$refs.content;
         const eScrollTopMax = e.scrollHeight - e.clientHeight;
         const bottom = document.querySelector(".bottom");
         const figureImg = document.querySelector(".content figure img");
         const figure = document.querySelector(".content figure");
-        console.log(e.scrollTop, eScrollTopMax);
         if (eScrollTopMax - e.scrollTop < 1) {
             bottom.style.paddingTop = `${eScrollTopMax - e.scrollTop}px`;
             figureImg.style.width = `${85 + eScrollTopMax - e.scrollTop}px`;
@@ -355,16 +347,12 @@ Alpine.data('dashboardApp', () => ({
         help: 'ayuda',
         inventory: 'inventario',
     },
-    routesInverse: {
-        '/': 'home',
-        '/produccion': 'production',
-        '/tienda': 'store',
-        '/contacto': 'contact',
-        '/ajustes': 'settings',
-        '/ayuda': 'help',
-        '/inventario': 'inventory',
-    },
+    routesInverse: {},
     init() {
+        this.routesInverse = Object.fromEntries(
+            Object.entries(this.routes).map(([key, value]) => [`/${value}`, key])
+        );
+        
         this.$nextTick(() => {
             let section = window.location.pathname;
             let link = `.link#${this.routesInverse[section]}-link`

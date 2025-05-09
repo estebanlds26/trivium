@@ -15,5 +15,16 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->map(\Illuminate\Auth\AuthenticationException::class, function ($exception) {
+            $request = request(); // Get the current request
+    
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Unauthenticated.'], 401);
+            }
+    
+            // Redirect to /iniciar-sesion for non-JSON requests
+            return new \Illuminate\Http\Exceptions\HttpResponseException(
+                redirect('/iniciar-sesion')
+            );
+        });
     })->create();

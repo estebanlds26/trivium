@@ -55,7 +55,7 @@
 
 @section('content')
     <template x-if="section =='home'">
-        <a href="">home</a>
+        <a href=""></a>
     </template>
     <template x-if="section =='production'">
         <div class="produccion" x-data="produccion">

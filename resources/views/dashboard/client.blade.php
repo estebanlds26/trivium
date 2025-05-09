@@ -39,7 +39,7 @@
 
 @section('content')
     <template x-if="section =='home'">
-        <a href="">home</a>
+        <a href=""></a>
     </template>
     <template x-if="section =='store'">
         <section id="products" class="relevant-content" x-data="productos">
