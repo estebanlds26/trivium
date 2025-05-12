@@ -91,59 +91,22 @@ Alpine.data('welcomeApp', () => ({
 
 Alpine.data('productos', () => ({
     slideshowIndex: 0,
-    products: [
-        {
-            id: 0,
-            name: "Irish Red Ale",
-            image: "/images/welcome/TRIVIUM-25.jpg",
-            description: `La Irish Red Ale es una joya en nuestro repertorio en
-                        Trivium, una cerveza que tiene profundas raíces en la
-                        tradición cervecera irlandesa. Cuando comenzamos
-                        nuestra aventura en el mundo de la cerveza artesanal,
-                        sabíamos que queríamos capturar la esencia y el
-                        carácter únicos de este estilo clásico.
-
-                        Nos enamoramos de la Irish Red Ale por su color rojizo
-                        distintivo, que proviene de las maltas tostadas que
-                        utilizamos en su elaboración. Estas maltas no solo le
-                        dan su apariencia característica, sino que también
-                        aportan sabores dulces y notas de caramelo que
-                        complementan perfectamente el ligero amargor de
-                        los lúpulos utilizados.
-
-                        Cada lote de nuestra Irish Red Ale es una celebración
-                        de la rica historia cervecera de Irlanda y de nuestra
-                        pasión por la calidad y la artesanía. Es una cerveza que
-                        nos conecta con las tradiciones mientras permitimos
-                        que nuestro toque personal y creativo brille a través de
-                        cada sorbo. Nos enorgullece compartir esta cerveza con
-                        nuestros clientes, invitándolos a disfrutar de su
-                        complejidad y carácter único, al tiempo que honramos
-                        y celebramos la herencia cervecera que inspiró su
-                        creación.`,
-            price: 9000,
-            images: [
-                "/images/welcome/TRIVIUM-25.jpg",
-                "/images/welcome/TRIVIUM-28.jpg",
-                "/images/welcome/TRIVIUM-25.jpg",
-                "/images/welcome/TRIVIUM-28.jpg",
-                "/images/welcome/TRIVIUM-25.jpg",
-                "/images/welcome/TRIVIUM-28.jpg",
-                "/images/welcome/TRIVIUM-25.jpg",
-                "/images/welcome/TRIVIUM-28.jpg",
-                "/images/welcome/TRIVIUM-25.jpg",
-                "/images/welcome/TRIVIUM-28.jpg",
-                "/images/welcome/TRIVIUM-25.jpg",
-                "/images/welcome/TRIVIUM-28.jpg",
-                "/images/welcome/TRIVIUM-25.jpg",
-                "/images/welcome/TRIVIUM-28.jpg",
-            ],
-        }
-    ],
+    products: null,
     showProductDetail: false,
     productDetail: null,
     intervalThumbnails: null,
     intervalScroll: null,
+    init(){
+        this.fetchProducts();
+    },
+    fetchProducts() {
+        fetch('http://localhost:8000/api/producto')
+            .then(response => response.json())
+            .then(data => {
+                this.products = data.data
+            })
+            .catch(error => console.error('Error fetching products:', error));
+    },
     closeProductDetail() {
         this.showProductDetail = false;
         this.productDetail = null;
@@ -153,11 +116,11 @@ Alpine.data('productos', () => ({
         this.showProductDetail = true;
     },
     nextSlideshowImage() {
-        this.slideshowIndex = (this.slideshowIndex + 1) % this.productDetail.images.length;
+        this.slideshowIndex = (this.slideshowIndex + 1) % this.productDetail.imagenes.length;
         this.updateSlideshow();
     },
     prevSlideshowImage() {
-        this.slideshowIndex = (this.slideshowIndex - 1 + this.productDetail.images.length) % this.productDetail.images.length;
+        this.slideshowIndex = (this.slideshowIndex - 1 + this.productDetail.imagenes.length) % this.productDetail.imagenes.length;
         this.updateSlideshow();
     },
     appearControls() {
@@ -410,7 +373,8 @@ Alpine.data('managementData', () => ({
             singularName: 'producto',
             rows: null,
             details: {},
-            availableProducts: null
+            availableProducts: null,
+            photos: []
         },
         'ventas': {
             api: 'pedido',
@@ -427,11 +391,11 @@ Alpine.data('managementData', () => ({
             singularName: 'producción',
             rows: null,
             details: {},
-            selectedInsumos: [], // Array to store selected insumos
+            selectedInsumos: [],
         },
         'insumos': {
             api: 'insumo',
-            rows: null, // List of available insumos
+            rows: null,
         },
     },
     init() {
@@ -580,9 +544,34 @@ Alpine.data('managementData', () => ({
     removeInsumo(index) {
         this.sections.produccion.selectedInsumos.splice(index, 1);
     },
+    handleFileUpload(event) {
+        const files = event.target.files;
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                this.sections.productos.photos.push({
+                    url: e.target.result,
+                    file: file
+                });
+            };
+
+            reader.readAsDataURL(file);
+        }
+    },
+    removePhoto(index) {
+        this.sections.productos.photos.splice(index, 1);
+    },
     edit(item) {
         this.subsection = "edit";
-        this.sections[this.section].details = item
+        this.sections[this.section].details = item;
+
+       
+        this.sections.productos.photos = (item.imagenes ? JSON.parse(item.imagenes) : []).map(image => ({
+            url: `/storage/${image}`,
+            file: null
+        }));
     },
     view(item) {
         this.subsection = "view";
@@ -592,30 +581,36 @@ Alpine.data('managementData', () => ({
         this.subsection = "index";
     },
     create() {
+        this.sections.productos.photos = [];
         this.subsection = "create";
     },
 
     update() {
         switch (this.section) {
             case "productos":
-                let nombre = this.$refs.nombreProductoEdit.value;
-                let precio = this.$refs.precioProductoEdit.value;
-                let descripcion = this.$refs.descripcionProductoEdit.value
-                let data = {
-                    nombre,
-                    precio,
-                    descripcion
-                }
+                const formData = new FormData();
+                formData.append('_method', 'PUT');
+                formData.append('nombre', this.$refs.nombreProductoEdit.value);
+                formData.append('precio', this.$refs.precioProductoEdit.value);
+                formData.append('descripcion', this.$refs.descripcionProductoEdit.value);
+
+               
+                this.sections.productos.photos.forEach((photo) => {
+                    if (photo.file) {
+                        formData.append('imagenes[]', photo.file);
+                    } else {
+                        const relativePath = photo.url.replace(/^\/storage\//, '');
+                        formData.append('existing[]', relativePath);
+                    }
+                });
+
                 fetch(`http://localhost:8000/api/${this.sections[this.section].api}/${this.sections[this.section].details.id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
+                    method: 'POST',
+                    body: formData
                 })
                     .then(response => response.json())
-                    .then(updatedData => {
-                        console.log('Updated successfully:', updatedData);
+                    .then(data => {
+                        console.log('Updated successfully:', data);
                         this.load(this.section);
                         this.goBack();
                     })
@@ -652,7 +647,7 @@ Alpine.data('managementData', () => ({
                         fecha: fechaProduccion,
                         cantidad: cantidadProduccion,
                         producto_id: productoIdProduccion,
-                        user_id: 1, // Replace with the logged-in user ID
+                        user_id: 1,
                     };
 
                     fetch(`http://localhost:8000/api/${this.sections[this.section].api}/${this.sections[this.section].details.id}`, {
@@ -667,7 +662,7 @@ Alpine.data('managementData', () => ({
                             if (updatedData.success) {
                                 const produccionId = updatedData.data.id;
 
-                                // Update insumos for the produccion
+                               
                                 insumosProduccion.forEach(insumo => {
                                     fetch(`http://localhost:8000/api/produccion/${produccionId}/insumos`, {
                                         method: 'POST',
@@ -696,29 +691,31 @@ Alpine.data('managementData', () => ({
 
     },
     add() {
+
         let fecha= "";
         switch (this.section) {
             case "productos":
-                let nombre = this.$refs.nombreProductoCreate.value;
-                let precio = this.$refs.precioProductoCreate.value;
-                let descripcion = this.$refs.descripcionProductoCreate.value
-                let data = {
-                    nombre,
-                    precio,
-                    descripcion
-                }
+                const formData = new FormData();
+                formData.append('nombre', this.$refs.nombreProductoCreate.value);
+                formData.append('precio', this.$refs.precioProductoCreate.value);
+                formData.append('descripcion', this.$refs.descripcionProductoCreate.value);
+
+                this.sections.productos.photos.forEach((photo) => {
+                    if (photo.file) {
+                        formData.append('imagenes[]', photo.file);
+                    }
+                });
+
                 fetch(`http://localhost:8000/api/${this.sections[this.section].api}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
+                    body: formData
                 })
                     .then(response => response.json())
                     .then(data => {
                         console.log('Created successfully:', data);
                         this.load(this.section);
                         this.goBack();
+                        this.sections.productos.photos = [];
                     })
                     .catch(error => console.error('Error creating:', error));
                 break;
@@ -727,7 +724,7 @@ Alpine.data('managementData', () => ({
                 let estado = this.$refs.estadoPedidoCreate.value;
                 let user_id = this.$refs.clientePedidoCreate.value;
 
-                // Collect selected products and their quantities
+               
                 let productos = this.sections.ventas.selectedProducts.map(productId => {
                     return {
                         producto_id: productId,
@@ -736,7 +733,7 @@ Alpine.data('managementData', () => ({
                     };
                 });
 
-                // Create the pedido
+               
                 fetch(`http://localhost:8000/api/${this.sections[this.section].api}`, {
                     method: 'POST',
                     headers: {
@@ -747,7 +744,7 @@ Alpine.data('managementData', () => ({
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            // Add products to the pivot table
+                           
                             let pedido_id = data.data.id;
                             productos.forEach(producto => {
                                 fetch(`http://localhost:8000/api/pedido/${pedido_id}/productos`, {
@@ -778,20 +775,20 @@ Alpine.data('managementData', () => ({
                     let cantidad = this.$refs.cantidadProduccionCreate.value;
                     let producto_id = this.$refs.productoProduccionCreate.value;
                     let insumos = this.sections.produccion.selectedInsumos;
-                    // Create the produccion
+                   
                     fetch(`http://localhost:8000/api/produccion`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ fecha, cantidad, producto_id, user_id: 1 }), // Replace user_id with the logged-in user
+                        body: JSON.stringify({ fecha, cantidad, producto_id, user_id: 1 }),
                     })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
                                 const produccionId = data.data.id;
             
-                                // Add insumos to the produccion
+                               
                                 insumos.forEach(insumo => {
                                     console.log(insumo)
             window.insumos= insumo
