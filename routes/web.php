@@ -51,7 +51,7 @@ Route::get('/inventario', function () {
         case 3:
             return view('dashboard.producer');
     }
-})->middleware(['auth'])->name('store');
+})->middleware(['auth'])->name('management');
 Route::get('/produccion', function () {
     switch (Auth::user()->rol_id) {
         case 1:
@@ -61,7 +61,7 @@ Route::get('/produccion', function () {
         case 3:
             return view('dashboard.producer');
     }
-})->middleware(['auth'])->name('store');
+})->middleware(['auth'])->name('production');
 Route::get('/tienda', function () {
     switch (Auth::user()->rol_id) {
         case 1:

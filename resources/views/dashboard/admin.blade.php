@@ -137,8 +137,8 @@
                 <div class="product-detail">
                     <div class="slideshow-container" @mousemove="appearControls" :data-index="slideshowIndex">
                         <figure class="slideshow">
-                            <template x-for="(image, index) in productDetail.images" :key="index">
-                                <img :src="image" alt>
+                            <template x-for="(image, index) in productDetail.imagenes" :key="index">
+                                <img :src="`/storage/${image}`" alt>
                             </template>
                         </figure>
                         <div class="prev-image" @click="prevSlideshowImage">
@@ -148,9 +148,9 @@
                             <i class="fa-solid fa-circle-chevron-right"></i>
                         </div>
                         <div class="controls visible">
-                            <template x-for="(image, index) in productDetail.images" :key="index">
+                            <template x-for="(image, index) in productDetail.imagenes" :key="index">
                                 <img @click="updateSlideshow(index)" :class="index == 0 ? 'active' : ''"
-                                    :src="image" alt>
+                                    :src="`/storage/${image}`" alt>
                             </template>
                         </div>
                         <div class="scroll-left-controls visible" @mouseenter="scrollLeft"
@@ -164,13 +164,13 @@
                         <div class="close" @click="closeProductDetail">
                             <i class="fa-solid fa-xmark"></i>
                         </div>
-                        <h1 x-text="productDetail.name"></h1>
-                        <p class="description" x-text="productDetail.description">
+                        <h1 x-text="productDetail.nombre"></h1>
+                        <p class="description" x-text="productDetail.descripcion">
 
                         </p>
                         <div class="bottom">
                             <div class="info">
-                                <div class="left"><span class="price">$ 9.000</span></div>
+                                <div class="left"><span class="price" x-text="`$ ${productDetail.precio}`"></span></div>
                                 <div class="right">
                                     <input type="number" name="quantity" class="quantity">
                                     <div class="add-to-cart">
@@ -182,69 +182,31 @@
                     </div>
                 </div>
             </template>
-            <template x-for="product in products" :key="product.id">
-                <div x-data="producto" class="product-container">
-                    <article class="product" @click="setProductDetail(product)">
-                        <figure><img :src="product.image" alt></figure>
-                        <h1 x-text="product.name"></h1>
-                        <div class="info">
-                            <div class="left"><span class="price" x-text="`$ ${product.price}`"></span></div>
-                            <div class="right">
-                                <input type="number" x-model="quantity" name="quantity" class="quantity"
-                                    value="1" autocomplete="off">
-                                <div class="add-to-cart" @click="addToCart(product, quantity)">
-                                    <i class="fa-solid fa-cart-shopping"></i>
+            <template x-if="!!products">
+                <template x-for="product in products" :key="product.id">
+                    <div x-data="producto" class="product-container">
+                        <article class="product" @click="setProductDetail(product)">
+                            <figure><img :src="`/storage/${product.imagenes[0]}`" alt></figure>
+                            <h1 x-text="product.nombre"></h1>
+                            <div class="info">
+                                <div class="left"><span class="price" x-text="`$ ${product.precio}`"></span></div>
+                                <div class="right">
+                                    <input type="number" x-ref="`quantity_product_${product.id}`" name="quantity" class="quantity"
+                                        value="1" autocomplete="off">
+                                    <div class="add-to-cart" @click="addToCart(product, quantity)">
+                                        <i class="fa-solid fa-cart-shopping"></i>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </article>
+                        </article>
+                    </div>
+                </template>
+            </template>
+            <template x-if="!products">
+                <div class="loading">
+                    <p>Cargando productos...</p>
                 </div>
             </template>
-            <div class="product-container">
-                <article class="product">
-                    <figure><img src="{{ asset('images/welcome/TRIVIUM-25.jpg') }}" alt></figure>
-                    <h1>Irish Red Ale</h1>
-                    <div class="info">
-                        <div class="left"><span class="price">$ 9.000</span></div>
-                        <div class="right">
-                            <input type="number" name="quantity" class="quantity">
-                            <div class="add-to-cart">
-                                <i class="fa-solid fa-cart-shopping"></i>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-            </div>
-            <div class="product-container">
-                <article class="product">
-                    <figure><img src="{{ asset('images/welcome/TRIVIUM-26.jpg') }}" alt></figure>
-                    <h1>Irish Red Ale</h1>
-                    <div class="info">
-                        <div class="left"><span class="price">$ 9.000</span></div>
-                        <div class="right">
-                            <input type="number" name="quantity" class="quantity">
-                            <div class="add-to-cart">
-                                <i class="fa-solid fa-cart-shopping"></i>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-            </div>
-            <div class="product-container">
-                <article class="product">
-                    <figure><img src="{{ asset('images/welcome/TRIVIUM-27.jpg') }}" alt></figure>
-                    <h1>Irish Red Ale</h1>
-                    <div class="info">
-                        <div class="left"><span class="price">$ 9.000</span></div>
-                        <div class="right">
-                            <input type="number" name="quantity" class="quantity">
-                            <div class="add-to-cart">
-                                <i class="fa-solid fa-cart-shopping"></i>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-            </div>
         </section>
     </template>
     <template x-if="section =='contact'">
@@ -457,6 +419,26 @@
                                         <input type="text" x-ref="precioProductoEdit"
                                             :value="sections.productos.details.precio">
                                     </label>
+                                    <label for="fotos-producto-edit">
+                                        Fotos
+                                    </label>
+                                    <div class="photo-previews">
+                                        <template x-for="(photo, index) in sections.productos.photos" :key="index">
+                                            <div class="photo-preview" draggable="true"
+                                                 @dragstart="dragIndex = index"
+                                                 @dragover.prevent
+                                                 @drop="reorder(dragIndex, index)">
+                                                <img :src="photo.url" alt="Vista previa">
+                                                <button @click="removePhoto(index)">
+                                                    <i class="fa-solid fa-trash-can"></i>
+                                                </button>
+                                            </div>
+                                        </template>
+                                        <label for="fotos-producto-edit-picker">
+                                            <i class="fa-solid fa-plus"></i>
+                                            <input type="file" multiple id="fotos-producto-edit-picker" accept="image/*" x-ref="fotosProductoEdit" @change="handleFileUpload($event)">
+                                        </label>
+                                    </div>
                                     <div class="buttons">
                                         <div class="btn green" @click="update()">Actualizar</div>
                                         <div class="btn grey" @click="goBack()">Descartar</div>
@@ -477,6 +459,26 @@
                                         Precio
                                         <input type="text" x-ref="precioProductoCreate" value="">
                                     </label>
+                                    <label for="fotos-producto-create">
+                                        Fotos
+                                    </label>
+                                    <div class="photo-previews">
+                                        <template x-for="(photo, index) in sections.productos.photos" :key="index">
+                                            <div class="photo-preview" draggable="true"
+                                                 @dragstart="dragIndex = index"
+                                                 @dragover.prevent
+                                                 @drop="reorder(dragIndex, index)">
+                                                <img :src="photo.url" alt="Vista previa">
+                                                <button @click="removePhoto(index)">
+                                                    <i class="fa-solid fa-trash-can"></i>
+                                                </button>
+                                            </div>
+                                        </template>
+                                        <label for="fotos-producto-create-picker">
+                                            <i class="fa-solid fa-plus"></i>
+                                            <input type="file" multiple id="fotos-producto-create-picker" accept="image/*" x-ref="fotosProductoEdit" @change="handleFileUpload($event)">
+                                        </label>
+                                    </div>
                                     <div class="buttons">
                                         <div class="btn green" @click="add()">Crear</div>
                                         <div class="btn grey" @click="goBack()">Descartar</div>

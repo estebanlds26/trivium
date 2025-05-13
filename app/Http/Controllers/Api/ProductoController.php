@@ -16,6 +16,11 @@ class ProductoController extends Controller
     public function index()
     {
         $productos = Producto::with(['producciones.producto', 'producciones.insumos','pedidos.user'])->get();
+        // Decode imagenes for each product
+        $productos->transform(function ($producto) {
+            $producto->imagenes = $producto->imagenes ? json_decode($producto->imagenes) : [];
+            return $producto;
+        });
 
         return response()->json([
             'success' => true,
@@ -31,7 +36,7 @@ class ProductoController extends Controller
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|string|max:45',
             'descripcion' => 'required|string',
-            'imagenes' => 'nullable|json',
+            'imagenes' => 'nullable|array',
             'precio' => 'required|integer',
         ]);
 
@@ -43,7 +48,21 @@ class ProductoController extends Controller
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $producto = Producto::create($request->all());
+        $imagePaths = [];
+
+        if ($request->hasFile('imagenes')) {
+            foreach ($request->file('imagenes') as $image) {
+                $path = $image->store('images', 'public');
+                $imagePaths[] = $path;
+            }
+        }
+
+        $producto = Producto::create([
+            'nombre' => $request->nombre,
+            'descripcion' => $request->descripcion,
+            'precio' => $request->precio,
+            'imagenes' => json_encode($imagePaths),
+        ]);
 
         return response()->json([
             'success' => true,
@@ -59,13 +78,15 @@ class ProductoController extends Controller
     {
         $producto = Producto::with(['producciones.producto', 'producciones.insumos', 'pedidos'])->find($id);
 
-
         if (!$producto) {
             return response()->json([
                 'success' => false,
                 'message' => 'Producto no encontrado',
             ], Response::HTTP_NOT_FOUND);
         }
+
+        // Decode imagenes for single product
+        $producto->imagenes = $producto->imagenes ? json_decode($producto->imagenes) : [];
 
         return response()->json([
             'success' => true,
@@ -87,14 +108,22 @@ class ProductoController extends Controller
             ], Response::HTTP_NOT_FOUND);
         }
 
+        // Debug log to check incoming request data
+        \Log::info('Update Request Data:', $request->all());
+
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|string|max:45',
             'descripcion' => 'required|string',
-            'imagenes' => 'nullable|json',
             'precio' => 'required|integer',
+            'existing' => 'nullable|array',
+            'existing.*' => 'string',
+            'imagenes' => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
+            // Debug log to check validation errors
+            \Log::error('Validation Errors:', $validator->errors()->toArray());
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error de validación',
@@ -102,7 +131,34 @@ class ProductoController extends Controller
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $producto->update($request->all());
+        // Save current state for image comparison
+        $oldImages = json_decode($producto->imagenes, true) ?? [];
+
+        // Combine existing and new paths
+        $existingPaths = $request->input('existing', []);
+        $imagePaths = $existingPaths;
+
+        if ($request->hasFile('imagenes')) {
+            foreach ($request->file('imagenes') as $image) {
+                $imagePaths[] = $image->store('images', 'public');
+            }
+        }
+
+        // Remove deleted images from storage
+        $deletedImages = array_diff($oldImages, $imagePaths);
+        foreach ($deletedImages as $img) {
+            $imgPath = storage_path('app/public/' . $img);
+            if (file_exists($imgPath)) {
+                @unlink($imgPath);
+            }
+        }
+
+        $producto->update([
+            'nombre' => $request->input('nombre'),
+            'descripcion' => $request->input('descripcion'),
+            'precio' => $request->input('precio'),
+            'imagenes' => json_encode($imagePaths),
+        ]);
 
         return response()->json([
             'success' => true,
@@ -123,6 +179,15 @@ class ProductoController extends Controller
                 'success' => false,
                 'message' => 'Producto no encontrado',
             ], Response::HTTP_NOT_FOUND);
+        }
+
+        // Remove all linked images from storage
+        $imagenes = json_decode($producto->imagenes, true) ?? [];
+        foreach ($imagenes as $img) {
+            $imgPath = storage_path('app/public/' . $img);
+            if (file_exists($imgPath)) {
+                @unlink($imgPath);
+            }
         }
 
         $producto->delete();
