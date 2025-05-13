@@ -178,69 +178,31 @@
                     </div>
                 </div>
             </template>
-            <template x-for="product in products" :key="product.id">
-                <div x-data="producto" class="product-container">
-                    <article class="product" @click="setProductDetail(product)">
-                        <figure><img :src="`/storage/${product.imagenes[0]}`" alt></figure>
-                        <h1 x-text="product.nombre"></h1>
-                        <div class="info">
-                            <div class="left"><span class="price" x-text="`$ ${product.precio}`"></span></div>
-                            <div class="right">
-                                <input type="number" x-model="`quantity_product_${product.id}`" name="quantity" class="quantity"
-                                    value="1" autocomplete="off">
-                                <div class="add-to-cart" @click="addToCart(product, quantity)">
-                                    <i class="fa-solid fa-cart-shopping"></i>
+            <template x-if="!!products">
+                <template x-for="product in products" :key="product.id">
+                    <div x-data="producto" class="product-container">
+                        <article class="product" @click="setProductDetail(product)">
+                            <figure><img :src="`/storage/${product.imagenes[0]}`" alt></figure>
+                            <h1 x-text="product.nombre"></h1>
+                            <div class="info">
+                                <div class="left"><span class="price" x-text="`$ ${product.precio}`"></span></div>
+                                <div class="right">
+                                    <input type="number" x-ref="`quantity_product_${product.id}`" name="quantity" class="quantity"
+                                        value="1" autocomplete="off">
+                                    <div class="add-to-cart" @click="addToCart(product, quantity)">
+                                        <i class="fa-solid fa-cart-shopping"></i>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </article>
+                        </article>
+                    </div>
+                </template>
+            </template>
+            <template x-if="!products">
+                <div class="loading">
+                    <p>Cargando productos...</p>
                 </div>
             </template>
-            <div class="product-container">
-                <article class="product">
-                    <figure><img src="{{ asset('images/welcome/TRIVIUM-25.jpg') }}" alt></figure>
-                    <h1>Irish Red Ale</h1>
-                    <div class="info">
-                        <div class="left"><span class="price">$ 9.000</span></div>
-                        <div class="right">
-                            <input type="number" name="quantity" class="quantity">
-                            <div class="add-to-cart">
-                                <i class="fa-solid fa-cart-shopping"></i>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-            </div>
-            <div class="product-container">
-                <article class="product">
-                    <figure><img src="{{ asset('images/welcome/TRIVIUM-26.jpg') }}" alt></figure>
-                    <h1>Irish Red Ale</h1>
-                    <div class="info">
-                        <div class="left"><span class="price">$ 9.000</span></div>
-                        <div class="right">
-                            <input type="number" name="quantity" class="quantity">
-                            <div class="add-to-cart">
-                                <i class="fa-solid fa-cart-shopping"></i>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-            </div>
-            <div class="product-container">
-                <article class="product">
-                    <figure><img src="{{ asset('images/welcome/TRIVIUM-27.jpg') }}" alt></figure>
-                    <h1>Irish Red Ale</h1>
-                    <div class="info">
-                        <div class="left"><span class="price">$ 9.000</span></div>
-                        <div class="right">
-                            <input type="number" name="quantity" class="quantity">
-                            <div class="add-to-cart">
-                                <i class="fa-solid fa-cart-shopping"></i>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-            </div>
         </section>
     </template>
     <template x-if="section =='contact'">
@@ -458,7 +420,10 @@
                                     </label>
                                     <div class="photo-previews">
                                         <template x-for="(photo, index) in sections.productos.photos" :key="index">
-                                            <div class="photo-preview">
+                                            <div class="photo-preview" draggable="true"
+                                                 @dragstart="dragIndex = index"
+                                                 @dragover.prevent
+                                                 @drop="reorder(dragIndex, index)">
                                                 <img :src="photo.url" alt="Vista previa">
                                                 <button @click="removePhoto(index)">
                                                     <i class="fa-solid fa-trash-can"></i>
@@ -495,7 +460,10 @@
                                     </label>
                                     <div class="photo-previews">
                                         <template x-for="(photo, index) in sections.productos.photos" :key="index">
-                                            <div class="photo-preview">
+                                            <div class="photo-preview" draggable="true"
+                                                 @dragstart="dragIndex = index"
+                                                 @dragover.prevent
+                                                 @drop="reorder(dragIndex, index)">
                                                 <img :src="photo.url" alt="Vista previa">
                                                 <button @click="removePhoto(index)">
                                                     <i class="fa-solid fa-trash-can"></i>

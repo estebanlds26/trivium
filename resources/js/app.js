@@ -138,19 +138,20 @@ Alpine.data('productos', () => ({
         }, 984)
     },
     scrollLeft() {
-        clearInterval(this.intervalScroll)
-        this.intervalScroll = setInterval(function () {
-            controls.scrollLeft -= 1
-            this.appearControls()
-
-        }, 2)
+        const controls = document.querySelector(".controls");
+        clearInterval(this.intervalScroll);
+        this.intervalScroll = setInterval(() => {
+            controls.scrollLeft -= 1;
+            this.appearControls();
+        }, 2);
     },
     scrollRight() {
-        clearInterval(this.intervalScroll)
-        this.intervalScroll = setInterval(function () {
-            controls.scrollLeft += 1
-            this.appearControls()
-        }, 2)
+        const controls = document.querySelector(".controls");
+        clearInterval(this.intervalScroll);
+        this.intervalScroll = setInterval(() => {
+            controls.scrollLeft += 1;
+            this.appearControls();
+        }, 2);
     },
     updateSlideshow(index) {
         const slideshowContainer = document.querySelector(".slideshow-container");
@@ -563,12 +564,31 @@ Alpine.data('managementData', () => ({
     removePhoto(index) {
         this.sections.productos.photos.splice(index, 1);
     },
+    dragIndex: null,
+    reorder(from, to) {
+        if (from === to) return;
+        const photos = this.sections.productos.photos;
+        const moved = photos.splice(from, 1)[0];
+        photos.splice(to, 0, moved);
+        // Force Alpine to detect the change
+        this.sections.productos.photos = photos.slice();
+    },
     edit(item) {
         this.subsection = "edit";
         this.sections[this.section].details = item;
 
-       
-        this.sections.productos.photos = (item.imagenes ? JSON.parse(item.imagenes) : []).map(image => ({
+        // Robustly handle both array and stringified JSON
+        let imagesArr = [];
+        if (Array.isArray(item.imagenes)) {
+            imagesArr = item.imagenes;
+        } else if (typeof item.imagenes === 'string') {
+            try {
+                imagesArr = JSON.parse(item.imagenes);
+            } catch (e) {
+                imagesArr = [];
+            }
+        }
+        this.sections.productos.photos = (imagesArr ? imagesArr : []).map(image => ({
             url: `/storage/${image}`,
             file: null
         }));
