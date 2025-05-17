@@ -16,7 +16,7 @@ class ProduccionController extends Controller
      */
     public function index()
     {
-        $producciones = Produccion::with(['insumos', 'procesos', 'producto', 'user'])->get();
+        $producciones = Produccion::with(['insumos', 'proceso', 'producto', 'user'])->get();
 
         return response()->json([
             'success' => true,
@@ -32,8 +32,10 @@ class ProduccionController extends Controller
         $validator = Validator::make($request->all(), [
             'fecha' => 'required|date',
             'cantidad' => 'required|integer',
+            'active_step' => 'integer',
             'producto_id' => 'required|integer|exists:productos,id',
             'user_id' => 'required|integer|exists:users,id',
+            'proceso_id' => 'required|integer|exists:procesos,id',
         ]);
 
         if ($validator->fails()) {
@@ -44,7 +46,28 @@ class ProduccionController extends Controller
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $produccion = Produccion::with(['insumos', 'procesos', 'producto', 'user'])->create($request->all());
+        // Get the proceso steps from the referenced proceso
+        $proceso = \App\Models\Proceso::find($request->proceso_id);
+        $proceso_steps_copy = $proceso ? $proceso->steps : null;
+        if (is_object($proceso_steps_copy)) {
+            $proceso_steps_copy = json_decode(json_encode($proceso_steps_copy), true);
+        }
+        $produccionData = $request->all();
+        $produccionData['proceso_steps_copy'] = $proceso_steps_copy;
+        $produccion = Produccion::with(['insumos', 'proceso', 'producto', 'user'])->create($produccionData);
+
+        // // Attach insumos from proceso to produccion
+        // if ($proceso && $proceso->insumos) {
+        //     $insumos = json_decode($proceso->insumos, true);
+        //     foreach ($insumos as $insumo) {
+        //         if (isset($insumo['insumo_id'], $insumo['quantity'])) {
+        //             $produccion->insumos()->attach($insumo['insumo_id'], [
+        //                 'cantidad_usada' => $insumo['quantity'],
+        //                 'precio_unitario' => 0 // Set to 0 or fetch latest price if needed
+        //             ]);
+        //         }
+        //     }
+        // }
 
         return response()->json([
             'success' => true,
@@ -58,7 +81,7 @@ class ProduccionController extends Controller
      */
     public function show(string $id)
     {
-        $produccion = Produccion::with(['insumos', 'procesos', 'producto', 'user'])->find($id);
+        $produccion = Produccion::with(['insumos', 'proceso', 'producto', 'user'])->find($id);
 
         if (!$produccion) {
             return response()->json([
@@ -78,7 +101,7 @@ class ProduccionController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $produccion = Produccion::with(['insumos', 'procesos', 'producto', 'user'])->find($id);
+        $produccion = Produccion::with(['insumos', 'proceso', 'producto', 'user'])->find($id);
 
         if (!$produccion) {
             return response()->json([
@@ -90,8 +113,10 @@ class ProduccionController extends Controller
         $validator = Validator::make($request->all(), [
             'fecha' => 'required|date',
             'cantidad' => 'required|integer',
+            'active_step' => 'integer',
             'producto_id' => 'required|integer|exists:productos,id',
             'user_id' => 'required|integer|exists:users,id',
+            'proceso_id' => 'required|integer|exists:procesos,id',
         ]);
 
         if ($validator->fails()) {
@@ -116,7 +141,7 @@ class ProduccionController extends Controller
      */
     public function destroy(string $id)
     {
-        $produccion = Produccion::with(['insumos', 'procesos', 'producto', 'user'])->find($id);
+        $produccion = Produccion::with(['insumos', 'proceso', 'producto', 'user'])->find($id);
 
         if (!$produccion) {
             return response()->json([
@@ -184,6 +209,25 @@ class ProduccionController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Insumo agregado a la producción exitosamente',
+        ], Response::HTTP_OK);
+    }
+
+    /**
+     * Clear all insumos from a produccion (detach all from pivot table).
+     */
+    public function clearInsumos($produccionId)
+    {
+        $produccion = Produccion::find($produccionId);
+        if (!$produccion) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Producción no encontrada',
+            ], Response::HTTP_NOT_FOUND);
+        }
+        $produccion->insumos()->detach();
+        return response()->json([
+            'success' => true,
+            'message' => 'Insumos eliminados de la producción',
         ], Response::HTTP_OK);
     }
 }

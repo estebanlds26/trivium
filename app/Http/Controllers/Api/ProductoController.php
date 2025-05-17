@@ -16,7 +16,7 @@ class ProductoController extends Controller
     public function index()
     {
         $productos = Producto::with(['producciones.producto', 'producciones.insumos','pedidos.user'])->get();
-        // Decode imagenes for each product
+
         $productos->transform(function ($producto) {
             $producto->imagenes = $producto->imagenes ? json_decode($producto->imagenes) : [];
             return $producto;

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::apiResource('produccion', ProduccionController::class);
 
 Route::post('produccion/{produccion}/insumos', [ProduccionController::class, 'addInsumo']);
+Route::post('produccion/{produccion}/insumos/clear', [ProduccionController::class, 'clearInsumos']);
 
 Route::apiResource('proceso', ProcesoController::class);
 
