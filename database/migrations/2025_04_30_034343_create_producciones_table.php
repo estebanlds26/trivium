@@ -13,8 +13,11 @@ return new class extends Migration
             $table->id();
             $table->date('fecha');
             $table->integer('cantidad');
+            $table->integer("active_step")->default(0);
+            $table->json("proceso_steps_copy")->nullable();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('producto_id')->constrained('productos')->onDelete('cascade');
+            $table->foreignId('proceso_id')->constrained('procesos')->onDelete('cascade');
             $table->timestamps();
         });
     }

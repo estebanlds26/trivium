@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             AdminUserSeeder::class,
             ProductoSeeder::class,
+            ProcesoSeeder::class,
             ProduccionSeeder::class,
             InsumoSeeder::class,
             EntradaDeMaterialSeeder::class,

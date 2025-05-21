@@ -10,10 +10,20 @@ class Proceso extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nombre', 'descripcion', 'fecha', 'produccion_id'];
+    protected $fillable = ['nombre', 'descripcion', 'steps', 'insumos'];
+
+    protected $casts = [
+        'steps' => 'array',
+        'insumos' => 'array',
+    ];
 
     public function produccion()
     {
         return $this->belongsTo(Produccion::class);
+    }
+
+    public function producciones()
+    {
+        return $this->hasMany(Produccion::class, 'proceso_id');
     }
 }

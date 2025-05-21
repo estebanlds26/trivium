@@ -15,7 +15,7 @@ class ProcesoController extends Controller
      */
     public function index()
     {
-        $procesos = Proceso::with(['produccion'])->all();
+        $procesos = Proceso::all();
 
         return response()->json([
             'success' => true,
@@ -28,11 +28,11 @@ class ProcesoController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make(request()->all(), [
+        $validator = Validator::make($request->all(), [
             'nombre' => 'required|string|max:255',
-            'descripcion' => 'required|string|max:255',
-            'fecha' => 'required|date',
-            'produccion_id' => 'required|integer|exists:produccions,id',
+            'descripcion' => 'nullable|string',
+            'steps' => 'required|array',
+            'insumos' => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
@@ -43,7 +43,8 @@ class ProcesoController extends Controller
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $proceso = Proceso::with(['produccion'])->create($request->all());
+        $data = $request->only(['nombre', 'descripcion', 'steps', 'insumos']);
+        $proceso = Proceso::create($data);
 
         return response()->json([
             'success' => true,
@@ -57,7 +58,7 @@ class ProcesoController extends Controller
      */
     public function show(string $id)
     {
-        $proceso = Proceso::with(['produccion'])->find($id);
+        $proceso = Proceso::find($id);
 
         if (!$proceso) {
             return response()->json([
@@ -77,7 +78,7 @@ class ProcesoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $proceso = Proceso::with(['produccion'])->find($id);
+        $proceso = Proceso::find($id);
 
         if (!$proceso) {
             return response()->json([
@@ -86,11 +87,11 @@ class ProcesoController extends Controller
             ], Response::HTTP_NOT_FOUND);
         }
 
-        $validator = Validator::make(request()->all(), [
+        $validator = Validator::make($request->all(), [
             'nombre' => 'sometimes|required|string|max:255',
-            'descripcion' => 'sometimes|required|string|max:255',
-            'fecha' => 'sometimes|required|date',
-            'produccion_id' => 'sometimes|required|integer|exists:produccions,id',
+            'descripcion' => 'nullable|string',
+            'steps' => 'sometimes|required|array',
+            'insumos' => 'sometimes|array',
         ]);
 
         if ($validator->fails()) {
@@ -115,7 +116,7 @@ class ProcesoController extends Controller
      */
     public function destroy(string $id)
     {
-        $proceso = Proceso::with(['produccion'])->find($id);
+        $proceso = Proceso::find($id);
 
         if (!$proceso) {
             return response()->json([

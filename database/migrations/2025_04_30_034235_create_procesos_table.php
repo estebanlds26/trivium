@@ -13,8 +13,8 @@ return new class extends Migration
             $table->id();
             $table->string('nombre');
             $table->text('descripcion')->nullable();
-            $table->date('fecha');
-            $table->foreignId('produccion_id')->constrained('producciones')->onDelete('cascade');
+            $table->json('steps');
+            $table->json('insumos')->nullable();
             $table->timestamps();
 
         });
