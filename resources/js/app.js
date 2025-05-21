@@ -91,12 +91,7 @@ Alpine.data('welcomeApp', () => ({
 }));
 
 Alpine.data('productos', () => ({
-    slideshowIndex: 0,
     products: null,
-    showProductDetail: false,
-    productDetail: null,
-    intervalThumbnails: null,
-    intervalScroll: null,
     init() {
         this.fetchProducts();
     },
@@ -108,71 +103,9 @@ Alpine.data('productos', () => ({
             })
             .catch(error => console.error('Error fetching products:', error));
     },
-    closeProductDetail() {
-        this.showProductDetail = false;
-        this.productDetail = null;
-    },
-    setProductDetail(producto) {
-        this.productDetail = producto;
-        this.showProductDetail = true;
-    },
-    nextSlideshowImage() {
-        this.slideshowIndex = (this.slideshowIndex + 1) % this.productDetail.imagenes.length;
-        this.updateSlideshow();
-    },
-    prevSlideshowImage() {
-        this.slideshowIndex = (this.slideshowIndex - 1 + this.productDetail.imagenes.length) % this.productDetail.imagenes.length;
-        this.updateSlideshow();
-    },
-    appearControls() {
-        const controls = document.querySelector(".controls");
-        const scrollRightControls = document.querySelector(".scroll-right-controls")
-        const scrollLeftControls = document.querySelector(".scroll-left-controls")
-        clearTimeout(this.intervalThumbnails)
-        controls.classList.add("visible")
-        scrollRightControls.classList.add("visible")
-        scrollLeftControls.classList.add("visible")
-        this.intervalThumbnails = setTimeout(function () {
-            controls.classList.remove("visible")
-            scrollRightControls.classList.remove("visible")
-            scrollLeftControls.classList.remove("visible")
-        }, 984)
-    },
-    scrollLeft() {
-        const controls = document.querySelector(".controls");
-        clearInterval(this.intervalScroll);
-        this.intervalScroll = setInterval(() => {
-            controls.scrollLeft -= 1;
-            this.appearControls();
-        }, 2);
-    },
-    scrollRight() {
-        const controls = document.querySelector(".controls");
-        clearInterval(this.intervalScroll);
-        this.intervalScroll = setInterval(() => {
-            controls.scrollLeft += 1;
-            this.appearControls();
-        }, 2);
-    },
-    updateSlideshow(index) {
-        const slideshowContainer = document.querySelector(".slideshow-container");
-
-        const slideshowImgs = slideshowContainer.querySelectorAll(".slideshow img");
-        const thumbnails = Array.from(document.querySelectorAll(".controls img"));
-
-
-        if (typeof index != "undefined") {
-            this.slideshowIndex = index;
-            this.appearControls()
-        }
-        slideshowContainer.setAttribute("data-index", this.slideshowIndex);
-        slideshowImgs[this.slideshowIndex].scrollIntoView({ behavior: "smooth", inline: "center" });
-        document.querySelector(".controls .active").classList.remove("active");
-        thumbnails[this.slideshowIndex].classList.add("active");
-        thumbnails[this.slideshowIndex].scrollIntoView({ behavior: "smooth", inline: "center" });
-
-        this.appearControls()
-    }
+  
+    
+    
 
 }))
 Alpine.data('produccion', () => ({
@@ -389,7 +322,71 @@ Alpine.data('dashboardApp', () => ({
     },
 }))
 Alpine.data('producto', () => ({
-    quantity: 0
+    quantity: 0,
+    producto: null,
+    productIndex: null,
+        slideshowIndex: 0,
+
+intervalThumbnails: null,
+    intervalScroll: null,
+nextSlideshowImage() {
+        this.slideshowIndex = (this.slideshowIndex + 1) % this.producto.imagenes.length;
+        this.updateSlideshow();
+    },
+    prevSlideshowImage() {
+        this.slideshowIndex = (this.slideshowIndex - 1 + this.producto.imagenes.length) % this.producto.imagenes.length;
+        this.updateSlideshow();
+    },
+appearControls() {
+        const controls = this.$refs["controls"];
+        const scrollRightControls = this.$refs["scroll-right-controls"];
+        const scrollLeftControls = this.$refs["scroll-left-controls"];
+        clearTimeout(this.intervalThumbnails)
+        controls.classList.add("visible")
+        scrollRightControls.classList.add("visible")
+        scrollLeftControls.classList.add("visible")
+        this.intervalThumbnails = setTimeout(function () {
+            controls.classList.remove("visible")
+            scrollRightControls.classList.remove("visible")
+            scrollLeftControls.classList.remove("visible")
+        }, 984)
+    },
+    scrollLeft() {
+        const controls = this.$refs["controls"];
+        clearInterval(this.intervalScroll);
+        this.intervalScroll = setInterval(() => {
+            controls.scrollLeft -= 1;
+            this.appearControls();
+        }, 2);
+    },
+    scrollRight() {
+        const controls = this.$refs["controls"];
+        clearInterval(this.intervalScroll);
+        this.intervalScroll = setInterval(() => {
+            controls.scrollLeft += 1;
+            this.appearControls();
+        }, 2);
+    },
+    updateSlideshow(index) {
+        const slideshowContainer = this.$refs["slideshow-container"];
+        const controls = this.$refs["controls"];
+
+        const slideshowImgs = slideshowContainer.querySelectorAll(".slideshow img");
+        const thumbnails = Array.from(controls.querySelectorAll("img"));
+
+
+        if (typeof index != "undefined") {
+            this.slideshowIndex = index;
+            this.appearControls()
+        }
+        slideshowContainer.setAttribute("data-index", this.slideshowIndex);
+        slideshowImgs[this.slideshowIndex].scrollIntoView({ behavior: "smooth", inline: "center", block: "center" });
+        controls.querySelector(".active").classList.remove("active");
+        thumbnails[this.slideshowIndex].classList.add("active");
+        thumbnails[this.slideshowIndex].scrollIntoView({ behavior: "smooth", inline: "center", block: "center" });
+
+        this.appearControls()
+    }
 }))
 
 Alpine.data('accordion', () => ({
