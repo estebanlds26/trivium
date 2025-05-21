@@ -111,12 +111,12 @@ class ProduccionController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'fecha' => 'required|date',
-            'cantidad' => 'required|integer',
+            'fecha' => 'date',
+            'cantidad' => 'integer',
             'active_step' => 'integer',
-            'producto_id' => 'required|integer|exists:productos,id',
-            'user_id' => 'required|integer|exists:users,id',
-            'proceso_id' => 'required|integer|exists:procesos,id',
+            'producto_id' => 'integer|exists:productos,id',
+            'user_id' => 'integer|exists:users,id',
+            'proceso_id' => 'integer|exists:procesos,id',
         ]);
 
         if ($validator->fails()) {
@@ -228,6 +228,41 @@ class ProduccionController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Insumos eliminados de la producción',
+        ], Response::HTTP_OK);
+    }
+
+    /**
+     * Update only the proceso_steps_copy for a produccion (PUT /api/produccion/{produccion_id}/steps)
+     */
+    public function updateSteps(Request $request, $produccionId)
+    {
+        $validator = Validator::make($request->all(), [
+            'proceso_steps_copy' => 'required|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $validator->errors(),
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $produccion = Produccion::find($produccionId);
+        if (!$produccion) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Producción no encontrada',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $produccion->proceso_steps_copy = $request->proceso_steps_copy;
+        $produccion->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'proceso_steps_copy actualizado con éxito',
+            'data' => $produccion,
         ], Response::HTTP_OK);
     }
 }

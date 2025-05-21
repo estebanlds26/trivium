@@ -176,61 +176,92 @@ Alpine.data('productos', () => ({
 
 }))
 Alpine.data('produccion', () => ({
-    procesos: [{
-        productionSteps: [
-            { type: 'simple', text: "Inicio" },
-            { type: 'checklist', text: "Se verifica la materia prima", items: [["insumo", false], ["insumo", false], ["insumo", false], ["insumo", false]] },
-            { type: 'simple', text: "Se pone a calentar el agua" },
-            { type: 'simple', text: "Molienda de la cebada" },
-            { type: 'simple', text: "Mezcla y macerado" },
-            { type: 'simple', text: "Extracción del mosto" },
-            { type: 'time', text: "Cocción", milliseconds: 10000, startTime: null, endTime: null },
-            { type: 'simple', text: "Se le hecha lúpulo" },
-            { type: 'time', text: "Cocción", milliseconds: 2700000, startTime: null, endTime: null },
-            { type: 'simple', text: "Se le hecha más lúpulo" },
-            { type: 'simple', text: "Whirlpool" },
-            { type: 'simple', text: "Enfriado" },
-            { type: 'time', text: "Fermentación", milliseconds: 864000000, startTime: null, endTime: null },
-            { type: 'simple', text: "Enbarrilado" },
-            { type: 'time', text: "Reposo del enbarrilado", milliseconds: 86400000, startTime: null, endTime: null },
-            { type: 'simple', text: "Gasificado" },
-            { type: 'time', text: "Reposo del gasificado", milliseconds: 86400000, startTime: null, endTime: null },
-            { type: 'simple', text: "Enbotellado" },
-            { type: 'simple', text: "Fin" },
-        ],
-        procesoId: 56,
-        procesoName: null,
-        activeStep: 0,
-    },
-    {
-        productionSteps: [
-            { type: 'simple', text: "Inicio" },
-            { type: 'checklist', text: "Se verifica la materia prima", items: [["insumo", false], ["insumo", false], ["insumo", false], ["insumo", false]] },
-            { type: 'simple', text: "Se pone a calentar el agua" },
-            { type: 'simple', text: "Molienda de la cebada" },
-            { type: 'simple', text: "Mezcla y macerado" },
-            { type: 'simple', text: "Extracción del mosto" },
-            { type: 'time', text: "Cocción", milliseconds: 10000, startTime: null, endTime: null },
-            { type: 'simple', text: "Se le hecha lúpulo" },
-            { type: 'time', text: "Cocción", milliseconds: 2700000, startTime: null, endTime: null },
-            { type: 'simple', text: "Se le hecha más lúpulo" },
-            { type: 'simple', text: "Whirlpool" },
-            { type: 'simple', text: "Enfriado" },
-            { type: 'time', text: "Fermentación", milliseconds: 864000000, startTime: null, endTime: null },
-            { type: 'simple', text: "Enbarrilado" },
-            { type: 'time', text: "Reposo del enbarrilado", milliseconds: 86400000, startTime: null, endTime: null },
-            { type: 'simple', text: "Gasificado" },
-            { type: 'time', text: "Reposo del gasificado", milliseconds: 86400000, startTime: null, endTime: null },
-            { type: 'simple', text: "Enbotellado" },
-            { type: 'simple', text: "Fin" },
-        ],
-        procesoId: 56,
-        procesoName: null,
-        activeStep: 0,
-    }],
+    procesos: [],
 
-    init() {
+    async init() {
+        await this.loadProducciones();
         document.querySelector(".step.active")?.scrollIntoView({ behavior: "smooth", inline: "center", block: "center" });
+    },
+    async loadProducciones(){
+        const response = await fetch(`http://localhost:8000/api/produccion`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                this.procesos = data.data.map((item, procesoIdx) => {
+                    const productionSteps = Array.isArray(item.proceso_steps_copy)
+                        ? item.proceso_steps_copy.map((step, stepIdx) => {
+                            if (step.type === 'time' && typeof step.duration !== 'undefined' && step.duration !== null) {
+                                step.milliseconds = step.duration * 60000;
+                            }
+                            // Start timer if step is time and has a startTime
+                            if (step.type === 'time' && step.startTime) {
+                                // Use $nextTick to ensure Alpine has updated DOM and data
+                                this.$nextTick(() => {
+                                    this.restartTimer(step, procesoIdx, stepIdx);
+                                });
+                            }
+                            return step;
+                        })
+                        : item.proceso_steps_copy;
+                    return {
+                        productionSteps,
+                        procesoId: item.id,
+                        procesoName: "",
+                        activeStep: item.active_step,
+                    };
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        console.log(this.procesos)
+    },
+    async updateStepsProduccion(proceso) {
+        if (!proceso) {
+            console.error('Se necesita un proceso para actualizarlo.');
+            return;
+        }
+        // Send PUT request to backend to update proceso_steps_copy
+        try {
+            const response = await fetch(`http://localhost:8000/api/produccion/${proceso.procesoId}/steps`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ proceso_steps_copy: proceso.productionSteps }),
+            });
+            const data = await response.json();
+            if (!data.success) {
+                console.error('Error updating proceso_steps_copy:', data);
+            } else {
+            }
+        } catch (error) {
+            console.error('Error in updateStepsProduccion:', error);
+        }
+    },
+    async updateActiveStepProduccion(proceso) {
+        if (!proceso) {
+            console.error('Se necesita un proceso para actualizar active_step.');
+            return;
+        }
+        try {
+            const response = await fetch(`http://localhost:8000/api/produccion/${proceso.procesoId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ active_step: proceso.activeStep }),
+            });
+            const data = await response.json();
+            if (!data.success) {
+                console.error('Error updating active_step:', data);
+            } else {
+            }
+        } catch (error) {
+            console.error('Error in updateActiveStepProduccion:', error);
+        }
     },
     continuar(nextStep, target, step, process) {
         switch (step.type) {
@@ -267,6 +298,8 @@ Alpine.data('produccion', () => ({
                 }
                 break;
         }
+        this.updateStepsProduccion(this.procesos[process]);
+        this.updateActiveStepProduccion(this.procesos[process]);
     },
     todoChuleado(step) {
         let todosChuleados = true;
@@ -285,7 +318,7 @@ Alpine.data('produccion', () => ({
         const days = pad(Math.floor(milliseconds / (1000 * 60 * 60 * 24)));
         return `${days}:${hours}:${minutes}:${seconds}`;
     },
-    startTimer(step) {
+    startTimer(step, indexProceso) {
         if (!step.startTime) {
             step.startTime = Date.now();
             step.endTime = step.startTime + step.milliseconds;
@@ -298,6 +331,22 @@ Alpine.data('produccion', () => ({
                 }
             }, 1000);
         }
+        console.log(indexProceso)
+        this.updateStepsProduccion(this.procesos[indexProceso]);
+    },
+    restartTimer(step, indexProceso, stepIdx) {
+        // Always update the step inside the Alpine data array for reactivity
+        let timer = setInterval(() => {
+            const realStep = this.procesos[indexProceso]?.productionSteps?.[stepIdx];
+            console.log(stepIdx)
+            if (!realStep) return clearInterval(timer);
+            const remainingTime = realStep.endTime - Date.now();
+            realStep.milliseconds = remainingTime > 0 ? remainingTime : 0;
+            if (realStep.milliseconds <= 0) {
+                realStep.milliseconds = 0;
+                clearInterval(timer);
+            }
+        }, 1000);
     },
 }))
 Alpine.data('dashboardApp', () => ({
@@ -649,6 +698,17 @@ Alpine.data('managementData', () => ({
                 let s = { ...step };
                 if (s.type === 'checklist' && Array.isArray(s.items)) {
                     s.items = s.items.map(i => Array.isArray(i) ? i[0] : i).join(', ');
+                }
+                if (s.type === 'time') {
+                    if (typeof s.duration !== 'undefined' && s.duration !== null) {
+                        // Use duration if present
+                        s.duration = parseInt(s.duration);
+                    } else if (typeof s.milliseconds !== 'undefined' && s.milliseconds !== null) {
+                        // Convert milliseconds to minutes
+                        s.duration = Math.round(s.milliseconds / 60000);
+                    } else {
+                        s.duration = 0;
+                    }
                 }
                 return s;
             });
@@ -1007,7 +1067,9 @@ Alpine.data('managementData', () => ({
                 s.items = step.items.split(',').map(i => [i.trim(), false]).filter(i => i[0]);
             }
             if (step.type === 'time') {
+                // Save both duration (minutes) and milliseconds (for view/timer)
                 s.duration = parseInt(step.duration) || 0;
+                s.milliseconds = s.duration * 60000;
             }
             return s;
         });
@@ -1039,6 +1101,7 @@ Alpine.data('managementData', () => ({
             }
             if (step.type === 'time') {
                 s.duration = parseInt(step.duration) || 0;
+                s.milliseconds = s.duration * 60000;
             }
             return s;
         });
