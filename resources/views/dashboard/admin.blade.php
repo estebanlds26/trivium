@@ -133,118 +133,61 @@
     </template>
     <template x-if="section =='store'">
         <section id="products" class="relevant-content" x-data="productos">
-            <template x-if="showProductDetail">
-                <div class="product-detail">
-                    <div class="slideshow-container" @mousemove="appearControls" :data-index="slideshowIndex">
-                        <figure class="slideshow">
-                            <template x-for="(image, index) in productDetail.images" :key="index">
-                                <img :src="image" alt>
-                            </template>
-                        </figure>
-                        <div class="prev-image" @click="prevSlideshowImage">
-                            <i class="fa-solid fa-circle-chevron-left"></i>
-                        </div>
-                        <div class="next-image" @click="nextSlideshowImage">
-                            <i class="fa-solid fa-circle-chevron-right"></i>
-                        </div>
-                        <div class="controls visible">
-                            <template x-for="(image, index) in productDetail.images" :key="index">
-                                <img @click="updateSlideshow(index)" :class="index == 0 ? 'active' : ''"
-                                    :src="image" alt>
-                            </template>
-                        </div>
-                        <div class="scroll-left-controls visible" @mouseenter="scrollLeft"
-                            @mouseleave="clearInterval(intervalScroll)">
-                        </div>
-                        <div class="scroll-right-controls visible" @mouseenter="scrollRight"
-                            @mouseleave="clearInterval(intervalScroll)">
-                        </div>
-                    </div>
-                    <div class="right">
-                        <div class="close" @click="closeProductDetail">
-                            <i class="fa-solid fa-xmark"></i>
-                        </div>
-                        <h1 x-text="productDetail.name"></h1>
-                        <p class="description" x-text="productDetail.description">
+           
+            <template x-if="!!products">
+                <template x-for="(product, index) in products" :key="product.id">
+                    <div x-data="producto" class="product-container" x-init="producto= product">
+                        <article class="product">
+                            <div class="slideshow-container"  x-ref="slideshow-container" @mousemove="appearControls()" :data-index="slideshowIndex">
+                                <figure class="slideshow">
+                                    <template x-for="(image, index) in product.imagenes" :key="index">
+                                        <img :src="`/storage/${image}`" alt>
+                                    </template>
+                                </figure>
+                                <div class="prev-image"  x-ref="prev-image" @click="prevSlideshowImage()">
+                                    <i class="fa-solid fa-circle-chevron-left"></i>
+                                </div>
+                                <div class="next-image"  x-ref="next-image" @click="nextSlideshowImage()">
+                                    <i class="fa-solid fa-circle-chevron-right"></i>
+                                </div>
+                                <div class="controls visible"  x-ref="controls" >
+                                    <template x-for="(image, indexI) in product.imagenes" :key="indexI">
+                                        <img @click="updateSlideshow(indexI)" :class="indexI == 0 ? 'active' : ''"
+                                            :src="`/storage/${image}`" alt>
+                                    </template>
+                                </div>
+                                <div class="scroll-left-controls visible"   x-ref="scroll-left-controls" @mouseenter="scrollLeft"
+                                    @mouseleave="clearInterval(intervalScroll)">
+                                </div>
+                                <div class="scroll-right-controls visible"  x-ref="scroll-right-controls"  @mouseenter="scrollRight"
+                                    @mouseleave="clearInterval(intervalScroll)">
+                                </div>
+                            </div>
+                            <div class="right">
+                                <h1 x-text="product.nombre"></h1>
+                                <p class="description" x-text="product.descripcion"></p>
 
-                        </p>
-                        <div class="bottom">
-                            <div class="info">
-                                <div class="left"><span class="price">$ 9.000</span></div>
-                                <div class="right">
-                                    <input type="number" name="quantity" class="quantity">
-                                    <div class="add-to-cart">
-                                        <i class="fa-solid fa-cart-shopping"></i>
+                                </p>
+                                <div class="info">
+                                    <div class="left"  x-ref="left" ><span class="price" x-text="`$ ${product.precio}`"></span></div>
+                                    <div class="right"  x-ref="right" >
+                                        <input type="number" x-ref="`quantity_product_${product.id}`" name="quantity" class="quantity"
+                                            value="1" autocomplete="off">
+                                        <div class="add-to-cart" @click="addToCart(product, quantity)">
+                                            <i class="fa-solid fa-cart-shopping"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </article>
                     </div>
+                </template>
+            </template>
+            <template x-if="!products">
+                <div class="loading">
+                    <p>Cargando productos...</p>
                 </div>
             </template>
-            <template x-for="product in products" :key="product.id">
-                <div x-data="producto" class="product-container">
-                    <article class="product" @click="setProductDetail(product)">
-                        <figure><img :src="product.image" alt></figure>
-                        <h1 x-text="product.name"></h1>
-                        <div class="info">
-                            <div class="left"><span class="price" x-text="`$ ${product.price}`"></span></div>
-                            <div class="right">
-                                <input type="number" x-model="quantity" name="quantity" class="quantity"
-                                    value="1" autocomplete="off">
-                                <div class="add-to-cart" @click="addToCart(product, quantity)">
-                                    <i class="fa-solid fa-cart-shopping"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </template>
-            <div class="product-container">
-                <article class="product">
-                    <figure><img src="{{ asset('images/welcome/TRIVIUM-25.jpg') }}" alt></figure>
-                    <h1>Irish Red Ale</h1>
-                    <div class="info">
-                        <div class="left"><span class="price">$ 9.000</span></div>
-                        <div class="right">
-                            <input type="number" name="quantity" class="quantity">
-                            <div class="add-to-cart">
-                                <i class="fa-solid fa-cart-shopping"></i>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-            </div>
-            <div class="product-container">
-                <article class="product">
-                    <figure><img src="{{ asset('images/welcome/TRIVIUM-26.jpg') }}" alt></figure>
-                    <h1>Irish Red Ale</h1>
-                    <div class="info">
-                        <div class="left"><span class="price">$ 9.000</span></div>
-                        <div class="right">
-                            <input type="number" name="quantity" class="quantity">
-                            <div class="add-to-cart">
-                                <i class="fa-solid fa-cart-shopping"></i>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-            </div>
-            <div class="product-container">
-                <article class="product">
-                    <figure><img src="{{ asset('images/welcome/TRIVIUM-27.jpg') }}" alt></figure>
-                    <h1>Irish Red Ale</h1>
-                    <div class="info">
-                        <div class="left"><span class="price">$ 9.000</span></div>
-                        <div class="right">
-                            <input type="number" name="quantity" class="quantity">
-                            <div class="add-to-cart">
-                                <i class="fa-solid fa-cart-shopping"></i>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-            </div>
         </section>
     </template>
     <template x-if="section =='contact'">
@@ -457,6 +400,26 @@
                                         <input type="text" x-ref="precioProductoEdit"
                                             :value="sections.productos.details.precio">
                                     </label>
+                                    <label for="fotos-producto-edit">
+                                        Fotos
+                                    </label>
+                                    <div class="photo-previews">
+                                        <template x-for="(photo, index) in sections.productos.photos" :key="index">
+                                            <div class="photo-preview" draggable="true"
+                                                 @dragstart="dragIndex = index"
+                                                 @dragover.prevent
+                                                 @drop="reorder(dragIndex, index)">
+                                                <img :src="photo.url" alt="Vista previa">
+                                                <button @click="removePhoto(index)">
+                                                    <i class="fa-solid fa-trash-can"></i>
+                                                </button>
+                                            </div>
+                                        </template>
+                                        <label for="fotos-producto-edit-picker">
+                                            <i class="fa-solid fa-plus"></i>
+                                            <input type="file" multiple id="fotos-producto-edit-picker" accept="image/*" x-ref="fotosProductoEdit" @change="handleFileUpload($event)">
+                                        </label>
+                                    </div>
                                     <div class="buttons">
                                         <div class="btn green" @click="update()">Actualizar</div>
                                         <div class="btn grey" @click="goBack()">Descartar</div>
@@ -477,6 +440,26 @@
                                         Precio
                                         <input type="text" x-ref="precioProductoCreate" value="">
                                     </label>
+                                    <label for="fotos-producto-create">
+                                        Fotos
+                                    </label>
+                                    <div class="photo-previews">
+                                        <template x-for="(photo, index) in sections.productos.photos" :key="index">
+                                            <div class="photo-preview" draggable="true"
+                                                 @dragstart="dragIndex = index"
+                                                 @dragover.prevent
+                                                 @drop="reorder(dragIndex, index)">
+                                                <img :src="photo.url" alt="Vista previa">
+                                                <button @click="removePhoto(index)">
+                                                    <i class="fa-solid fa-trash-can"></i>
+                                                </button>
+                                            </div>
+                                        </template>
+                                        <label for="fotos-producto-create-picker">
+                                            <i class="fa-solid fa-plus"></i>
+                                            <input type="file" multiple id="fotos-producto-create-picker" accept="image/*" x-ref="fotosProductoEdit" @change="handleFileUpload($event)">
+                                        </label>
+                                    </div>
                                     <div class="buttons">
                                         <div class="btn green" @click="add()">Crear</div>
                                         <div class="btn grey" @click="goBack()">Descartar</div>
@@ -820,6 +803,33 @@
                                             </template>
                                         </select>
                                     </label>
+                                    <label for="proceso-produccion-edit" @change="setProcesoInsumos">
+                                        Proceso
+                                        <select x-ref="procesoProduccionEdit">
+                                            <option hidden disabled selected value="">Selecciona un proceso</option>
+                                            <template x-for="proceso in sections.procesos.rows" :key="proceso.id">
+                                                <option :value="proceso.id" x-text="proceso.nombre" :selected="proceso.id == sections.produccion.details.proceso.id"></option>
+                                            </template>
+                                        </select>
+                                    </label>
+                                    <label for="insumos-produccion-edit">
+                                        Insumos
+                                        <div class="insumos-list">
+                                            <template x-for="(insumo, index) in sections.produccion.selectedInsumos" :key="index">
+                                                <div class="insumo-item">
+                                                    <select :id="`insumo-${index}`" x-model="insumo.insumo_id">
+                                                        <option value="" disabled>Seleccione un insumo</option>
+                                                        <template x-for="insumoOption in sections.insumos.rows" :key="insumoOption.id">
+                                                            <option :value="insumoOption.id" x-text="insumoOption.nombre" :disabled="sections.produccion.selectedInsumos.some((i, idx2) => i.insumo_id === insumoOption.id && idx2 !== index)"></option>
+                                                        </template>
+                                                    </select>
+                                                    <input type="number" placeholder="Cantidad usada" x-model="insumo.cantidad_usada" min="1">
+                                                    <button type="button" class="btn red" @click="removeInsumo(index)">Eliminar</button>
+                                                </div>
+                                            </template>
+                                            <button type="button" class="btn green" @click="addInsumo()">Agregar Insumo</button>
+                                        </div>
+                                    </label>
                                     <div class="buttons">
                                         <div class="btn green" @click="update()">Actualizar</div>
                                         <div class="btn grey" @click="goBack()">Descartar</div>
@@ -844,15 +854,28 @@
                                             </template>
                                         </select>
                                     </label>
+                                    <label for="proceso-produccion-create" @change="setProcesoInsumos">
+                                        Proceso
+                                        <select x-ref="procesoProduccionCreate">
+                                            <option hidden disabled selected value="">Selecciona un proceso</option>
+                                            <template x-for="proceso in sections.procesos.rows" :key="proceso.id">
+                                                <option :value="proceso.id" x-text="proceso.nombre"></option>
+                                            </template>
+                                        </select>
+                                    </label>
                                     <label for="insumos-produccion-create">
                                         Insumos
                                         <div class="insumos-list">
                                             <template x-for="(insumo, index) in sections.produccion.selectedInsumos" :key="index">
                                                 <div class="insumo-item">
-                                                    <select :id="`insumo-${index}`" x-model="insumo.insumo_id">
-                                                        <option value="" disabled>Seleccione un insumo</option>
+                                                    <select :id="`insumo-${index}`" x-model.number="insumo.insumo_id">
+                                                        <option value="" disabled hidden selected>Seleccione un insumo</option>
                                                         <template x-for="insumoOption in sections.insumos.rows" :key="insumoOption.id">
-                                                            <option :value="insumoOption.id" x-text="insumoOption.nombre"></option>
+                                                            <option 
+                                                                :value="insumoOption.id * 1" 
+                                                                x-text="insumoOption.nombre"
+                                                                :disabled="sections.produccion.selectedInsumos.some((i, idx2) => i.insumo_id === insumoOption.id && idx2 !== index)">
+                                                            </option>
                                                         </template>
                                                     </select>
                                                     <input type="number" placeholder="Cantidad usada" x-model="insumo.cantidad_usada" min="1">
@@ -941,7 +964,7 @@
                                     <template x-if="sections.produccion.rows != null && sections.produccion.rows.length == 0">
                                         <tbody>
                                             <tr>
-                                                <td colspan="8">No hay ventas</td>
+                                                <td colspan="8">No hay producciones</td>
                                             </tr>
                                         </tbody>
                                     </template>
@@ -961,6 +984,271 @@
                                                             <i @click.stop="destroy(produccion.id)"
                                                                 class="fa-solid fa-trash-can"></i>
                                                             <i @click.stop="edit(produccion)"
+                                                                class="fa-solid fa-pen-to-square"></i>
+                                                            <i class="fa-solid fa-print"></i>
+
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </template>
+                                </table>
+                            </div>
+                        </template>
+                    </div>
+                    </template>
+                    <template x-if="section == 'procesos'">
+                        <div class="procesos management-section">
+
+                            <template x-if="subsection=='edit'">
+                                <div class="edit">
+                                    <form @submit.prevent="updateProceso()">
+                                        <label>Nombre del Proceso
+                                            <input type="text" x-ref="nombreProcesoEdit" :value="sections.procesos.details.nombre" required>
+                                        </label>
+                                        <label>Descripción
+                                            <textarea x-ref="descripcionProcesoEdit" required x-text="sections.procesos.details.descripcion"></textarea>
+                                        </label>
+                                        <!-- Step Manager (Edit) -->
+                                        <div class="step-generator">
+                                            <h2>Paso a paso del proceso</h2>
+                                            <template x-for="(step, idx) in sections.procesos.steps" :key="idx">
+                                                <div class="step-row" :class="{ dragging: dragStepIndex === idx }"
+                                                    @dragover.prevent
+                                                    @drop="reorderStep(dragStepIndex, idx); dragStepIndex = null">
+                                                    <span class="drag-handle" style="cursor:grab"
+                                                        draggable="true"
+                                                        @dragstart="dragStepIndex = idx"
+                                                        @dragend="dragStepIndex = null">
+                                                        ↕
+                                                    </span>
+                                                    <input type="text" x-model="step.text" placeholder="Descripción del paso" required>
+                                                    <select x-model="step.type">
+                                                        <option value="simple">Simple</option>
+                                                        <option value="checklist">Checklist</option>
+                                                        <option value="time">Tiempo</option>
+                                                    </select>
+                                                    <!-- Type-specific fields -->
+                                                    <template x-if="step.type === 'checklist'">
+                                                        <input type="text" x-model="step.items" placeholder="Ítems (separados por coma)">
+                                                    </template>
+                                                    <template x-if="step.type === 'time'">
+                                                        <input type="number" x-model="step.duration" placeholder="Duración (minutos)">
+                                                    </template>
+                                                    <button type="button" @click="removeStep(idx)"><i class="fa-solid fa-trash"></i></button>
+                                                </div>
+                                            </template>
+                                            <button type="button" class="add-step" @click="addStep()">
+                                                <i class="fa-solid fa-plus"></i> Agregar paso
+                                            </button>
+                                        </div>
+                                        <!-- Insumo Editor for Proceso (Edit) -->
+                                        <label for="insumos-proceso-edit">
+                                            Insumos
+                                            <div class="insumos-list">
+                                                <template x-for="(insumo, index) in sections.procesos.selectedInsumos" :key="index">
+                                                    <div class="insumo-item">
+                                                        <select :id="`insumo-proceso-edit-${index}`" x-model.number="insumo.insumo_id">
+                                                            <option value="" disabled hidden selected>Seleccione un insumo</option>
+                                                            <template x-for="insumoOption in sections.insumos.rows" :key="insumoOption.id">
+                                                                <option :value="insumoOption.id" x-text="insumoOption.nombre" :disabled="sections.procesos.selectedInsumos.some((i, idx2) => i.insumo_id === insumoOption.id && idx2 !== index)"></option>
+                                                            </template>
+                                                        </select>
+                                                        <input type="number" placeholder="Cantidad" x-model.number="insumo.quantity" min="1">
+                                                        <button type="button" class="btn red" @click="removeProcesoInsumo(index)">Eliminar</button>
+                                                    </div>
+                                                </template>
+                                                <button type="button" class="btn green" @click="addProcesoInsumo()">Agregar Insumo</button>
+                                            </div>
+                                        </label>
+                                        <button type="submit" class="save-proceso">Actualizar Proceso</button>
+                                    </form>
+                                </div>
+                            </template>
+                            <template x-if="subsection=='create'">
+                                <div class="create">
+                                    <form @submit.prevent="addProceso()">
+                                        <label>Nombre del Proceso
+                                            <input type="text" x-ref="nombreProcesoCreate" required>
+                                        </label>
+                                        <label>Descripción
+                                            <textarea x-ref="descripcionProcesoCreate" required></textarea>
+                                        </label>
+                                        <!-- Step Generator -->
+                                        <div class="step-generator">
+                                            <h2>Paso a paso del proceso</h2>
+                                            <template x-for="(step, idx) in sections.procesos.steps" :key="idx">
+                                                <div class="step-row" :class="{ dragging: dragStepIndex === idx }" draggable="true"
+                                                    @dragstart="dragStepIndex = idx"
+                                                    @dragover.prevent
+                                                    @drop="reorderStep(dragStepIndex, idx); dragStepIndex = null">
+                                                    <span class="drag-handle" style="cursor:grab"
+                                                        draggable="true"
+                                                        @dragstart="dragStepIndex = idx"
+                                                        @dragend="dragStepIndex = null">
+                                                        ↕
+                                                    </span>
+                                                    <input type="text" x-model="step.text" placeholder="Descripción del paso" required>
+                                                    <select x-model="step.type">
+                                                        <option value="simple">Simple</option>
+                                                        <option value="checklist">Checklist</option>
+                                                        <option value="time">Tiempo</option>
+                                                    </select>
+                                                    <!-- Type-specific fields -->
+                                                    <template x-if="step.type === 'checklist'">
+                                                        <input type="text" x-model="step.items" placeholder="Ítems (separados por coma)">
+                                                    </template>
+                                                    <template x-if="step.type === 'time'">
+                                                        <input type="number" x-model="step.duration" placeholder="Duración (minutos)">
+                                                    </template>
+                                                    <button type="button" @click="removeStep(idx)"><i class="fa-solid fa-trash"></i></button>
+                                                </div>
+                                            </template>
+                                            <button type="button" class="add-step" @click="addStep()">
+                                                <i class="fa-solid fa-plus"></i> Agregar paso
+                                            </button>
+                                        </div>
+                                        <!-- Insumo Editor for Proceso (Create) -->
+                                        <label for="insumos-proceso-create">
+                                            Insumos
+                                            <div class="insumos-list">
+                                                <template x-for="(insumo, index) in sections.procesos.selectedInsumos" :key="index">
+                                                    <div class="insumo-item">
+                                                        <select :id="`insumo-proceso-create-${index}`" x-model.number="insumo.insumo_id">
+                                                            <option value="" disabled hidden selected>Seleccione un insumo</option>
+                                                            <template x-for="insumoOption in sections.insumos.rows" :key="insumoOption.id">
+                                                                <option :value="insumoOption.id" x-text="insumoOption.nombre" :disabled="sections.procesos.selectedInsumos.some((i, idx2) => i.insumo_id === insumoOption.id && idx2 !== index)"></option>
+                                                            </template>
+                                                        </select>
+                                                        <input type="number" placeholder="Cantidad" x-model.number="insumo.quantity" min="1">
+                                                        <button type="button" class="btn red" @click="removeProcesoInsumo(index)">Eliminar</button>
+                                                    </div>
+                                                </template>
+                                                <button type="button" class="btn green" @click="addProcesoInsumo()">Agregar Insumo</button>
+                                            </div>
+                                        </label>
+                                        <button type="submit" class="save-proceso">Guardar Proceso</button>
+                                    </form>
+                                </div>
+                            </template>
+                        <template x-if="subsection=='view'">
+                            <div class="view">
+                                <label for="nombre-proceso">
+                                    Nombre
+                                    <p id="nombre-proceso" x-text="sections.procesos.details.nombre"></p>
+                                </label>
+                                <label for="descripcion-proceso">
+                                    Descripción
+                                    <p id="descripcion-proceso" x-text="sections.procesos.details.descripcion"></p>
+                                </label>
+                                <label for="steps-proceso">
+                                    Pasos
+                                    <div class="table">
+                                        <table class="productos-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Tipo</th>
+                                                    <th>Detalle</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template x-for="(step, index) in (Array.isArray(sections.procesos.details.steps) ? sections.procesos.details.steps : JSON.parse(sections.procesos.details.steps))" :key="index">
+                                                    <tr>
+                                                        <td x-text="index + 1"></td>
+                                                        <td x-text="step.type"></td>
+                                                        <td>
+                                                            <template x-if="step.type == 'simple'">
+                                                                <span x-text="step.text"></span>
+                                                            </template>
+                                                            <template x-if="step.type == 'checklist'">
+                                                                <span>
+                                                                    <span x-text="step.text"></span>
+                                                                    <ul style='margin:0; padding-left:1em;'>
+                                                                        <template x-for="(item, idx) in step.items" :key="idx">
+                                                                            <li><span x-text="item[0]"></span> <span x-text="item[1] ? '✔️' : ''"></span></li>
+                                                                        </template>
+                                                                    </ul>
+                                                                </span>
+                                                            </template>
+                                                            <template x-if="step.type == 'time'">
+                                                                <span>
+                                                                    <span x-text="step.text"></span> -
+                                                                    <span x-text="formatTime ? formatTime(step.milliseconds) : step.milliseconds + ' ms'"></span>
+                                                                </span>
+                                                            </template>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </label>
+                                <label for="insumos-proceso">
+                                    Insumos
+                                    <div class="table">
+                                        <table class="productos-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Nombre</th>
+                                                    <th>Cantidad</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template x-for="(insumo, index) in (Array.isArray(sections.procesos.details.insumos) ? sections.procesos.details.insumos : (sections.procesos.details.insumos ? JSON.parse(sections.procesos.details.insumos) : []))" :key="index">
+                                                    <tr>
+                                                        <td x-text="insumo.insumo_id"></td>
+                                                        <td x-text="sections.insumos.rows ? (sections.insumos.rows.find(i => i.id == insumo.insumo_id)?.nombre ?? '-') : '-' "></td>
+                                                        <td x-text="insumo.quantity"></td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </label>
+                            </div>
+                        </template>
+                        <template x-if="subsection=='index'">
+                            <div class="table">
+                                <table class="pedidos-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Pasos</th>
+                                            <th>Insumos</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <template x-if="sections.procesos.rows == null">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="8">Cargando</td>
+                                            </tr>
+                                        </tbody>
+                                    </template>
+                                    <template x-if="sections.procesos.rows != null && sections.procesos.rows.length == 0">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="8">No hay producciones</td>
+                                            </tr>
+                                        </tbody>
+                                    </template>
+                                    <template x-if="sections.procesos.rows != null && sections.procesos.rows.length != 0">
+                                        <tbody>
+                                            <template x-for="(proceso, index) in sections.procesos.rows"
+                                                :key="index">
+                                                <tr @click="view(proceso)">
+                                                    <td x-text="proceso.nombre"></td>
+                                                    <td>Detalles (<span
+                                                                x-text="countProcesoSteps(proceso.steps)"></span>)</td>
+                                                    <td x-text="getListQuantitiesProcesoInsumos(proceso.insumos)"></td>
+                                                    <td>
+                                                        <div class="actions">
+                                                            <i @click.stop="destroy(produccion.id)"
+                                                                class="fa-solid fa-trash-can"></i>
+                                                            <i @click.stop="edit(proceso)"
                                                                 class="fa-solid fa-pen-to-square"></i>
                                                             <i class="fa-solid fa-print"></i>
 
@@ -1004,6 +1292,11 @@
                         @click="setSection('produccion')">
                         <i class="fa-solid fa-cubes-stacked"></i>
                         <h1>Producciones</h1>
+                    </div>
+                    <div class="section procesos" :class="section == 'procesos' ? 'active' : ''"
+                        @click="setSection('procesos')">
+                        <i class="fa-solid fa-cubes-stacked"></i>
+                        <h1>Procesos</h1>
                     </div>
                     <div class="section stock-bajo" :class="section == 'Stock Bajo' ? 'active' : ''"
                         @click="setSection('Stock Bajo')">

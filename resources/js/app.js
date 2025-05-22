@@ -12,64 +12,58 @@ Alpine.data('welcomeApp', () => ({
         login: 'iniciar-sesion',
         register: 'registrarse',
     },
-    routesInverse: {
-        '/': 'home',
-        '/acerca-de': 'about',
-        '/productos': 'products',
-        '/iniciar-sesion': 'login',
-        '/registrarse': 'register',
-    },
-    previousSection: null,
+    routesInverse: {},
+    section: 'home',
+    previousSection: "about",
     scrollTop: 0,
 
     init() {
-        this.previousSection = document.querySelector("#about.relevant-content");
+        this.routesInverse = Object.fromEntries(
+            Object.entries(this.routes).map(([key, value]) => [`/${value}`, key])
+        );
+
+
+        console.log(this.routesInverse)
         this.updateFigure();
         window.addEventListener("resize", this.updateFigure);
         this.$nextTick(() => {
-            let section = window.location.pathname;
-            let link = `.link#${this.routesInverse[section]}-link`
-            document.querySelector(link).click();
+            this.section = this.routesInverse[window.location.pathname];
+            this.setSection(this.section)
         });
 
     },
     toggle() {
         this.open = !this.open;
     },
-    handleScroll(content, background) {
-        this.scrollTop = content.scrollTop;
-        background.style.filter = `blur(${this.scrollTop / 74}px)`;
+    handleScroll() {
+        this.scrollTop = this.$refs.content.scrollTop;
+        this.$refs.background.style.filter = `blur(${this.scrollTop / 74}px)`;
         this.updateFigure();
         if (this.scrollTop > 230) {
-            if (document.querySelector(".link.active")?.id === "home-link") {
-                document.querySelector(".link.active").classList.remove("active");
-                document.querySelector(`.link#${this.previousSection.id}-link`).classList.add("active");
-                document.querySelector(".relevant-content.active")?.classList.remove("active");
-                this.previousSection.classList.add("active");
-                history.pushState({ page: 1 }, "", `/${this.routes[this.previousSection.id]}`);
-            }
+
+            this.$nextTick(() => {
+                if (this.section == "home") {
+                    this.setSection(this.previousSection, "no-auto-scroll")
+                }
+            })
         } else {
-            this.previousSection = document.querySelector(".relevant-content.active") ?? this.previousSection;
-            this.previousSection.classList.remove("active");
-            document.querySelector(".link.active")?.classList.remove("active");
-            document.querySelector(".link#home-link").classList.add("active");
-            history.pushState({ page: 1 }, "", `/${this.routes["home"]}`);
+            this.setSection("home", "no-auto-scroll")
         }
     },
-    navigateToSection(link) {
-        const section = document.querySelector(`#${link.id.replace("-link", "")}`);
-        document.querySelector(".relevant-content.active")?.classList.remove("active");
-        document.querySelector(".link.active").classList.remove("active");
-        link.classList.add("active");
-        section?.classList.add("active");
-        if (section) section.scrollTop = 0;
-        history.pushState({ page: 1 }, "", `/${this.routes[link.id.replace("-link", "")]}`);
-        if (link.id === "home-link") {
-            this.autoScrollHeaderBottom();
-        } else {
+    handleInnerScroll(element) {
+        if (this.$refs.content.scrollTop == 0) return
+        this.autoScrollHeaderTop();
+    },
+    setSection(section, mode) {
+        this.previousSection = this.section == "home" ? this.previousSection : this.section;
+        this.section = section;
+        this.$nextTick(() => {
+            history.pushState({ page: 1 }, "", `/${this.routes[section] ?? ''}`);
+        })
+        if (typeof mode != "undefined" && mode == "no-auto-scroll") return
+        section == "home" ?
+            this.autoScrollHeaderBottom() :
             this.autoScrollHeaderTop();
-            this.previousSection = section ?? this.previousSection;
-        }
     },
     autoScrollHeaderTop() {
         document.querySelector(".relevant nav").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -79,12 +73,11 @@ Alpine.data('welcomeApp', () => ({
         document.querySelector(".relevant nav").scrollIntoView({ behavior, block: "end" });
     },
     updateFigure() {
-        const e = document.querySelector(".content");
+        const e = this.$refs.content;
         const eScrollTopMax = e.scrollHeight - e.clientHeight;
         const bottom = document.querySelector(".bottom");
         const figureImg = document.querySelector(".content figure img");
         const figure = document.querySelector(".content figure");
-        console.log(e.scrollTop, eScrollTopMax);
         if (eScrollTopMax - e.scrollTop < 1) {
             bottom.style.paddingTop = `${eScrollTopMax - e.scrollTop}px`;
             figureImg.style.width = `${85 + eScrollTopMax - e.scrollTop}px`;
@@ -98,182 +91,110 @@ Alpine.data('welcomeApp', () => ({
 }));
 
 Alpine.data('productos', () => ({
-    slideshowIndex: 0,
-    products: [
-        {
-            id: 0,
-            name: "Irish Red Ale",
-            image: "/images/welcome/TRIVIUM-25.jpg",
-            description: `La Irish Red Ale es una joya en nuestro repertorio en
-                        Trivium, una cerveza que tiene profundas raíces en la
-                        tradición cervecera irlandesa. Cuando comenzamos
-                        nuestra aventura en el mundo de la cerveza artesanal,
-                        sabíamos que queríamos capturar la esencia y el
-                        carácter únicos de este estilo clásico.
-
-                        Nos enamoramos de la Irish Red Ale por su color rojizo
-                        distintivo, que proviene de las maltas tostadas que
-                        utilizamos en su elaboración. Estas maltas no solo le
-                        dan su apariencia característica, sino que también
-                        aportan sabores dulces y notas de caramelo que
-                        complementan perfectamente el ligero amargor de
-                        los lúpulos utilizados.
-
-                        Cada lote de nuestra Irish Red Ale es una celebración
-                        de la rica historia cervecera de Irlanda y de nuestra
-                        pasión por la calidad y la artesanía. Es una cerveza que
-                        nos conecta con las tradiciones mientras permitimos
-                        que nuestro toque personal y creativo brille a través de
-                        cada sorbo. Nos enorgullece compartir esta cerveza con
-                        nuestros clientes, invitándolos a disfrutar de su
-                        complejidad y carácter único, al tiempo que honramos
-                        y celebramos la herencia cervecera que inspiró su
-                        creación.`,
-            price: 9000,
-            images: [
-                "/images/welcome/TRIVIUM-25.jpg",
-                "/images/welcome/TRIVIUM-28.jpg",
-                "/images/welcome/TRIVIUM-25.jpg",
-                "/images/welcome/TRIVIUM-28.jpg",
-                "/images/welcome/TRIVIUM-25.jpg",
-                "/images/welcome/TRIVIUM-28.jpg",
-                "/images/welcome/TRIVIUM-25.jpg",
-                "/images/welcome/TRIVIUM-28.jpg",
-                "/images/welcome/TRIVIUM-25.jpg",
-                "/images/welcome/TRIVIUM-28.jpg",
-                "/images/welcome/TRIVIUM-25.jpg",
-                "/images/welcome/TRIVIUM-28.jpg",
-                "/images/welcome/TRIVIUM-25.jpg",
-                "/images/welcome/TRIVIUM-28.jpg",
-            ],
-        }
-    ],
-    showProductDetail: false,
-    productDetail: null,
-    intervalThumbnails: null,
-    intervalScroll: null,
-    closeProductDetail() {
-        this.showProductDetail = false;
-        this.productDetail = null;
+    products: null,
+    init() {
+        this.fetchProducts();
     },
-    setProductDetail(producto) {
-        this.productDetail = producto;
-        this.showProductDetail = true;
+    fetchProducts() {
+        fetch('http://localhost:8000/api/producto')
+            .then(response => response.json())
+            .then(data => {
+                this.products = data.data
+            })
+            .catch(error => console.error('Error fetching products:', error));
     },
-    nextSlideshowImage() {
-        this.slideshowIndex = (this.slideshowIndex + 1) % this.productDetail.images.length;
-        this.updateSlideshow();
-    },
-    prevSlideshowImage() {
-        this.slideshowIndex = (this.slideshowIndex - 1 + this.productDetail.images.length) % this.productDetail.images.length;
-        this.updateSlideshow();
-    },
-    appearControls() {
-        const controls = document.querySelector(".controls");
-        const scrollRightControls = document.querySelector(".scroll-right-controls")
-        const scrollLeftControls = document.querySelector(".scroll-left-controls")
-        clearTimeout(this.intervalThumbnails)
-        controls.classList.add("visible")
-        scrollRightControls.classList.add("visible")
-        scrollLeftControls.classList.add("visible")
-        this.intervalThumbnails = setTimeout(function () {
-            controls.classList.remove("visible")
-            scrollRightControls.classList.remove("visible")
-            scrollLeftControls.classList.remove("visible")
-        }, 984)
-    },
-    scrollLeft() {
-        clearInterval(this.intervalScroll)
-        this.intervalScroll = setInterval(function () {
-            controls.scrollLeft -= 1
-            this.appearControls()
-
-        }, 2)
-    },
-    scrollRight() {
-        clearInterval(this.intervalScroll)
-        this.intervalScroll = setInterval(function () {
-            controls.scrollLeft += 1
-            this.appearControls()
-        }, 2)
-    },
-    updateSlideshow(index) {
-        const slideshowContainer = document.querySelector(".slideshow-container");
-
-        const slideshowImgs = slideshowContainer.querySelectorAll(".slideshow img");
-        const thumbnails = Array.from(document.querySelectorAll(".controls img"));
-
-
-        if (typeof index != "undefined") {
-            this.slideshowIndex = index;
-            this.appearControls()
-        }
-        slideshowContainer.setAttribute("data-index", this.slideshowIndex);
-        slideshowImgs[this.slideshowIndex].scrollIntoView({ behavior: "smooth", inline: "center" });
-        document.querySelector(".controls .active").classList.remove("active");
-        thumbnails[this.slideshowIndex].classList.add("active");
-        thumbnails[this.slideshowIndex].scrollIntoView({ behavior: "smooth", inline: "center" });
-
-        this.appearControls()
-    }
+  
+    
+    
 
 }))
 Alpine.data('produccion', () => ({
-    procesos: [{
-        productionSteps: [
-            { type: 'simple', text: "Inicio" },
-            { type: 'checklist', text: "Se verifica la materia prima", items: [["insumo", false], ["insumo", false], ["insumo", false], ["insumo", false]] },
-            { type: 'simple', text: "Se pone a calentar el agua" },
-            { type: 'simple', text: "Molienda de la cebada" },
-            { type: 'simple', text: "Mezcla y macerado" },
-            { type: 'simple', text: "Extracción del mosto" },
-            { type: 'time', text: "Cocción", milliseconds: 10000, startTime: null, endTime: null },
-            { type: 'simple', text: "Se le hecha lúpulo" },
-            { type: 'time', text: "Cocción", milliseconds: 2700000, startTime: null, endTime: null },
-            { type: 'simple', text: "Se le hecha más lúpulo" },
-            { type: 'simple', text: "Whirlpool" },
-            { type: 'simple', text: "Enfriado" },
-            { type: 'time', text: "Fermentación", milliseconds: 864000000, startTime: null, endTime: null },
-            { type: 'simple', text: "Enbarrilado" },
-            { type: 'time', text: "Reposo del enbarrilado", milliseconds: 86400000, startTime: null, endTime: null },
-            { type: 'simple', text: "Gasificado" },
-            { type: 'time', text: "Reposo del gasificado", milliseconds: 86400000, startTime: null, endTime: null },
-            { type: 'simple', text: "Enbotellado" },
-            { type: 'simple', text: "Fin" },
-        ],
-        procesoId: 56,
-        procesoName: null,
-        activeStep: 0,
-    },
-    {
-        productionSteps: [
-            { type: 'simple', text: "Inicio" },
-            { type: 'checklist', text: "Se verifica la materia prima", items: [["insumo", false], ["insumo", false], ["insumo", false], ["insumo", false]] },
-            { type: 'simple', text: "Se pone a calentar el agua" },
-            { type: 'simple', text: "Molienda de la cebada" },
-            { type: 'simple', text: "Mezcla y macerado" },
-            { type: 'simple', text: "Extracción del mosto" },
-            { type: 'time', text: "Cocción", milliseconds: 10000, startTime: null, endTime: null },
-            { type: 'simple', text: "Se le hecha lúpulo" },
-            { type: 'time', text: "Cocción", milliseconds: 2700000, startTime: null, endTime: null },
-            { type: 'simple', text: "Se le hecha más lúpulo" },
-            { type: 'simple', text: "Whirlpool" },
-            { type: 'simple', text: "Enfriado" },
-            { type: 'time', text: "Fermentación", milliseconds: 864000000, startTime: null, endTime: null },
-            { type: 'simple', text: "Enbarrilado" },
-            { type: 'time', text: "Reposo del enbarrilado", milliseconds: 86400000, startTime: null, endTime: null },
-            { type: 'simple', text: "Gasificado" },
-            { type: 'time', text: "Reposo del gasificado", milliseconds: 86400000, startTime: null, endTime: null },
-            { type: 'simple', text: "Enbotellado" },
-            { type: 'simple', text: "Fin" },
-        ],
-        procesoId: 56,
-        procesoName: null,
-        activeStep: 0,
-    }],
+    procesos: [],
 
-    init() {
+    async init() {
+        await this.loadProducciones();
         document.querySelector(".step.active")?.scrollIntoView({ behavior: "smooth", inline: "center", block: "center" });
+    },
+    async loadProducciones(){
+        const response = await fetch(`http://localhost:8000/api/produccion`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                this.procesos = data.data.map((item, procesoIdx) => {
+                    const productionSteps = Array.isArray(item.proceso_steps_copy)
+                        ? item.proceso_steps_copy.map((step, stepIdx) => {
+                            if (step.type === 'time' && typeof step.duration !== 'undefined' && step.duration !== null) {
+                                step.milliseconds = step.duration * 60000;
+                            }
+                            // Start timer if step is time and has a startTime
+                            if (step.type === 'time' && step.startTime) {
+                                // Use $nextTick to ensure Alpine has updated DOM and data
+                                this.$nextTick(() => {
+                                    this.restartTimer(step, procesoIdx, stepIdx);
+                                });
+                            }
+                            return step;
+                        })
+                        : item.proceso_steps_copy;
+                    return {
+                        productionSteps,
+                        procesoId: item.id,
+                        procesoName: "",
+                        activeStep: item.active_step,
+                    };
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        console.log(this.procesos)
+    },
+    async updateStepsProduccion(proceso) {
+        if (!proceso) {
+            console.error('Se necesita un proceso para actualizarlo.');
+            return;
+        }
+        // Send PUT request to backend to update proceso_steps_copy
+        try {
+            const response = await fetch(`http://localhost:8000/api/produccion/${proceso.procesoId}/steps`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ proceso_steps_copy: proceso.productionSteps }),
+            });
+            const data = await response.json();
+            if (!data.success) {
+                console.error('Error updating proceso_steps_copy:', data);
+            } else {
+            }
+        } catch (error) {
+            console.error('Error in updateStepsProduccion:', error);
+        }
+    },
+    async updateActiveStepProduccion(proceso) {
+        if (!proceso) {
+            console.error('Se necesita un proceso para actualizar active_step.');
+            return;
+        }
+        try {
+            const response = await fetch(`http://localhost:8000/api/produccion/${proceso.procesoId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ active_step: proceso.activeStep }),
+            });
+            const data = await response.json();
+            if (!data.success) {
+                console.error('Error updating active_step:', data);
+            } else {
+            }
+        } catch (error) {
+            console.error('Error in updateActiveStepProduccion:', error);
+        }
     },
     continuar(nextStep, target, step, process) {
         switch (step.type) {
@@ -309,6 +230,8 @@ Alpine.data('produccion', () => ({
                 }
                 break;
         }
+        this.updateStepsProduccion(this.procesos[process]);
+        this.updateActiveStepProduccion(this.procesos[process]);
     },
     todoChuleado(step) {
         let todosChuleados = true;
@@ -327,7 +250,7 @@ Alpine.data('produccion', () => ({
         const days = pad(Math.floor(milliseconds / (1000 * 60 * 60 * 24)));
         return `${days}:${hours}:${minutes}:${seconds}`;
     },
-    startTimer(step) {
+    startTimer(step, indexProceso) {
         if (!step.startTime) {
             step.startTime = Date.now();
             step.endTime = step.startTime + step.milliseconds;
@@ -340,6 +263,22 @@ Alpine.data('produccion', () => ({
                 }
             }, 1000);
         }
+        console.log(indexProceso)
+        this.updateStepsProduccion(this.procesos[indexProceso]);
+    },
+    restartTimer(step, indexProceso, stepIdx) {
+        // Always update the step inside the Alpine data array for reactivity
+        let timer = setInterval(() => {
+            const realStep = this.procesos[indexProceso]?.productionSteps?.[stepIdx];
+            console.log(stepIdx)
+            if (!realStep) return clearInterval(timer);
+            const remainingTime = realStep.endTime - Date.now();
+            realStep.milliseconds = remainingTime > 0 ? remainingTime : 0;
+            if (realStep.milliseconds <= 0) {
+                realStep.milliseconds = 0;
+                clearInterval(timer);
+            }
+        }, 1000);
     },
 }))
 Alpine.data('dashboardApp', () => ({
@@ -354,16 +293,12 @@ Alpine.data('dashboardApp', () => ({
         help: 'ayuda',
         inventory: 'inventario',
     },
-    routesInverse: {
-        '/': 'home',
-        '/produccion': 'production',
-        '/tienda': 'store',
-        '/contacto': 'contact',
-        '/ajustes': 'settings',
-        '/ayuda': 'help',
-        '/inventario': 'inventory',
-    },
+    routesInverse: {},
     init() {
+        this.routesInverse = Object.fromEntries(
+            Object.entries(this.routes).map(([key, value]) => [`/${value}`, key])
+        );
+
         this.$nextTick(() => {
             let section = window.location.pathname;
             let link = `.link#${this.routesInverse[section]}-link`
@@ -387,7 +322,71 @@ Alpine.data('dashboardApp', () => ({
     },
 }))
 Alpine.data('producto', () => ({
-    quantity: 0
+    quantity: 0,
+    producto: null,
+    productIndex: null,
+        slideshowIndex: 0,
+
+intervalThumbnails: null,
+    intervalScroll: null,
+nextSlideshowImage() {
+        this.slideshowIndex = (this.slideshowIndex + 1) % this.producto.imagenes.length;
+        this.updateSlideshow();
+    },
+    prevSlideshowImage() {
+        this.slideshowIndex = (this.slideshowIndex - 1 + this.producto.imagenes.length) % this.producto.imagenes.length;
+        this.updateSlideshow();
+    },
+appearControls() {
+        const controls = this.$refs["controls"];
+        const scrollRightControls = this.$refs["scroll-right-controls"];
+        const scrollLeftControls = this.$refs["scroll-left-controls"];
+        clearTimeout(this.intervalThumbnails)
+        controls.classList.add("visible")
+        scrollRightControls.classList.add("visible")
+        scrollLeftControls.classList.add("visible")
+        this.intervalThumbnails = setTimeout(function () {
+            controls.classList.remove("visible")
+            scrollRightControls.classList.remove("visible")
+            scrollLeftControls.classList.remove("visible")
+        }, 984)
+    },
+    scrollLeft() {
+        const controls = this.$refs["controls"];
+        clearInterval(this.intervalScroll);
+        this.intervalScroll = setInterval(() => {
+            controls.scrollLeft -= 1;
+            this.appearControls();
+        }, 2);
+    },
+    scrollRight() {
+        const controls = this.$refs["controls"];
+        clearInterval(this.intervalScroll);
+        this.intervalScroll = setInterval(() => {
+            controls.scrollLeft += 1;
+            this.appearControls();
+        }, 2);
+    },
+    updateSlideshow(index) {
+        const slideshowContainer = this.$refs["slideshow-container"];
+        const controls = this.$refs["controls"];
+
+        const slideshowImgs = slideshowContainer.querySelectorAll(".slideshow img");
+        const thumbnails = Array.from(controls.querySelectorAll("img"));
+
+
+        if (typeof index != "undefined") {
+            this.slideshowIndex = index;
+            this.appearControls()
+        }
+        slideshowContainer.setAttribute("data-index", this.slideshowIndex);
+        slideshowImgs[this.slideshowIndex].scrollIntoView({ behavior: "smooth", inline: "center", block: "center" });
+        controls.querySelector(".active").classList.remove("active");
+        thumbnails[this.slideshowIndex].classList.add("active");
+        thumbnails[this.slideshowIndex].scrollIntoView({ behavior: "smooth", inline: "center", block: "center" });
+
+        this.appearControls()
+    }
 }))
 
 Alpine.data('accordion', () => ({
@@ -409,7 +408,8 @@ Alpine.data('managementData', () => ({
             singularName: 'producto',
             rows: null,
             details: {},
-            availableProducts: null
+            availableProducts: null,
+            photos: []
         },
         'ventas': {
             api: 'pedido',
@@ -426,11 +426,20 @@ Alpine.data('managementData', () => ({
             singularName: 'producción',
             rows: null,
             details: {},
-            selectedInsumos: [], // Array to store selected insumos
+            selectedInsumos: [],
+        },
+        'procesos': {
+            api: 'proceso',
+            pluralName: 'procesos',
+            singularName: 'proceso',
+            rows: null,
+            details: {},
+            selectedInsumos: [],
+            steps: [],
         },
         'insumos': {
             api: 'insumo',
-            rows: null, // List of available insumos
+            rows: null,
         },
     },
     init() {
@@ -491,6 +500,32 @@ Alpine.data('managementData', () => ({
                     this.sections.insumos.rows = data.data
                 })
                 .catch(error => console.error('Error:', error));
+            this.sections.procesos.rows = null;
+            const response3 = await fetch(`http://localhost:8000/api/proceso`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    this.sections.procesos.rows = data.data
+                })
+                .catch(error => console.error('Error:', error));
+        }
+        if (section == 'procesos') {
+            this.sections.insumos.rows = null;
+            const response3 = await fetch(`http://localhost:8000/api/insumo`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    this.sections.insumos.rows = data.data
+                })
+                .catch(error => console.error('Error:', error));
         }
     },
     setSection(section) {
@@ -509,6 +544,16 @@ Alpine.data('managementData', () => ({
             list.push(`${item.nombre} (${item.pivot.cantidad_usada})`)
         });
         return list.join("  |  ");
+    },
+    getListQuantitiesProcesoInsumos(items) {
+        return items.map(item => {
+            let insumo = this.sections.insumos.rows?.find(i => i.id == item.insumo_id);
+            let nombre = insumo ? insumo.nombre : `Insumo ${item.insumo_id}`;
+            return `${nombre} (${item.quantity})`;
+        }).join("  |  ");
+    },
+    countProcesoSteps(steps) {
+        return steps.length;
     },
     getTotalProducts(items) {
         let total = 0
@@ -579,9 +624,109 @@ Alpine.data('managementData', () => ({
     removeInsumo(index) {
         this.sections.produccion.selectedInsumos.splice(index, 1);
     },
+    handleFileUpload(event) {
+        const files = event.target.files;
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            this.sections.productos.photos.push({
+                url: URL.createObjectURL(file),
+                file: file
+            });
+        }
+    },
+    formatTime(milliseconds) {
+        const pad = (num) => String(num).padStart(2, '0');
+        const seconds = pad(Math.floor((milliseconds / 1000) % 60));
+        const minutes = pad(Math.floor((milliseconds / (1000 * 60)) % 60));
+        const hours = pad(Math.floor((milliseconds / (1000 * 60 * 60)) % 24));
+        const days = pad(Math.floor(milliseconds / (1000 * 60 * 60 * 24)));
+        return `${days}:${hours}:${minutes}:${seconds}`;
+    },
+    removePhoto(index) {
+        this.sections.productos.photos.splice(index, 1);
+    },
+    dragIndex: null,
+    reorder(from, to) {
+        if (from === to) return;
+        const photos = this.sections.productos.photos;
+        const moved = photos.splice(from, 1)[0];
+        photos.splice(to, 0, moved);
+        // Force Alpine to detect the change
+        this.sections.productos.photos = photos.slice();
+    },
     edit(item) {
         this.subsection = "edit";
-        this.sections[this.section].details = item
+        this.sections[this.section].details = item;
+        if (this.section === 'produccion') {
+            if (item.insumos && Array.isArray(item.insumos)) {
+                this.sections.produccion.selectedInsumos = item.insumos.map(insumo => ({
+                    insumo_id: insumo.id,
+                    cantidad_usada: insumo.pivot.cantidad_usada
+                }));
+            } else {
+                this.sections.produccion.selectedInsumos = [];
+            }
+        }
+        if (this.section === 'procesos') {
+            let stepsArr = [];
+            if (Array.isArray(item.steps)) {
+                stepsArr = item.steps;
+            } else if (typeof item.steps === 'string') {
+                try {
+                    stepsArr = JSON.parse(item.steps);
+                } catch (e) {
+                    stepsArr = [];
+                }
+            }
+            this.sections.procesos.steps = stepsArr.map(step => {
+                let s = { ...step };
+                if (s.type === 'checklist' && Array.isArray(s.items)) {
+                    s.items = s.items.map(i => Array.isArray(i) ? i[0] : i).join(', ');
+                }
+                if (s.type === 'time') {
+                    if (typeof s.duration !== 'undefined' && s.duration !== null) {
+                        // Use duration if present
+                        s.duration = parseInt(s.duration);
+                    } else if (typeof s.milliseconds !== 'undefined' && s.milliseconds !== null) {
+                        // Convert milliseconds to minutes
+                        s.duration = Math.round(s.milliseconds / 60000);
+                    } else {
+                        s.duration = 0;
+                    }
+                }
+                return s;
+            });
+            // Load insumos for editing
+            let insumosArr = [];
+            if (Array.isArray(item.insumos)) {
+                insumosArr = item.insumos;
+            } else if (typeof item.insumos === 'string') {
+                try {
+                    insumosArr = JSON.parse(item.insumos);
+                } catch (e) {
+                    insumosArr = [];
+                }
+            }
+            this.sections.procesos.selectedInsumos = insumosArr.map(i => ({
+                insumo_id: i.insumo_id,
+                quantity: i.quantity
+            }));
+        }
+        // Robustly handle both array and stringified JSON
+        let imagesArr = [];
+        if (Array.isArray(item.imagenes)) {
+            imagesArr = item.imagenes;
+        } else if (typeof item.imagenes === 'string') {
+            try {
+                imagesArr = JSON.parse(item.imagenes);
+            } catch (e) {
+                imagesArr = [];
+            }
+        }
+        this.sections.productos.photos = (imagesArr ? imagesArr : []).map(image => ({
+            url: `/storage/${image}`,
+            file: null
+        }));
     },
     view(item) {
         this.subsection = "view";
@@ -591,30 +736,36 @@ Alpine.data('managementData', () => ({
         this.subsection = "index";
     },
     create() {
+        this.sections.productos.photos = [];
         this.subsection = "create";
     },
 
-    update() {
+    async update() {
         switch (this.section) {
             case "productos":
-                let nombre = this.$refs.nombreProductoEdit.value;
-                let precio = this.$refs.precioProductoEdit.value;
-                let descripcion = this.$refs.descripcionProductoEdit.value
-                let data = {
-                    nombre,
-                    precio,
-                    descripcion
-                }
+                const formData = new FormData();
+                formData.append('_method', 'PUT');
+                formData.append('nombre', this.$refs.nombreProductoEdit.value);
+                formData.append('precio', this.$refs.precioProductoEdit.value);
+                formData.append('descripcion', this.$refs.descripcionProductoEdit.value);
+
+
+                this.sections.productos.photos.forEach((photo) => {
+                    if (photo.file) {
+                        formData.append('imagenes[]', photo.file);
+                    } else {
+                        const relativePath = photo.url.replace(/^\/storage\//, '');
+                        formData.append('existing[]', relativePath);
+                    }
+                });
+
                 fetch(`http://localhost:8000/api/${this.sections[this.section].api}/${this.sections[this.section].details.id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
+                    method: 'POST',
+                    body: formData
                 })
                     .then(response => response.json())
-                    .then(updatedData => {
-                        console.log('Updated successfully:', updatedData);
+                    .then(data => {
+                        console.log('Updated successfully:', data);
                         this.load(this.section);
                         this.goBack();
                     })
@@ -641,83 +792,96 @@ Alpine.data('managementData', () => ({
                     })
                     .catch(error => console.error('Error updating:', error));
                 break;
-                case "produccion":
+            case "produccion":
+                try {
                     let fechaProduccion = this.$refs.fechaProduccionEdit.value;
                     let cantidadProduccion = this.$refs.cantidadProduccionEdit.value;
                     let productoIdProduccion = this.$refs.productoProduccionEdit.value;
                     let insumosProduccion = this.sections.produccion.selectedInsumos;
-
+                    let proceso_id = this.$refs.procesoProduccionEdit.value;
                     let produccionData = {
                         fecha: fechaProduccion,
                         cantidad: cantidadProduccion,
                         producto_id: productoIdProduccion,
-                        user_id: 1, // Replace with the logged-in user ID
+                        user_id: 1,
+                        proceso_id
                     };
 
-                    fetch(`http://localhost:8000/api/${this.sections[this.section].api}/${this.sections[this.section].details.id}`, {
+                    // Update produccion main data
+                    const response = await fetch(`http://localhost:8000/api/${this.sections[this.section].api}/${this.sections[this.section].details.id}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify(produccionData),
-                    })
-                        .then(response => response.json())
-                        .then(updatedData => {
-                            if (updatedData.success) {
-                                const produccionId = updatedData.data.id;
+                    });
+                    const updatedData = await response.json();
+                    if (!updatedData.success) {
+                        console.error('Error actualizando producción:', updatedData);
+                        return;
+                    }
+                    const produccionId = updatedData.data.id;
 
-                                // Update insumos for the produccion
-                                insumosProduccion.forEach(insumo => {
-                                    fetch(`http://localhost:8000/api/produccion/${produccionId}/insumos`, {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                        },
-                                        body: JSON.stringify(insumo),
-                                    })
-                                        .then(response => response.json())
-                                        .then(insumoData => {
-                                            console.log('Insumo actualizado:', insumoData);
-                                        })
-                                        .catch(error => console.error('Error actualizando insumo:', error));
-                                });
+                    // Clear all insumos for this produccion
+                    const clearRes = await fetch(`http://localhost:8000/api/produccion/${produccionId}/insumos/clear`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    if (!clearRes.ok) {
+                        console.error('Error clearing insumos:', await clearRes.text());
+                        return;
+                    }
 
-                                console.log('Producción actualizada exitosamente:', updatedData);
-                                this.load(this.section);
-                                this.goBack();
-                            } else {
-                                console.error('Error actualizando producción:', updatedData);
-                            }
-                        })
-                        .catch(error => console.error('Error actualizando producción:', error));
-                    break;
+                    // Add current insumos
+                    for (const insumo of insumosProduccion) {
+                        const addRes = await fetch(`http://localhost:8000/api/produccion/${produccionId}/insumos`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(insumo),
+                        });
+                        if (!addRes.ok) {
+                            console.error('Error agregando insumo:', await addRes.text());
+                        }
+                    }
+
+                    this.load(this.section);
+                    this.goBack();
+                } catch (error) {
+                    console.error('Error en update produccion:', error);
+                }
+                break;
         }
-
     },
     add() {
-        let fecha= "";
+
+        let fecha = "";
         switch (this.section) {
             case "productos":
-                let nombre = this.$refs.nombreProductoCreate.value;
-                let precio = this.$refs.precioProductoCreate.value;
-                let descripcion = this.$refs.descripcionProductoCreate.value
-                let data = {
-                    nombre,
-                    precio,
-                    descripcion
-                }
+                const formData = new FormData();
+                formData.append('nombre', this.$refs.nombreProductoCreate.value);
+                formData.append('precio', this.$refs.precioProductoCreate.value);
+                formData.append('descripcion', this.$refs.descripcionProductoCreate.value);
+
+                this.sections.productos.photos.forEach((photo) => {
+                    if (photo.file) {
+                        formData.append('imagenes[]', photo.file);
+                    }
+                });
+
                 fetch(`http://localhost:8000/api/${this.sections[this.section].api}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
+                    body: formData
                 })
                     .then(response => response.json())
                     .then(data => {
                         console.log('Created successfully:', data);
                         this.load(this.section);
                         this.goBack();
+                        this.sections.productos.photos = [];
                     })
                     .catch(error => console.error('Error creating:', error));
                 break;
@@ -726,7 +890,7 @@ Alpine.data('managementData', () => ({
                 let estado = this.$refs.estadoPedidoCreate.value;
                 let user_id = this.$refs.clientePedidoCreate.value;
 
-                // Collect selected products and their quantities
+
                 let productos = this.sections.ventas.selectedProducts.map(productId => {
                     return {
                         producto_id: productId,
@@ -735,7 +899,7 @@ Alpine.data('managementData', () => ({
                     };
                 });
 
-                // Create the pedido
+
                 fetch(`http://localhost:8000/api/${this.sections[this.section].api}`, {
                     method: 'POST',
                     headers: {
@@ -746,7 +910,7 @@ Alpine.data('managementData', () => ({
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            // Add products to the pivot table
+
                             let pedido_id = data.data.id;
                             productos.forEach(producto => {
                                 fetch(`http://localhost:8000/api/pedido/${pedido_id}/productos`, {
@@ -773,50 +937,50 @@ Alpine.data('managementData', () => ({
                     .catch(error => console.error('Error creando pedido:', error));
                 break;
             case "produccion":
-                    fecha = this.$refs.fechaProduccionCreate.value;
-                    let cantidad = this.$refs.cantidadProduccionCreate.value;
-                    let producto_id = this.$refs.productoProduccionCreate.value;
-                    let insumos = this.sections.produccion.selectedInsumos;
-                    // Create the produccion
-                    fetch(`http://localhost:8000/api/produccion`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ fecha, cantidad, producto_id, user_id: 1 }), // Replace user_id with the logged-in user
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                const produccionId = data.data.id;
-            
-                                // Add insumos to the produccion
-                                insumos.forEach(insumo => {
-                                    console.log(insumo)
-            window.insumos= insumo
-                                    fetch(`http://localhost:8000/api/produccion/${produccionId}/insumos`, {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                        },
-                                        body: JSON.stringify(insumo),
+                fecha = this.$refs.fechaProduccionCreate.value;
+                let cantidad = this.$refs.cantidadProduccionCreate.value;
+                let producto_id = this.$refs.productoProduccionCreate.value;
+                let insumos = this.sections.produccion.selectedInsumos;
+                let proceso_id = this.$refs.procesoProduccionCreate.value;
+                fetch(`http://localhost:8000/api/produccion`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ fecha, cantidad, producto_id, user_id: 1, proceso_id }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const produccionId = data.data.id;
+
+
+                            insumos.forEach(insumo => {
+                                console.log(insumo)
+                                window.insumos = insumo
+                                fetch(`http://localhost:8000/api/produccion/${produccionId}/insumos`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify(insumo),
+                                })
+                                    .then(response => response.json())
+                                    .then(insumoData => {
+                                        console.log('Insumo agregado:', insumoData);
                                     })
-                                        .then(response => response.json())
-                                        .then(insumoData => {
-                                            console.log('Insumo agregado:', insumoData);
-                                        })
-                                        .catch(error => console.error('Error agregando insumo:', error));
-                                });
-            
-                                console.log('Producción creada exitosamente:', data);
-                                this.load(this.section);
-                                this.goBack();
-                            } else {
-                                console.error('Error creando producción:', data);
-                            }
-                        })
-                        .catch(error => console.error('Error creando producción:', error));
-                        break;
+                                    .catch(error => console.error('Error agregando insumo:', error));
+                            });
+
+                            console.log('Producción creada exitosamente:', data);
+                            this.load(this.section);
+                            this.goBack();
+                        } else {
+                            console.error('Error creando producción:', data);
+                        }
+                    })
+                    .catch(error => console.error('Error creando producción:', error));
+                break;
         }
     },
     destroy(id) {
@@ -832,6 +996,115 @@ Alpine.data('managementData', () => ({
                 this.load(this.section);
             })
             .catch(error => console.error('Error deleting:', error));
-    }
+    },
+    async setProcesoInsumos() {
+        // Only run if in produccion create or edit mode and proceso is selected
+        if (this.section === 'produccion' && (this.subsection === 'create' || this.subsection === 'edit')) {
+            const procesoId = this.subsection === 'create'
+                ? this.$refs.procesoProduccionCreate?.value
+                : this.$refs.procesoProduccionEdit?.value;
+            if (!procesoId) return;
+            const proceso = this.sections.procesos.rows?.find(p => p.id == procesoId);
+            if (proceso && proceso.insumos) {
+                let insumosArr = Array.isArray(proceso.insumos) ? proceso.insumos : JSON.parse(proceso.insumos);
+                this.sections.produccion.selectedInsumos = insumosArr.map(insumo => ({
+                    insumo_id: insumo.insumo_id,
+                    cantidad_usada: insumo.quantity
+                }));
+            } else {
+                this.sections.produccion.selectedInsumos = [];
+            }
+        }
+    },
+    dragStepIndex: null,
+    addStep() {
+        this.sections.procesos.steps.push({
+            text: '',
+            type: 'simple',
+            items: '', // for checklist
+            duration: '', // for time
+        });
+    },
+    removeStep(idx) {
+        this.sections.procesos.steps.splice(idx, 1);
+    },
+    reorderStep(from, to) {
+        if (from === to) return;
+        const steps = this.sections.procesos.steps;
+        const moved = steps.splice(from, 1)[0];
+        steps.splice(to, 0, moved);
+        this.sections.procesos.steps = steps.slice(); // force Alpine update
+    },
+    addProcesoInsumo() {
+        this.sections.procesos.selectedInsumos.push({ insumo_id: '', quantity: 1 });
+    },
+    removeProcesoInsumo(index) {
+        this.sections.procesos.selectedInsumos.splice(index, 1);
+    },
+    // Override addProceso for proceso creation with steps
+    async addProceso() {
+        const nombre = this.$refs.nombreProcesoCreate.value;
+        const descripcion = this.$refs.descripcionProcesoCreate.value;
+        const steps = this.sections.procesos.steps.map(step => {
+            let s = { text: step.text, type: step.type };
+            if (step.type === 'checklist') {
+                s.items = step.items.split(',').map(i => [i.trim(), false]).filter(i => i[0]);
+            }
+            if (step.type === 'time') {
+                // Save both duration (minutes) and milliseconds (for view/timer)
+                s.duration = parseInt(step.duration) || 0;
+                s.milliseconds = s.duration * 60000;
+            }
+            return s;
+        });
+        // Prepare insumos as JSON
+        const insumos = this.sections.procesos.selectedInsumos.filter(i => i.insumo_id && i.quantity > 0);
+        const data = { nombre, descripcion, steps, insumos };
+        await fetch('http://localhost:8000/api/proceso', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            this.load('procesos');
+            this.goBack();
+            this.sections.procesos.steps = [];
+            this.sections.procesos.selectedInsumos = [];
+        })
+        .catch(error => console.error('Error creating proceso:', error));
+    },
+    async updateProceso() {
+        const id = this.sections.procesos.details.id;
+        const nombre = this.$refs.nombreProcesoEdit.value;
+        const descripcion = this.$refs.descripcionProcesoEdit.value;
+        const steps = this.sections.procesos.steps.map(step => {
+            let s = { text: step.text, type: step.type };
+            if (step.type === 'checklist') {
+                s.items = step.items.split(',').map(i => [i.trim(), false]).filter(i => i[0]);
+            }
+            if (step.type === 'time') {
+                s.duration = parseInt(step.duration) || 0;
+                s.milliseconds = s.duration * 60000;
+            }
+            return s;
+        });
+        // Prepare insumos as JSON
+        const insumos = this.sections.procesos.selectedInsumos.filter(i => i.insumo_id && i.quantity > 0);
+        const data = { nombre, descripcion, steps, insumos };
+        await fetch(`http://localhost:8000/api/proceso/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            this.load('procesos');
+            this.goBack();
+            this.sections.procesos.steps = [];
+            this.sections.procesos.selectedInsumos = [];
+        })
+        .catch(error => console.error('Error updating proceso:', error));
+    },
 }))
 Alpine.start();
