@@ -141,8 +141,7 @@
                             <div class="slideshow-container"  x-ref="slideshow-container" @mousemove="appearControls()" :data-index="slideshowIndex">
                                 <figure class="slideshow">
                                     <template x-for="(image, index) in product.imagenes" :key="index">
-                                        <img :src="`/storage/${image}`" alt>
-                                    </template>
+                                        <img :src="`/storage/${image}`" alt @click="openImageModal(`/storage/${image}`, index)" style="cursor: pointer;">                                    </template>
                                 </figure>
                                 <div class="prev-image"  x-ref="prev-image" @click="prevSlideshowImage()">
                                     <i class="fa-solid fa-circle-chevron-left"></i>
@@ -178,6 +177,18 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            <div x-show="showImageModal" class="product-modal" @click.self="closeImageModal">
+                                <button class="close-modal" @click.stop="closeImageModal()">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                                <button class="left-arrow" @click.stop="prevModalImage()" >
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </button>
+                                <img :src="modalImageUrl">
+                                <button class="right-arrow" @click.stop="nextModalImage()" >
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
                             </div>
                         </article>
                     </div>

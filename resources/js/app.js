@@ -325,10 +325,36 @@ Alpine.data('producto', () => ({
     quantity: 0,
     producto: null,
     productIndex: null,
-        slideshowIndex: 0,
+    slideshowIndex: 0,
 
-intervalThumbnails: null,
+    intervalThumbnails: null,
     intervalScroll: null,
+
+    // ...existing code...
+showImageModal: false,
+modalImageUrl: null,
+modalImageIndex: 0,
+
+openImageModal(url, index = 0) {
+    this.modalImageUrl = url;
+    this.modalImageIndex = index;
+    this.showImageModal = true;
+},
+closeImageModal() {
+    this.showImageModal = false;
+    this.modalImageUrl = null;
+},
+nextModalImage() {
+    if (!this.producto || !this.producto.imagenes) return;
+    this.modalImageIndex = (this.modalImageIndex + 1) % this.producto.imagenes.length;
+    this.modalImageUrl = `/storage/${this.producto.imagenes[this.modalImageIndex]}`;
+},
+prevModalImage() {
+    if (!this.producto || !this.producto.imagenes) return;
+    this.modalImageIndex = (this.modalImageIndex - 1 + this.producto.imagenes.length) % this.producto.imagenes.length;
+    this.modalImageUrl = `/storage/${this.producto.imagenes[this.modalImageIndex]}`;
+},
+
 nextSlideshowImage() {
         this.slideshowIndex = (this.slideshowIndex + 1) % this.producto.imagenes.length;
         this.updateSlideshow();
