@@ -89,7 +89,7 @@
                                                         <label :for="`checklist-item-${index}_${indexProceso}`"><span
                                                                 x-text="item[0]"></span><input type="checkbox"
                                                                 :id="`checklist-item-${index}_${indexProceso}`"
-                                                                :value="item[0]" x-model="item[1]"></label>
+                                                                :value="item[0]" x-model="item[1]" @input="$nextTick(()=>{updateStepsProduccion(proceso)})"></label>
                                                     </div>
                                                 </template>
                                             </div>
@@ -378,7 +378,7 @@
                     <div class="left">
                         <img src="{{ asset('images/welcome/TRIVIUM_recortado.png') }}" alt="Trivium"
                             class="logo-trivium">
-                        <div class="return" @click="goBack()" x-show="subsection != 'index'">
+                        <div class="return" @click="goBack()" x-show="sections[section].subsection != 'index'">
                             <i class="fa-solid fa-chevron-left"></i>
                         </div>
                         <h1 x-text="capitalize(sections[section].pluralName)"></h1>
@@ -399,7 +399,7 @@
                 <aside class="management-content">
                     <template x-if="section== 'productos'">
                         <div class="productos management-section">
-                            <template x-if="subsection=='edit'">
+                            <template x-if="sections[section].subsection=='edit'">
                                 <div class="edit">
                                     <label for="nombre-producto-edit">
                                         Nombre
@@ -441,7 +441,7 @@
                                     </div>
                                 </div>
                             </template>
-                            <template x-if="subsection=='create'">
+                            <template x-if="sections[section].subsection=='create'">
                                 <div class="create">
                                     <label for="nombre-producto-create">
                                         Nombre
@@ -481,7 +481,7 @@
                                     </div>
                                 </div>
                             </template>
-                            <template x-if="subsection=='view'">
+                            <template x-if="sections[section].subsection=='view'">
                                 <div class="view">
                                     <label for="nombre-producto">
                                         Nombre
@@ -565,9 +565,19 @@
                                             </table>
                                         </div>
                                     </label>
+                                    <label for="fotos-producto-view">
+                                        Fotos
+                                        <div class="photo-previews" x-init="window.details= sections.productos.details">
+                                            <template x-for="(photo, index) in sections.productos.details.imagenes" :key="index">
+                                                <div class="photo-preview" draggable="true">
+                                                    <img :src="`/storage/${photo}`" alt="Vista previa" style="max-width: 120px; max-height: 120px; margin: 0 8px 8px 0; border-radius: 8px; border: 1px solid #ddd;">
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </label>
                                 </div>
                             </template>
-                            <template x-if="subsection=='index'">
+                            <template x-if="sections[section].subsection=='index'">
                                 <div class="table">
                                     <table class="productos-table">
                                         <thead>
@@ -638,7 +648,7 @@
                     </template>
                     <template x-if="section== 'ventas'">
                         <div class="ventas management-section">
-                            <template x-if="subsection=='edit'">
+                            <template x-if="sections[section].subsection=='edit'">
                                 <div class="edit">
                                     <label for="estado-pedido-edit">
                                         Estado del pedido
@@ -655,7 +665,7 @@
                                     </div>
                                 </div>
                             </template>
-                            <template x-if="subsection=='create'">
+                            <template x-if="sections[section].subsection=='create'">
                                 <div class="create">
                                     <label for="fecha-pedido-create">
                                         Fecha del pedido
@@ -697,7 +707,7 @@
                                     </div>
                                 </div>
                             </template>
-                            <template x-if="subsection=='view'">
+                            <template x-if="sections[section].subsection=='view'">
                                 <div class="view">
                                     <label for="fecha-pedido">
                                         Fecha
@@ -740,7 +750,7 @@
                                     </label>
                                 </div>
                             </template>
-                            <template x-if="subsection=='index'">
+                            <template x-if="sections[section].subsection=='index'">
                                 <div class="table">
                                     <table class="pedidos-table">
                                         <thead>
@@ -797,24 +807,24 @@
 
                         </div>
                     </template>
-                    <template x-if="section == 'produccion'">
+                    <template x-if="section == 'producciones'">
                         <div class="producciones management-section">
 
-                            <template x-if="subsection=='edit'">
+                            <template x-if="sections[section].subsection=='edit'">
                                 <div class="edit">
                                     <label for="fecha-produccion-edit">
                                         Fecha
-                                        <input type="date" x-ref="fechaProduccionEdit" :value="sections.produccion.details.fecha">
+                                        <input type="date" x-ref="fechaProduccionEdit" :value="sections.producciones.details.fecha">
                                     </label>
                                     <label for="cantidad-produccion-edit">
                                         Cantidad
-                                        <input type="number" x-ref="cantidadProduccionEdit" :value="sections.produccion.details.cantidad">
+                                        <input type="number" x-ref="cantidadProduccionEdit" :value="sections.producciones.details.cantidad">
                                     </label>
                                     <label for="producto-produccion-edit">
                                         Producto
                                         <select x-ref="productoProduccionEdit">
                                             <template x-for="producto in sections.productos.rows" :key="producto.id">
-                                                <option :value="producto.id" x-text="producto.nombre" :selected="producto.id == sections.produccion.details.producto.id"></option>
+                                                <option :value="producto.id" x-text="producto.nombre" :selected="producto.id == sections.producciones.details.producto.id"></option>
                                             </template>
                                         </select>
                                     </label>
@@ -823,19 +833,24 @@
                                         <select x-ref="procesoProduccionEdit">
                                             <option hidden disabled selected value="">Selecciona un proceso</option>
                                             <template x-for="proceso in sections.procesos.rows" :key="proceso.id">
-                                                <option :value="proceso.id" x-text="proceso.nombre" :selected="proceso.id == sections.produccion.details.proceso.id"></option>
+                                                <option :value="proceso.id" x-text="proceso.nombre" :selected="proceso.id == sections.producciones.details.proceso.id"></option>
                                             </template>
                                         </select>
                                     </label>
                                     <label for="insumos-produccion-edit">
                                         Insumos
                                         <div class="insumos-list">
-                                            <template x-for="(insumo, index) in sections.produccion.selectedInsumos" :key="index">
+                                            <template x-for="(insumo, index) in sections.producciones.selectedInsumos" :key="index">
                                                 <div class="insumo-item">
                                                     <select :id="`insumo-${index}`" x-model="insumo.insumo_id">
                                                         <option value="" disabled>Seleccione un insumo</option>
-                                                        <template x-for="insumoOption in sections.insumos.rows" :key="insumoOption.id">
-                                                            <option :value="insumoOption.id" x-text="insumoOption.nombre" :disabled="sections.produccion.selectedInsumos.some((i, idx2) => i.insumo_id === insumoOption.id && idx2 !== index)"></option>
+                                                        <template x-for="(insumoOption, idxOption) in sections.insumos.rows" :key="insumoOption.id">
+                                                            <option 
+                                                                :value="insumoOption.id" 
+                                                                x-text="insumoOption.nombre"
+                                                                :selected="insumo.insumo_id == insumoOption.id"
+                                                                :hidden="sections.producciones.selectedInsumos.some((i, idx2) => i.insumo_id == insumoOption.id && idx2 !== index) && insumo.insumo_id != insumoOption.id"
+                                                            ></option>
                                                         </template>
                                                     </select>
                                                     <input type="number" placeholder="Cantidad usada" x-model="insumo.cantidad_usada" min="1">
@@ -851,7 +866,7 @@
                                     </div>
                                 </div>
                             </template>
-                            <template x-if="subsection=='create'">
+                            <template x-if="sections[section].subsection=='create'">
                                 <div class="create">
                                     <label for="fecha-produccion-create">
                                         Fecha
@@ -881,16 +896,17 @@
                                     <label for="insumos-produccion-create">
                                         Insumos
                                         <div class="insumos-list">
-                                            <template x-for="(insumo, index) in sections.produccion.selectedInsumos" :key="index">
+                                            <template x-for="(insumo, index) in sections.producciones.selectedInsumos" :key="index">
                                                 <div class="insumo-item">
                                                     <select :id="`insumo-${index}`" x-model.number="insumo.insumo_id">
                                                         <option value="" disabled hidden selected>Seleccione un insumo</option>
                                                         <template x-for="insumoOption in sections.insumos.rows" :key="insumoOption.id">
                                                             <option 
-                                                                :value="insumoOption.id * 1" 
+                                                                :value="insumoOption.id" 
                                                                 x-text="insumoOption.nombre"
-                                                                :disabled="sections.produccion.selectedInsumos.some((i, idx2) => i.insumo_id === insumoOption.id && idx2 !== index)">
-                                                            </option>
+                                                                :selected="insumo.insumo_id == insumoOption.id"
+                                                                :disabled="sections.producciones.selectedInsumos.some((i, idx2) => i.insumo_id == insumoOption.id && idx2 !== index) && insumo.insumo_id != insumoOption.id"
+                                                            ></option>
                                                         </template>
                                                     </select>
                                                     <input type="number" placeholder="Cantidad usada" x-model="insumo.cantidad_usada" min="1">
@@ -906,23 +922,23 @@
                                     </div>
                                 </div>
                             </template>
-                        <template x-if="subsection=='view'">
+                        <template x-if="sections[section].subsection=='view'">
                             <div class="view">
                                 <label for="fecha-produccion">
                                     Fecha
-                                    <p id="fecha-produccion" x-text="sections.produccion.details.fecha"></p>
+                                    <p id="fecha-produccion" x-text="sections.producciones.details.fecha"></p>
                                 </label>
                                 <label for="cantidad-produccion">
                                     Cantidad
-                                    <p id="cantidad-produccion" x-text="sections.produccion.details.cantidad"></p>
+                                    <p id="cantidad-produccion" x-text="sections.producciones.details.cantidad"></p>
                                 </label>
                                 <label for="producto-produccion">
                                     Producto
-                                    <p id="producto-produccion" x-text="sections.produccion.details.producto.nombre"></p>
+                                    <p id="producto-produccion" x-text="sections.producciones.details.producto.nombre"></p>
                                 </label>
                                 <label for="usuario-produccion">
                                     Usuario
-                                    <p id="usuario-produccion" x-text="sections.produccion.details.user.name"></p>
+                                    <p id="usuario-produccion" x-text="sections.producciones.details.user.name"></p>
                                 </label>
                                 <label for="detalles-insumos-produccion">
                                     Detalles insumos
@@ -937,7 +953,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <template x-for="(insumo, index) in sections.produccion.details.insumos" :key="index">
+                                                <template x-for="(insumo, index) in sections.producciones.details.insumos" :key="index">
                                                     <tr>
                                                         <td x-text="insumo.nombre"></td>
                                                         <td x-text="insumo.pivot.cantidad_usada"></td>
@@ -951,11 +967,11 @@
                                 </label>
                                 <label for="total-produccion">
                                     Total Costo
-                                    <p id="total-produccion" x-text="getTotalInsumos(sections.produccion.details.insumos)"></p>
+                                    <p id="total-produccion" x-text="getTotalInsumos(sections.producciones.details.insumos)"></p>
                                 </label>
                             </div>
                         </template>
-                        <template x-if="subsection=='index'">
+                        <template x-if="sections[section].subsection=='index'">
                             <div class="table">
                                 <table class="pedidos-table">
                                     <thead>
@@ -969,23 +985,23 @@
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
-                                    <template x-if="sections.produccion.rows == null">
+                                    <template x-if="sections.producciones.rows == null">
                                         <tbody>
                                             <tr>
                                                 <td colspan="8">Cargando</td>
                                             </tr>
                                         </tbody>
                                     </template>
-                                    <template x-if="sections.produccion.rows != null && sections.produccion.rows.length == 0">
+                                    <template x-if="sections.producciones.rows != null && sections.producciones.rows.length == 0">
                                         <tbody>
                                             <tr>
                                                 <td colspan="8">No hay producciones</td>
                                             </tr>
                                         </tbody>
                                     </template>
-                                    <template x-if="sections.produccion.rows != null && sections.produccion.rows.length != 0">
+                                    <template x-if="sections.producciones.rows != null && sections.producciones.rows.length != 0">
                                         <tbody>
-                                            <template x-for="(produccion, index) in sections.produccion.rows"
+                                            <template x-for="(produccion, index) in sections.producciones.rows"
                                                 :key="index">
                                                 <tr @click="view(produccion)">
                                                     <td x-text="produccion.fecha"></td>
@@ -1016,7 +1032,7 @@
                     <template x-if="section == 'procesos'">
                         <div class="procesos management-section">
 
-                            <template x-if="subsection=='edit'">
+                            <template x-if="sections[section].subsection=='edit'">
                                 <div class="edit">
                                     <form @submit.prevent="updateProceso()">
                                         <label>Nombre del Proceso
@@ -1081,7 +1097,7 @@
                                     </form>
                                 </div>
                             </template>
-                            <template x-if="subsection=='create'">
+                            <template x-if="sections[section].subsection=='create'">
                                 <div class="create">
                                     <form @submit.prevent="addProceso()">
                                         <label>Nombre del Proceso
@@ -1147,7 +1163,7 @@
                                     </form>
                                 </div>
                             </template>
-                        <template x-if="subsection=='view'">
+                        <template x-if="sections[section].subsection=='view'">
                             <div class="view">
                                 <label for="nombre-proceso">
                                     Nombre
@@ -1225,7 +1241,7 @@
                                 </label>
                             </div>
                         </template>
-                        <template x-if="subsection=='index'">
+                        <template x-if="sections[section].subsection=='index'">
                             <div class="table">
                                 <table class="pedidos-table">
                                     <thead>
@@ -1278,7 +1294,7 @@
                         </template>
                     </div>
                     </template>
-                    <button class="add big-action" x-show="subsection=='index'" @click="create()">
+                    <button class="add big-action" x-show="sections[section].subsection=='index'" @click="create()">
                         <i class="fa-solid fa-plus"></i>
                     </button>
                 </aside>
@@ -1303,8 +1319,8 @@
                         <i class="fa-solid fa-cart-shopping"></i>
                         <h1>Ventas</h1>
                     </div>
-                    <div class="section produccion" :class="section == 'produccion' ? 'active' : ''"
-                        @click="setSection('produccion')">
+                    <div class="section produccion" :class="section == 'producciones' ? 'active' : ''"
+                        @click="setSection('producciones')">
                         <i class="fa-solid fa-cubes-stacked"></i>
                         <h1>Producciones</h1>
                     </div>
