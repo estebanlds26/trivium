@@ -263,7 +263,37 @@
                         <i class="fa-solid fa-chevron-down" :class="openItem == 1 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 1 ? 'open' : ''">
-                        asdasd
+                        <fieldset>
+                            <legend>Preferencias</legend>
+                            <div class="option-row"> 
+                            <label for="Tema">Tema</label>
+                            <div class="radio-inputs">
+                                 <label>
+                                <label class="radio">
+                                    <input type="radio" name="radio" checked="">
+                                    <span class="nameTwo">Oscuro</span>
+                                </label>
+                                <label class="radio"><br><br>
+                                    <input type="radio" name="radio">
+                                    <span class="nameTwo">Claro</span>
+                                </label>
+                                </div>
+                                </div>
+                            <div class="option-row">   
+                            <label for="Lenguaje">Lenguaje</label>
+                            <div class="radio-inputs">
+                                 <label>
+                                <label class="radio">
+                                    <input type="radio" name="radio" checked="">
+                                    <span class="nameTwo">Español</span>
+                                </label>
+                                <label class="radio"><br><br>
+                                    <input type="radio" name="radio">
+                                    <span class="nameTwo">English</span>
+                                </label>
+                                </div>
+                            </div>
+                        </fieldset>
                     </div>
                 </div>
                 <div class="accordion-item">
@@ -272,7 +302,70 @@
                         <i class="fa-solid fa-chevron-down" :class="openItem == 2 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 2 ? 'open' : ''">
-                        asdasd
+                        <fieldset>
+                            <legend>Vision</legend>
+                            <div class="option-row"> 
+                            <label for="Tema">Tamaño de letra</label>
+                            <label for="Tema">Modo de alto contraste</label>
+                            <div class="radio-inputs">
+                                 <label>
+                                <label class="radio">
+                                    <input type="radio" name="radio" checked="">
+                                    <span class="nameTwo">Desactivado</span>
+                                </label>
+                                <label class="radio"><br><br>
+                                    <input type="radio" name="radio">
+                                    <span class="nameTwo">Activado</span>
+                                </label>
+                                </div>
+                                </div>
+                            <label for="Tema">Nivel de brillo</label>
+                            <div class="option-row">   
+                            <label for="Lenguaje">Leer en voz alta</label>
+                            <div class="radio-inputs">
+                                 <label>
+                                <label class="radio">
+                                    <input type="radio" name="radio" checked="">
+                                    <span class="nameTwo">Desactivado</span>
+                                </label>
+                                <label class="radio"><br><br>
+                                    <input type="radio" name="radio">
+                                    <span class="nameTwo">Activado</span>
+                                </label>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Neurologia</legend>
+                            <div class="option-row"> 
+                            <label for="Tema">Imagenes destellantes</label>
+                            <div class="radio-inputs">
+                                 <label>
+                                <label class="radio">
+                                    <input type="radio" name="radio" checked="">
+                                    <span class="nameTwo">Desactivado</span>
+                                </label>
+                                <label class="radio"><br><br>
+                                    <input type="radio" name="radio">
+                                    <span class="nameTwo">Activado</span>
+                                </label>
+                                </div>
+                                </div>
+                            <div class="option-row">   
+                            <label for="Lenguaje">Animaciones</label>
+                            <div class="radio-inputs">
+                                 <label>
+                                <label class="radio">
+                                    <input type="radio" name="radio" checked="">
+                                    <span class="nameTwo">Desactivado</span>
+                                </label>
+                                <label class="radio"><br><br>
+                                    <input type="radio" name="radio">
+                                    <span class="nameTwo">Activado</span>
+                                </label>
+                                </div>
+                            </div>
+                        </fieldset>
                     </div>
                 </div>
                 <div class="accordion-item">

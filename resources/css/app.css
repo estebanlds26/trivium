@@ -960,7 +960,7 @@ body {
           margin-left: 1.5em;
         }
 
-        & label {
+        & label:not(.option-row > * label) {
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -973,7 +973,7 @@ body {
             border-bottom: 1px solid #535353;
           }
 
-          & input {
+          & input:not([type="radio"]) {
             background: none;
             outline: none;
             border: none;
@@ -1510,6 +1510,54 @@ body {
       }
     }
   }
+}
+
+/* styles fieldsield */
+/* From Uiverse.io by Yaya12085 */ 
+.radio-inputs {
+  width: 80%;
+  position: relative;
+  display: flex;
+  border-radius: 0.5rem;
+  background-color: #afaeae;
+  box-sizing: border-box;
+  box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.06);
+  padding: 1rem;
+  font-size: 14px;
+
+}
+
+
+.radio-inputs .radio {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+
+.radio-inputs .radio .name {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  border: none;
+  padding: .5rem 0;
+  color: rgba(51, 65, 85, 1);
+  transition: all .15s ease-in-out;
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 20rem; /* espacio entre etiqueta y radios */
+          
+}
+.nameTwo{
+  cursor: pointer;
+  color: rgba(51, 65, 85, 1);
+  font-size: 1.3rem;
+  font-weight: bold;
 }
 
 .product-modal {
