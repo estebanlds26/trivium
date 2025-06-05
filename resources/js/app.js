@@ -58,7 +58,7 @@ Alpine.data('welcomeApp', () => ({
         this.previousSection = this.section == "home" ? this.previousSection : this.section;
         this.section = section;
         this.$nextTick(() => {
-            history.pushState({ page: 1 }, "", `/${this.routes[section] ?? ''}`);
+            history.pushState({ page: 1 }, "", `/${this.routes[section]?? ''}`);
         })
         if (typeof mode != "undefined" && mode == "no-auto-scroll") return
         section == "home" ?
@@ -132,10 +132,7 @@ Alpine.data('produccion', () => ({
                             }
                             // Start timer if step is time and has a startTime
                             if (step.type === 'time' && step.startTime) {
-                                // Use $nextTick to ensure Alpine has updated DOM and data
-                                this.$nextTick(() => {
                                     this.restartTimer(step, procesoIdx, stepIdx);
-                                });
                             }
                             return step;
                         })
@@ -318,7 +315,7 @@ Alpine.data('dashboardApp', () => ({
         this.section = link.id.replace("-link", "");
         document.querySelector(".link.active").classList.remove("active");
         link.classList.add("active");
-        history.pushState({ page: 1 }, "", `/${this.routes[this.section]}`);
+        history.pushState({ page: 1 }, "", `/${this.routes[this.section]}${window.location.hash}`);
     },
 }))
 Alpine.data('producto', () => ({
@@ -425,11 +422,13 @@ Alpine.data('accordion', () => ({
     }
 }))
 Alpine.data('managementData', () => ({
-    section: 'productos',
-    subsection: 'index',
+    defaultSection: 'productos',
+    section: '',
+    nextAction: null,
     sections: {
         'productos': {
             api: 'producto',
+            subsection: 'index',
             pluralName: 'productos',
             singularName: 'producto',
             rows: null,
@@ -439,6 +438,7 @@ Alpine.data('managementData', () => ({
         },
         'ventas': {
             api: 'pedido',
+            subsection: 'index',
             pluralName: 'ventas',
             singularName: 'venta',
             rows: null,
@@ -446,8 +446,9 @@ Alpine.data('managementData', () => ({
             selectedProducts: [],
             productQuantities: {},
         },
-        'produccion': {
+        'producciones': {
             api: 'produccion',
+            subsection: 'index',
             pluralName: 'producciones',
             singularName: 'producción',
             rows: null,
@@ -456,6 +457,7 @@ Alpine.data('managementData', () => ({
         },
         'procesos': {
             api: 'proceso',
+            subsection: 'index',
             pluralName: 'procesos',
             singularName: 'proceso',
             rows: null,
@@ -465,14 +467,81 @@ Alpine.data('managementData', () => ({
         },
         'insumos': {
             api: 'insumo',
+            subsection: 'index',
+            pluralName: 'insumos',
+            singularName: 'insumo',
             rows: null,
         },
     },
     init() {
-        this.load(this.section);
+        this.reverseUrlForSection();
         this.$watch('section', (value) => {
             this.load(value);
         });
+    },
+    normalize(text){
+        return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    },
+    async reverseUrlForSection(){
+        const url= window.location.hash.replace("#", "");
+        const urlSections= url.split("/");
+        console.log(this.section, this.defaultSection, urlSections)
+        if(urlSections.length <= 1){
+            if(urlSections[0])
+            {
+                this.section = urlSections[0];
+            }else{
+                this.section = this.defaultSection
+                this.$nextTick(()=>{
+                    this.setUrl("index")
+                });
+            }
+        }
+        else{
+            let sectionObj = Object.values(this.sections).find(item => this.normalize(item.singularName) == this.normalize(urlSections[0]));
+            if (sectionObj) {
+                this.section = this.normalize(sectionObj.pluralName);
+            }
+        }
+        
+        if(this.sections[this.section].rows == null){
+            await this.load(this.section);
+        }
+
+        if(urlSections.length <= 1){
+            this.sections[this.section].subsection = "index";
+            return;
+        }
+        const section = urlSections[0].replace("#", "");
+        if(urlSections.length == 2){
+            this.add();
+            return            
+        }
+        if(urlSections.length == 3){
+            switch(urlSections[1]){
+                case "editar":
+                    this.edit(this.sections[this.section]
+                                .rows
+                                .find(item => item.id == urlSections[2]));
+                    return;
+                case "ver":
+                    this.view(this.sections[this.section]
+                                .rows
+                                .find(item => item.id == urlSections[2]));
+                    return;
+            }
+        }
+    },
+    setUrl(zone, id){
+        if(typeof id === "undefined"){
+            if(zone == "create"){
+                window.location.hash= `${this.normalize(this.sections[this.section].singularName)}/crear`
+                return
+            }
+            window.location.hash= `${this.section}`
+            return
+        }
+        window.location.hash= `${this.normalize(this.sections[this.section].singularName)}/${zone}/${id}`
     },
     async load(section) {
         this.sections[section].rows = null;
@@ -501,7 +570,7 @@ Alpine.data('managementData', () => ({
                 })
                 .catch(error => console.error('Error:', error));
         }
-        if (section == 'produccion') {
+        if (section == 'producciones') {
             this.sections.productos.rows = null;
             const response = await fetch(`http://localhost:8000/api/producto`, {
                 method: 'GET',
@@ -538,7 +607,8 @@ Alpine.data('managementData', () => ({
                     this.sections.procesos.rows = data.data
                 })
                 .catch(error => console.error('Error:', error));
-        }
+                
+            }
         if (section == 'procesos') {
             this.sections.insumos.rows = null;
             const response3 = await fetch(`http://localhost:8000/api/insumo`, {
@@ -556,6 +626,20 @@ Alpine.data('managementData', () => ({
     },
     setSection(section) {
         this.section = section;
+        switch (this.sections[this.section].subsection) {
+            case "index":
+                this.setUrl("index");
+                break;
+            case "create":
+                this.setUrl("create")
+                break;
+            case "edit":
+                this.setUrl("editar", this.sections[this.section].details.id);
+                break;
+            case "view":
+                this.setUrl("ver", this.sections[this.section].details.id);
+                break;
+        }
     },
     getListQuantitiesProducts(items) {
         let list = []
@@ -587,6 +671,9 @@ Alpine.data('managementData', () => ({
             total += item.pivot.importe
         });
         return total;
+    },
+    getTotalInsumos(items) {
+        let total = 0
     },
     getTotalInsumos(items) {
         let total = 0
@@ -645,10 +732,10 @@ Alpine.data('managementData', () => ({
         return ["productos"].includes(section);
     },
     addInsumo() {
-        this.sections.produccion.selectedInsumos.push({ insumo_id: '', cantidad_usada: 1 });
+        this.sections.producciones.selectedInsumos.push({ insumo_id: '', cantidad_usada: 1 });
     },
     removeInsumo(index) {
-        this.sections.produccion.selectedInsumos.splice(index, 1);
+        this.sections.producciones.selectedInsumos.splice(index, 1);
     },
     handleFileUpload(event) {
         const files = event.target.files;
@@ -681,16 +768,16 @@ Alpine.data('managementData', () => ({
         this.sections.productos.photos = photos.slice();
     },
     edit(item) {
-        this.subsection = "edit";
+        this.sections[this.section].subsection = "edit";
         this.sections[this.section].details = item;
-        if (this.section === 'produccion') {
+        if (this.section === 'producciones') {
             if (item.insumos && Array.isArray(item.insumos)) {
-                this.sections.produccion.selectedInsumos = item.insumos.map(insumo => ({
+                this.sections.producciones.selectedInsumos = item.insumos.map(insumo => ({
                     insumo_id: insumo.id,
                     cantidad_usada: insumo.pivot.cantidad_usada
                 }));
             } else {
-                this.sections.produccion.selectedInsumos = [];
+                this.sections.producciones.selectedInsumos = [];
             }
         }
         if (this.section === 'procesos') {
@@ -753,17 +840,23 @@ Alpine.data('managementData', () => ({
             url: `/storage/${image}`,
             file: null
         }));
+        this.setUrl("editar", item.id);
+
     },
     view(item) {
-        this.subsection = "view";
+        this.sections[this.section].subsection = "view";
         this.sections[this.section].details = item
+        this.setUrl("ver", item.id);
     },
     goBack() {
-        this.subsection = "index";
+        this.sections[this.section].subsection = "index";
+        this.setUrl("index");
+
     },
     create() {
         this.sections.productos.photos = [];
-        this.subsection = "create";
+        this.sections[this.section].subsection = "create";
+        this.setUrl("create");
     },
 
     async update() {
@@ -818,12 +911,12 @@ Alpine.data('managementData', () => ({
                     })
                     .catch(error => console.error('Error updating:', error));
                 break;
-            case "produccion":
+            case "producciones":
                 try {
                     let fechaProduccion = this.$refs.fechaProduccionEdit.value;
                     let cantidadProduccion = this.$refs.cantidadProduccionEdit.value;
                     let productoIdProduccion = this.$refs.productoProduccionEdit.value;
-                    let insumosProduccion = this.sections.produccion.selectedInsumos;
+                    let insumosProduccion = this.sections.producciones.selectedInsumos;
                     let proceso_id = this.$refs.procesoProduccionEdit.value;
                     let produccionData = {
                         fecha: fechaProduccion,
@@ -966,7 +1059,7 @@ Alpine.data('managementData', () => ({
                 fecha = this.$refs.fechaProduccionCreate.value;
                 let cantidad = this.$refs.cantidadProduccionCreate.value;
                 let producto_id = this.$refs.productoProduccionCreate.value;
-                let insumos = this.sections.produccion.selectedInsumos;
+                let insumos = this.sections.producciones.selectedInsumos;
                 let proceso_id = this.$refs.procesoProduccionCreate.value;
                 fetch(`http://localhost:8000/api/produccion`, {
                     method: 'POST',
@@ -1025,20 +1118,20 @@ Alpine.data('managementData', () => ({
     },
     async setProcesoInsumos() {
         // Only run if in produccion create or edit mode and proceso is selected
-        if (this.section === 'produccion' && (this.subsection === 'create' || this.subsection === 'edit')) {
-            const procesoId = this.subsection === 'create'
+        if (this.section === 'producciones' && (this.sections[this.section].subsection === 'create' || this.sections[this.section].subsection === 'edit')) {
+            const procesoId = this.sections[this.section].subsection === 'create'
                 ? this.$refs.procesoProduccionCreate?.value
                 : this.$refs.procesoProduccionEdit?.value;
             if (!procesoId) return;
             const proceso = this.sections.procesos.rows?.find(p => p.id == procesoId);
             if (proceso && proceso.insumos) {
                 let insumosArr = Array.isArray(proceso.insumos) ? proceso.insumos : JSON.parse(proceso.insumos);
-                this.sections.produccion.selectedInsumos = insumosArr.map(insumo => ({
+                this.sections.producciones.selectedInsumos = insumosArr.map(insumo => ({
                     insumo_id: insumo.insumo_id,
                     cantidad_usada: insumo.quantity
                 }));
             } else {
-                this.sections.produccion.selectedInsumos = [];
+                this.sections.producciones.selectedInsumos = [];
             }
         }
     },
