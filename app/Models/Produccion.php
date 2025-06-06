@@ -17,6 +17,7 @@ class Produccion extends Model
         'user_id',
         'producto_id',
         'proceso_id',
+        'estado'
     ];
 
     protected $casts = [

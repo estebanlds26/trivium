@@ -847,7 +847,7 @@
                                                         <template x-for="(insumoOption, idxOption) in sections.insumos.rows" :key="insumoOption.id">
                                                             <option 
                                                                 :value="insumoOption.id" 
-                                                                x-text="insumoOption.nombre"
+                                                                x-text="`${insumoOption.nombre} (${insumoOption.unidad})`"
                                                                 :selected="insumo.insumo_id == insumoOption.id"
                                                                 :hidden="sections.producciones.selectedInsumos.some((i, idx2) => i.insumo_id == insumoOption.id && idx2 !== index) && insumo.insumo_id != insumoOption.id"
                                                             ></option>
@@ -903,9 +903,9 @@
                                                         <template x-for="insumoOption in sections.insumos.rows" :key="insumoOption.id">
                                                             <option 
                                                                 :value="insumoOption.id" 
-                                                                x-text="insumoOption.nombre"
+                                                                x-text="`${insumoOption.nombre} (${insumoOption.unidad})`"
                                                                 :selected="insumo.insumo_id == insumoOption.id"
-                                                                :disabled="sections.producciones.selectedInsumos.some((i, idx2) => i.insumo_id == insumoOption.id && idx2 !== index) && insumo.insumo_id != insumoOption.id"
+                                                                :hidden="sections.producciones.selectedInsumos.some((i, idx2) => i.insumo_id == insumoOption.id && idx2 !== index) && insumo.insumo_id != insumoOption.id"
                                                             ></option>
                                                         </template>
                                                     </select>
@@ -1083,7 +1083,7 @@
                                                         <select :id="`insumo-proceso-edit-${index}`" x-model.number="insumo.insumo_id">
                                                             <option value="" disabled hidden selected>Seleccione un insumo</option>
                                                             <template x-for="insumoOption in sections.insumos.rows" :key="insumoOption.id">
-                                                                <option :value="insumoOption.id" x-text="insumoOption.nombre" :disabled="sections.procesos.selectedInsumos.some((i, idx2) => i.insumo_id === insumoOption.id && idx2 !== index)"></option>
+                                                                <option :value="insumoOption.id" x-text="`${insumoOption.nombre} (${insumoOption.unidad})`" :selected="insumo.insumo_id == insumoOption.id" :hidden="sections.procesos.selectedInsumos.some((i, idx2) => i.insumo_id === insumoOption.id && idx2 !== index)" ></option>
                                                             </template>
                                                         </select>
                                                         <input type="number" placeholder="Cantidad" x-model.number="insumo.quantity" min="1">
@@ -1149,7 +1149,7 @@
                                                         <select :id="`insumo-proceso-create-${index}`" x-model.number="insumo.insumo_id">
                                                             <option value="" disabled hidden selected>Seleccione un insumo</option>
                                                             <template x-for="insumoOption in sections.insumos.rows" :key="insumoOption.id">
-                                                                <option :value="insumoOption.id" x-text="insumoOption.nombre" :disabled="sections.procesos.selectedInsumos.some((i, idx2) => i.insumo_id === insumoOption.id && idx2 !== index)"></option>
+                                                                <option :value="insumoOption.id" x-text="`${insumoOption.nombre} (${insumoOption.unidad})`" :selected="insumoOption.id == insumo.insumo_id" :hidden="sections.procesos.selectedInsumos.some((i, idx2) => i.insumo_id === insumoOption.id && idx2 !== index)"></option>
                                                             </template>
                                                         </select>
                                                         <input type="number" placeholder="Cantidad" x-model.number="insumo.quantity" min="1">
@@ -1294,6 +1294,150 @@
                         </template>
                     </div>
                     </template>
+                    <template x-if="section=='insumos'">
+                        <div class="insumos management-section">
+                            <!-- Edit subsection -->
+                            <template x-if="sections[section].subsection=='edit'">
+                                <div class="edit">
+                                    <label for="nombre-insumo-edit">
+                                        Nombre
+                                        <input type="text" x-ref="nombreInsumoEdit"
+                                            :value="sections.insumos.details.nombre">
+                                    </label>
+                                    <label for="unidad-insumo-edit">
+                                        Unidad
+                                        <input type="text" x-ref="unidadInsumoEdit"
+                                            :value="sections.insumos.details.unidad">
+                                    </label>
+                                    <label for="marca-insumo-edit">
+                                        Marca
+                                        <input type="text" x-ref="marcaInsumoEdit"
+                                            :value="sections.insumos.details.marca">
+                                    </label>
+                                    <div class="buttons">
+                                        <div class="btn green" @click="update()">Actualizar</div>
+                                        <div class="btn grey" @click="goBack()">Descartar</div>
+                                    </div>
+                                </div>
+                            </template>
+                            <!-- Create subsection -->
+                            <template x-if="sections[section].subsection=='create'">
+                                <div class="create">
+                                    <label for="nombre-insumo-create">
+                                        Nombre
+                                        <input type="text" x-ref="nombreInsumoCreate" value="">
+                                    </label>
+                                    <label for="unidad-insumo-create">
+                                        Unidad
+                                        <input type="text" x-ref="unidadInsumoCreate" value="">
+                                    </label>
+                                    <label for="marca-insumo-create">
+                                        Marca
+                                        <input type="text" x-ref="marcaInsumoCreate" value="">
+                                    </label>
+                                    <div class="buttons">
+                                        <div class="btn green" @click="add()">Crear</div>
+                                        <div class="btn grey" @click="goBack()">Descartar</div>
+                                    </div>
+                                </div>
+                            </template>
+                            <!-- View subsection -->
+                            <template x-if="sections[section].subsection=='view'">
+                                <div class="view">
+                                    <label for="nombre-insumo">
+                                        Nombre
+                                        <p id="nombre-insumo" x-text="sections.insumos.details.nombre"></p>
+                                    </label>
+                                    <label for="unidad-insumo">
+                                        Unidad
+                                        <p id="unidad-insumo" x-text="sections.insumos.details.unidad"></p>
+                                    </label>
+                                    <label for="marca-insumo">
+                                        Marca
+                                        <p id="marca-insumo" x-text="sections.insumos.details.marca"></p>
+                                    </label>
+                                    <label for="entradas-insumo">
+                                        Entradas de material
+                                        <div class="table">
+                                            <table class="productos-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Fecha</th>
+                                                        <th>Cantidad</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <template x-for="entrada in sections.insumos.details.entradas"
+                                                        :key="entrada.id">
+                                                        <tr>
+                                                            <td x-text="entrada.fecha"></td>
+                                                            <td x-text="entrada.cantidad"></td>
+                                                        </tr>
+                                                    </template>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </label>
+                                </div>
+                            </template>
+                            <!-- Index subsection -->
+                            <template x-if="sections[section].subsection=='index'">
+                                <div class="table">
+                                    <table class="productos-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Nombre</th>
+                                                <th>Unidad</th>
+                                                <th>Marca</th>
+                                                <th>Entradas</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <template x-if="sections.insumos.rows == null">
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="5">Cargando</td>
+                                                </tr>
+                                            </tbody>
+                                        </template>
+                                        <template
+                                            x-if="sections.insumos.rows != null && sections.insumos.rows.length == 0">
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="5">No hay insumos</td>
+                                                </tr>
+                                            </tbody>
+                                        </template>
+                                        <template
+                                            x-if="sections.insumos.rows != null && sections.insumos.rows.length != 0">
+                                            <tbody>
+                                                <template x-for="(insumo, index) in sections.insumos.rows"
+                                                    :key="index">
+                                                    <tr @click="viewInsumo(insumo)">
+                                                        <td x-text="insumo.nombre"></td>
+                                                        <td x-text="insumo.unidad"></td>
+                                                        <td x-text="insumo.marca"></td>
+                                                        <td>
+                                                            <span
+                                                                x-text="insumo.entradas ? insumo.entradas.length : 0"></span>
+                                                        </td>
+                                                        <td>
+                                                            <div class="actions">
+                                                                <i @click.stop="editInsumo(insumo)"
+                                                                    class="fa-solid fa-pen-to-square"></i>
+                                                                <i @click.stop="destroyInsumo(insumo.id)"
+                                                                    class="fa-solid fa-trash-can"></i>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </template>
+                                    </table>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
                     <button class="add big-action" x-show="sections[section].subsection=='index'" @click="create()">
                         <i class="fa-solid fa-plus"></i>
                     </button>
@@ -1304,10 +1448,10 @@
                         <i class="fa-solid fa-arrow-right-arrow-left"></i>
                         <h1>Entrada de Material</h1>
                     </div>
-                    <div class="section materia-prima" :class="section == 'Materia Prima' ? 'active' : ''"
-                        @click="setSection('Materia Prima')">
+                    <div class="section materia-prima" :class="section == 'insumos' ? 'active' : ''"
+                        @click="setSection('insumos')">
                         <i class="fa-solid fa-box"></i>
-                        <h1>Materia Prima</h1>
+                        <h1>Insumos</h1>
                     </div>
                     <div class="section productos" :class="section == 'productos' ? 'active' : ''"
                         @click="setSection('productos')">
