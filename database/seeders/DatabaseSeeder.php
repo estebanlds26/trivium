@@ -20,10 +20,8 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             ProductoSeeder::class,
             ProcesoSeeder::class,
-            ProduccionSeeder::class,
             InsumoSeeder::class,
             EntradaDeMaterialSeeder::class,
-            ProduccionHasInsumoSeeder::class,
             PedidoSeeder::class,
             PedidoHasProductoSeeder::class,
         ]);

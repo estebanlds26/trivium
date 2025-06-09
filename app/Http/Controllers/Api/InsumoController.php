@@ -15,7 +15,7 @@ class InsumoController extends Controller
      */
     public function index()
     {
-        $insumos = Insumo::with(['producciones'])->get();
+        $insumos = Insumo::with(['producciones', 'entradas'])->get();
         return response()->json([
             'success' => true,
             'data' => $insumos
@@ -41,7 +41,7 @@ class InsumoController extends Controller
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $insumo = Insumo::with(['producciones'])->create($request->all());
+        $insumo = Insumo::with(['producciones', 'entradas'])->create($request->all());
 
         return response()->json([
             'success' => true,
@@ -55,7 +55,7 @@ class InsumoController extends Controller
      */
     public function show(string $id)
     {
-        $insumo = Insumo::with(['producciones'])->find($id);
+        $insumo = Insumo::with(['producciones', 'entradas'])->find($id);
 
         if (!$insumo) {
             return response()->json([
@@ -75,7 +75,7 @@ class InsumoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $insumo = Insumo::with(['producciones'])->find($id);
+        $insumo = Insumo::with(['producciones', 'entradas'])->find($id);
 
         if (!$insumo) {
             return response()->json([
@@ -112,7 +112,7 @@ class InsumoController extends Controller
      */
     public function destroy(string $id)
     {
-        $insumo = Insumo::with(['producciones'])->find($id);
+        $insumo = Insumo::with(['producciones', 'entradas'])->find($id);
 
         if (!$insumo) {
             return response()->json([

@@ -967,7 +967,11 @@ body {
     border: 1px solid #707070;
     color: #dcdcdc;
     padding: 0.5em;
-    margin-bottom: 0.6em;
+    transition: all 1s 0.4s ease-out;
+    &.completado{
+      background: #99ea82;
+      color: #202020;
+    }
   }
 & .proceso {
   overflow-x: auto;
@@ -975,7 +979,7 @@ body {
   width: 100%;
   padding: 1em 0;
   border: 3px solid #202020;
-  
+  margin-bottom: 1em;
   &>div {
 
     display: flex;

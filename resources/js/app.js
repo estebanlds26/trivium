@@ -209,8 +209,9 @@ Alpine.data('produccion', () => ({
                         procesoId: item.id,
                         procesoName: "",
                         activeStep: item.active_step,
+                        estado: item.estado
                     };
-                });
+                }).filter(proceso=> proceso.estado != "Completado");
             })
             .catch(error => console.error('Error:', error));
         console.log(this.procesos)
@@ -238,6 +239,28 @@ Alpine.data('produccion', () => ({
             console.error('Error in updateStepsProduccion:', error);
         }
     },
+    async updateStatusProduccion(proceso) {
+        if (!proceso) {
+            console.error('Se necesita un proceso para actualizar su estado.');
+            return;
+        }
+        try {
+            const response = await fetch(`http://localhost:8000/api/produccion/${proceso.procesoId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ estado: proceso.estado }),
+            });
+            const data = await response.json();
+            if (!data.success) {
+                console.error('Error updating status:', data);
+            } else {
+            }
+        } catch (error) {
+            console.error('Error in updateStatusProduccion:', error);
+        }
+    },
     async updateActiveStepProduccion(proceso) {
         if (!proceso) {
             console.error('Se necesita un proceso para actualizar active_step.');
@@ -260,10 +283,29 @@ Alpine.data('produccion', () => ({
             console.error('Error in updateActiveStepProduccion:', error);
         }
     },
-    continuar(nextStep, target, step, process) {
+    tituloProceso(proceso){
+        if(proceso.activeStep == 0){
+            if(proceso.starting){
+                return "Iniciando..."
+            }
+            return "Sin iniciar"
+        }
+        if(proceso.estado == "Completado"){
+            return "Completado"
+        }
+        return proceso.productionSteps[proceso.activeStep].text 
+    },
+    async continuar(nextStep, target, step, process) {
         if(nextStep == this.procesos[process].productionSteps.length){
-            alert("end")
+            this.procesos[process].estado= "Completado"
+            await this.updateStatusProduccion(this.procesos[process])
             return
+        }
+        if(nextStep == 1){
+            this.procesos[process].estado= "En proceso"
+            this.procesos[process].starting= true
+            await this.updateStatusProduccion(this.procesos[process])
+
         }
         switch (step.type) {
             case "checklist":
@@ -389,7 +431,11 @@ Alpine.data('dashboardApp', () => ({
         link.classList.add("active");
         history.pushState({ page: 1 }, "", `/${this.routes[this.section]}${window.location.hash}`);
     },
-    plural(palabra) {
+    plural(palabra, cantidad) {
+    // Si sólo hay uno, devuelve la palabra en singular
+    if(cantidad== 1){
+        return palabra
+    }
     // Si termina en vocal no acentuada, agrega 's'
     if (/[aeiou]$/.test(palabra)) {
         return palabra + 's';
@@ -408,6 +454,17 @@ Alpine.data('dashboardApp', () => ({
     }
     // Por defecto, agrega 's'
     return palabra + 's';
+},
+formatDate(date){
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    return new Date(date).toLocaleDateString('es-ES', options).replace(',', '');
+},
+formatPrice(price){
+    return new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        minimumFractionDigits: 0
+    }).format(price);
 }
 }))
 Alpine.data('producto', () => ({
@@ -484,6 +541,14 @@ Alpine.data('managementData', () => ({
             subsection: 'index',
             pluralName: 'insumos',
             singularName: 'insumo',
+            rows: null,
+            details: {},
+        },
+        'entradas': {
+            api: 'entrada-de-material',
+            subsection: 'index',
+            pluralName: 'entradas de material',
+            singularName: 'entrada',
             rows: null,
             details: {},
         },
@@ -637,7 +702,22 @@ Alpine.data('managementData', () => ({
                     this.sections.insumos.rows = data.data
                 })
                 .catch(error => console.error('Error:', error));
-        }
+                
+            }
+            if(section== 'entradas'){
+                this.sections.insumos.rows = null;
+                const response3 = await fetch(`http://localhost:8000/api/insumo`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        this.sections.insumos.rows = data.data
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
     },
     setSection(section) {
         this.section = section;
@@ -666,7 +746,7 @@ Alpine.data('managementData', () => ({
     getListQuantitiesInsumos(items) {
         let list = []
         items.forEach((item) => {
-            list.push(`${item.nombre} (${item.pivot.cantidad_usada} ${this.capitalize(this.plural(item.unidad))})`)
+            list.push(`${item.nombre} (${item.pivot.cantidad_usada} ${this.capitalize(this.plural(item.unidad, item.pivot.cantidad_usada))})`)
         });
         return list.join("  |  ");
     },
@@ -674,7 +754,7 @@ Alpine.data('managementData', () => ({
         return items.map(item => {
             let insumo = this.sections.insumos.rows?.find(i => i.id == item.insumo_id);
             let nombre = insumo ? insumo.nombre : `Insumo ${item.insumo_id}`;
-            return `${nombre} (${item.quantity} ${this.capitalize(this.plural(insumo.unidad))})`;
+            return `${nombre} (${item.quantity} ${this.capitalize(this.plural(insumo.unidad, item.quantity7))})`;
         }).join("  |  ");
     },
     countProcesoSteps(steps) {
@@ -951,12 +1031,14 @@ Alpine.data('managementData', () => ({
                     let productoIdProduccion = this.$refs.productoProduccionEdit.value;
                     let insumosProduccion = this.sections.producciones.selectedInsumos;
                     let proceso_id = this.$refs.procesoProduccionEdit.value;
+                    let estado= this.$refs.estadoProduccionEdit.value;
                     let produccionData = {
                         fecha: fechaProduccion,
                         cantidad: cantidadProduccion,
                         producto_id: productoIdProduccion,
                         user_id: 1,
-                        proceso_id
+                        proceso_id,
+                        estado
                     };
 
                     // Update produccion main data
@@ -1004,6 +1086,38 @@ Alpine.data('managementData', () => ({
                     this.goBack();
                 } catch (error) {
                     console.error('Error en update produccion:', error);
+                }
+                break;
+            case "entradas":
+                try {
+                    let fechaEntrada = this.$refs.fechaEntradaEdit.value;
+                    let insumoEntrada = this.$refs.insumoEntradaEdit.value;
+                    let cantidadEntrada = this.$refs.cantidadEntradaEdit.value;
+                    let precioUnitario = this.$refs.precioUnitarioEntradaEdit.value;
+                    let entradaData = {
+                        fecha: fechaEntrada,
+                        cantidad: cantidadEntrada,
+                        insumo_id: insumoEntrada,
+                        precio_unitario: precioUnitario
+                    };
+
+                    const response = await fetch(`http://localhost:8000/api/${this.sections[this.section].api}/${this.sections[this.section].details.id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(entradaData),
+                    });
+                    const updatedData = await response.json();
+                    if (!updatedData.success) {
+                        console.error('Error actualizando entrada de material:', updatedData);
+                        return;
+                    }
+
+                    this.load(this.section);
+                    this.goBack();
+                } catch (error) {
+                    console.error('Error en update entrada de material:', error);
                 }
                 break;
         }
@@ -1149,6 +1263,29 @@ Alpine.data('managementData', () => ({
                         }
                     })
                     .catch(error => console.error('Error creando producción:', error));
+                break;
+                case "entradas":
+                let fechaEntrada = this.$refs.fechaEntradaCreate.value;
+                let insumoEntrada = this.$refs.insumoEntradaCreate.value;
+                let precioUnitarioEntrada = this.$refs.precioUnitarioEntradaCreate.value;
+                let cantidadE = this.$refs.cantidadEntradaCreate.value;
+                fetch(`http://localhost:8000/api/entrada-de-material`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ fechaEntrada, cantidad: cantidadE, insumo_id: insumoEntrada, precio_unitario: precioUnitarioEntrada }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.load(this.section);
+                            this.goBack();
+                        } else {
+                            console.error('Error creando entrada de material:', data);
+                        }
+                    })
+                    .catch(error => console.error('Error creando entrada de material:', error));
                 break;
         }
     },
