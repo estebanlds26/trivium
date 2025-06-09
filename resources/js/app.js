@@ -547,7 +547,7 @@ Alpine.data('managementData', () => ({
         'entradas': {
             api: 'entrada-de-material',
             subsection: 'index',
-            pluralName: 'entradas de material',
+            pluralName: 'entradas',
             singularName: 'entrada',
             rows: null,
             details: {},
