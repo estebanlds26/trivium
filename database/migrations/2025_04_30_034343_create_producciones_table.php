@@ -13,6 +13,7 @@ return new class extends Migration
             $table->id();
             $table->date('fecha');
             $table->integer('cantidad');
+            $table->enum('estado', ['Pendiente', 'En proceso', 'Completado', 'Cancelado'])->default('Pendiente');
             $table->integer("active_step")->default(0);
             $table->json("proceso_steps_copy")->nullable();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');

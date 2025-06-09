@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ClienteController;
+use App\Http\Controllers\Api\EntradaDeMaterialController;
 use App\Http\Controllers\Api\InsumoController;
 use App\Http\Controllers\Api\PedidoController;
 use App\Http\Controllers\Api\ProcesoController;
@@ -31,6 +32,8 @@ Route::apiResource('insumo', InsumoController::class);
 Route::apiResource('cliente', ClienteController::class);
 
 Route::apiResource('producto', ProductoController::class);
+
+Route::apiResource('entrada-de-material', EntradaDeMaterialController::class);
 
 Route::apiResource('entradas-de-material', EntradaDeMaterialController::class);
 
