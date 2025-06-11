@@ -19,7 +19,55 @@
                 <img draggable="false" src="{{ asset('images/welcome/TRIVIUM_recortado.png') }}" alt="">
             </a>
             <input type="text" placeholder="Busca en nuestra plataforma aquí" class="search" id="main-search"/>
-            
+
+            <!-- Botón del carrito en el header -->
+            <div class="cart-container" @click.outside="closeCart">
+                <button @click="openCart" class="cart-button">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span x-text="cart.length" class="cart-counter"></span>
+                </button>
+
+                <!-- Dropdown del carrito -->
+                <div x-show="showCartModal" 
+                     class="cart-dropdown"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-75"
+                     x-transition:leave-start="opacity-100 scale-100"
+                     x-transition:leave-end="opacity-0 scale-95">
+                    <div class="cart-header">
+                        <h3>Carrito de compras</h3>
+                        <button @click="closeCart" class="close-button">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="cart-body">
+                        <template x-if="cart.length === 0">
+                            <p class="empty-cart">El carrito está vacío</p>
+                        </template>
+                        <ul class="cart-items">
+                            <template x-for="item in cart" :key="item.id">
+                                <li class="cart-item">
+                                    <span x-text="item.name ?? item.nombre"></span>
+                                    <div class="item-controls">
+                                        <span x-text="item.quantity"></span>
+                                        <button @click="removeFromCart(item.id)" class="remove-item">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                    <div class="cart-footer" x-show="cart.length > 0">
+                        <button class="checkout-button">
+                            Proceder al pago
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div class="user" @click="triggerProfileLink($event.target)" x-on:click.outside="closeProfileLink()">
                 <img draggable="false" src="{{ asset('images/welcome/TRIVIUM-1.jpeg') }}" alt="" class="avatar">
                 <i class="fa-solid fa-chevron-down" :class="openProfileLink?'open':''"></i>

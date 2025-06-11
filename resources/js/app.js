@@ -336,7 +336,53 @@ Alpine.data('dashboardApp', () => ({
         help: 'ayuda',
         inventory: 'inventario',
     },
+    toggleProfile() {
+        this.openProfileLink = !this.openProfileLink;
+    },
+
+    closeProfile() {
+        this.openProfileLink = false;
+    },
+
+    logout() {
+        // Crear y enviar el formulario de logout
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'http://127.0.0.1:8000/logout';
+        
+        // Añadir el token CSRF
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = csrfToken;
+        
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);
+        form.submit();
+    },
+
+    
+
     routesInverse: {},
+    cart: [],
+    showCartModal: false,
+    addToCart(product, quantity = 1) {
+        const existing = this.cart.find(item => item.id === product.id);
+        if (existing) {
+            existing.quantity += parseInt(quantity);
+        } else {
+            this.cart.push({ ...product, quantity: parseInt(quantity) });
+        }
+    },
+    openCart() { this.showCartModal = true; },
+    closeCart() { this.showCartModal = false; },
+    removeFromCart(productId) {
+        this.cart = this.cart.filter(item => item.id !== productId);
+    },
+    clearCart() {
+        this.cart = [];
+    },
     init() {
         this.routesInverse = Object.fromEntries(
             Object.entries(this.routes).map(([key, value]) => [`/${value}`, key])

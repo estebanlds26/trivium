@@ -42,6 +42,7 @@
         <a href=""></a>
     </template>
     <template x-if="section =='store'">
+        <!-- Sección de productos -->
         <section id="products" class="relevant-content" x-data="productos">
             <template x-if="!!products">
                 <template x-for="(product, index) in products" :key="product.id">
