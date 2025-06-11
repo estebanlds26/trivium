@@ -53,70 +53,61 @@
                 <template x-if="section == 'products'">
 
                     <section id="products" class="relevant-content" x-data="productos">
-            <template x-if="showProductDetail">
-                <div class="product-detail">
-                    <div class="slideshow-container" @mousemove="appearControls" :data-index="slideshowIndex">
-                        <figure class="slideshow">
-                            <template x-for="(image, index) in productDetail.imagenes" :key="index">
-                                <img :src="`/storage/${image}`" alt>
-                            </template>
-                        </figure>
-                        <div class="prev-image" @click="prevSlideshowImage">
-                            <i class="fa-solid fa-circle-chevron-left"></i>
-                        </div>
-                        <div class="next-image" @click="nextSlideshowImage">
-                            <i class="fa-solid fa-circle-chevron-right"></i>
-                        </div>
-                        <div class="controls visible">
-                            <template x-for="(image, index) in productDetail.imagenes" :key="index">
-                                <img @click="updateSlideshow(index)" :class="index == 0 ? 'active' : ''"
-                                    :src="`/storage/${image}`" alt>
-                            </template>
-                        </div>
-                        <div class="scroll-left-controls visible" @mouseenter="scrollLeft"
-                            @mouseleave="clearInterval(intervalScroll)">
-                        </div>
-                        <div class="scroll-right-controls visible" @mouseenter="scrollRight"
-                            @mouseleave="clearInterval(intervalScroll)">
-                        </div>
-                    </div>
-                    <div class="right">
-                        <div class="close" @click="closeProductDetail">
-                            <i class="fa-solid fa-xmark"></i>
-                        </div>
-                        <h1 x-text="productDetail.nombre"></h1>
-                        <p class="description" x-text="productDetail.descripcion">
+            <template x-if="!!products">
+                <template x-for="(product, index) in products" :key="product.id">
+                    <div x-data="producto" class="product-container" x-init="producto= product">
+                        <article class="product">
+                            <div class="slideshow-container"  x-ref="slideshow-container" @mousemove="appearControls()" :data-index="slideshowIndex">
+                                <figure class="slideshow">
+                                    <template x-for="(image, index) in product.imagenes" :key="index">
+                                        <img :src="`/storage/${image}`" alt @click="openImageModal(`/storage/${image}`, index)" style="cursor: pointer;">                                    </template>
+                                </figure>
+                                <div class="prev-image"  x-ref="prev-image" @click="prevSlideshowImage()">
+                                    <i class="fa-solid fa-circle-chevron-left"></i>
+                                </div>
+                                <div class="next-image"  x-ref="next-image" @click="nextSlideshowImage()">
+                                    <i class="fa-solid fa-circle-chevron-right"></i>
+                                </div>
+                                <div class="controls visible"  x-ref="controls" >
+                                    <template x-for="(image, indexI) in product.imagenes" :key="indexI">
+                                        <img @click="updateSlideshow(indexI)" :class="indexI == 0 ? 'active' : ''"
+                                            :src="`/storage/${image}`" alt>
+                                    </template>
+                                </div>
+                                <div class="scroll-left-controls visible"   x-ref="scroll-left-controls" @mouseenter="scrollLeft"
+                                    @mouseleave="clearInterval(intervalScroll)">
+                                </div>
+                                <div class="scroll-right-controls visible"  x-ref="scroll-right-controls"  @mouseenter="scrollRight"
+                                    @mouseleave="clearInterval(intervalScroll)">
+                                </div>
+                            </div>
+                            <div class="right">
+                                <h1 x-text="product.nombre"></h1>
+                                <p class="description" x-text="product.descripcion"></p>
 
-                        </p>
-                        <div class="bottom">
-                            <div class="info">
-                                <div class="left"><span class="price" x-text="`$ ${productDetail.precio}`"></span></div>
-                                <div class="right">
-                                    <input type="number" name="quantity" class="quantity">
-                                    <div class="add-to-cart">
-                                        <i class="fa-solid fa-cart-shopping"></i>
+                                </p>
+                                <div class="info">
+                                    <div class="left"  x-ref="left" ><span class="price" x-text="`$ ${product.precio}`"></span></div>
+                                    <div class="right"  x-ref="right" >
+                                        <input type="number" x-ref="`quantity_product_${product.id}`" name="quantity" class="quantity"
+                                            value="1" autocomplete="off">
+                                        <div class="add-to-cart" @click="addToCart(product, quantity)">
+                                            <i class="fa-solid fa-cart-shopping"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </template>
-            <template x-if="!!products">
-                <template x-for="product in products" :key="product.id">
-                    <div x-data="producto" class="product-container">
-                        <article class="product" @click="setProductDetail(product)">
-                            <figure><img :src="`/storage/${product.imagenes[0]}`" alt></figure>
-                            <h1 x-text="product.nombre"></h1>
-                            <div class="info">
-                                <div class="left"><span class="price" x-text="`$ ${product.precio}`"></span></div>
-                                <div class="right">
-                                    <input type="number" x-ref="`quantity_product_${product.id}`" name="quantity" class="quantity"
-                                        value="1" autocomplete="off">
-                                    <div class="add-to-cart" @click="addToCart(product, quantity)">
-                                        <i class="fa-solid fa-cart-shopping"></i>
-                                    </div>
-                                </div>
+                            <div x-show="showImageModal" class="product-modal" @click.self="closeImageModal">
+                                <button class="close-modal" @click.stop="closeImageModal()">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                                <button class="left-arrow" @click.stop="prevModalImage()" >
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </button>
+                                <img :src="modalImageUrl">
+                                <button class="right-arrow" @click.stop="nextModalImage()" >
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
                             </div>
                         </article>
                     </div>
