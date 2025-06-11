@@ -520,63 +520,57 @@
                 </div>
                 <div class="accordion-item">
                     <div class="accordion-header" @click="toggleItem(0)">
-                        <h1>¿Cómo puedo crear una cuenta?</h1>
+                        <h1>¿Cómo actualizo el inventario de cervezas disponibles?</h1>
                         <i class="fa-solid fa-chevron-down" :class="openItem == 0 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 0 ? 'open' : ''">
                         <div>
-                            Puedes crear una cuenta haciendo clic en el botón “Registrarse” en la parte superior de la página.
-                            Completa el formulario con tu nombre, correo electrónico y una contraseña segura.
-                            Una vez enviado, recibirás un correo de confirmación para activar tu cuenta.
+                            Desde el panel de administración, entra a la sección “Inventario” y edita las cantidades disponibles por tipo de cerveza.
                         </div>
                     </div>
                     
                 </div>
                 <div class="accordion-item">
                     <div class="accordion-header" @click="toggleItem(1)">
-                        <h1>¿Cómo restablezco mi contraseña?</h1>
+                        <h1>¿Dónde gestiono el proceso de producción?</h1>
                         <i class="fa-solid fa-chevron-down" :class="openItem == 1 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 1 ? 'open' : ''">
                         <div>
-                            Si olvidaste tu contraseña, ve a la página de inicio de sesión y haz clic en “¿Olvidaste tu contraseña?”.
-                            Ingresa tu correo electrónico y te enviaremos un enlace para que puedas establecer una nueva contraseña de forma segura.
+                            Ve al módulo “Gestión de producción”, donde puedes registrar nuevas tandas, controlar insumos y hacer seguimiento a los lotes en curso.
                         </div>
                     </div>
                 </div>
                 <div class="accordion-item">
                     <div class="accordion-header" @click="toggleItem(2)">
-                        <h1>¿Cómo puedo contactar al servicio de atención al cliente?</h1>
+                        <h1>¿Cómo agrego un nuevo producto o cerveza al catálogo?</h1>
                         <i class="fa-solid fa-chevron-down" :class="openItem == 2 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 2 ? 'open' : ''">
                         <div>    
-                            Puedes contactarnos directamente a través del formulario en la sección Contacto, por WhatsApp escaneando nuestro código QR,
-                            o enviándonos un correo electrónico. Estamos disponibles para ayudarte con cualquier consulta o inconveniente.
+                            En el panel de control, selecciona “Productos” > “Agregar nuevo” y completa los campos con el nombre, descripción, imagen y stock.
                         </div>
                     </div>
                 </div>
                 <div class="accordion-item">
                     <div class="accordion-header" @click="toggleItem(3)">
-                        <h1>¿Puedo cancelar o modificar mi pedido?</h1>
+                        <h1>¿Puedo modificar los precios o promociones desde la plataforma?</h1>
                         <i class="fa-solid fa-chevron-down" :class="openItem == 3 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 3 ? 'open' : ''">
                         <div>
-                            Sí, puedes cancelar o modificar tu pedido antes de que sea despachado.
-                            Por favor contáctanos lo antes posible a través del servicio de atención al cliente para gestionar el cambio.
+                            Sí, en la sección de productos puedes editar el precio base y aplicar descuentos o promociones según la temporada.
                         </div>
                     </div>
                 </div>
                 <div class="accordion-item">
                     <div class="accordion-header" @click="toggleItem(4)">
-                        <h1>¿Ofrecen servicios de entrega internacional?</h1>
+                        <h1>¿Qué hago si veo un error en los datos del sistema o el inventario?</h1>
                         <i class="fa-solid fa-chevron-down" :class="openItem == 4 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 4 ? 'open' : ''">
                         <div>
-                            Actualmente nuestras entregas están limitadas al territorio nacional.
-                            Sin embargo, estamos trabajando para habilitar envíos internacionales próximamente. ¡Te mantendremos informado!
+                           Puedes corregirlo directamente si tienes permisos de administrador o reportarlo al área técnica desde la sección “Soporte interno”. ¡Estaremos atentos!
                         </div>
                     </div>
                 </div>

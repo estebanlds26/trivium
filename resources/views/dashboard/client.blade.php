@@ -219,7 +219,37 @@
                         <i class="fa-solid fa-chevron-down" :class="openItem == 1 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 1 ? 'open' : ''">
-                        asdasd
+                        <fieldset>
+                            <legend>Preferencias</legend>
+
+                            <div class="option-row">
+                                <label for="tema">Tema</label>
+                                <div class="radio-inputs">
+                                <label class="radio">
+                                    <input type="radio" name="tema" checked />
+                                    <span class="nameTwo">Oscuro</span>
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="tema" />
+                                    <span class="nameTwo">Claro</span>
+                                </label>
+                                </div>
+                            </div>
+
+                            <div class="option-row">
+                                <label for="lenguaje">Lenguaje</label>
+                                <div class="radio-inputs">
+                                <label class="radio">
+                                    <input type="radio" name="lenguaje" checked />
+                                    <span class="nameTwo">Español</span>
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="lenguaje" />
+                                    <span class="nameTwo">English</span>
+                                </label>
+                                </div>
+                            </div>
+                            </fieldset>
                     </div>
                 </div>
                 <div class="accordion-item">
@@ -228,7 +258,86 @@
                         <i class="fa-solid fa-chevron-down" :class="openItem == 2 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 2 ? 'open' : ''">
-                        asdasd
+                        <fieldset>
+                            <legend>Visión</legend>
+                            <div class="option-row">
+                                <div class="vision-panel">
+                                <label for="tamaño">Tamaño de letra</label>
+                                <div class="font-size-controls">
+                                    <button id="decrease" aria-label="Disminuir tamaño">−</button>
+                                    <span>A</span>
+                                    <button id="increase" aria-label="Aumentar tamaño">+</button>
+                                </div>
+                                </div>
+                            </div>
+
+                            <div class="option-row">
+                                <label for="Modo">Modo de alto contraste</label>
+                                <div class="radio-inputs">
+                                <label class="radio">
+                                    <input type="radio" name="contraste" checked />
+                                    <span class="nameTwo">Desactivado</span>
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="contraste" />
+                                    <span class="nameTwo">Activado</span>
+                                </label>
+                                </div>
+                            </div>
+
+                            <div class="option-row">
+                                <label for="Brillo">Nivel de brillo</label>
+                                <div class="rangeWrapper">
+                                <input value="7" max="20" min="1" class="kawaii" type="range" />
+                                </div>
+                            </div>
+
+                            <div class="option-row">
+                                <label for="voz">Leer en voz alta</label>
+                                <div class="radio-inputs">
+                                <label class="radio">
+                                    <input type="radio" name="voz" checked />
+                                    <span class="nameTwo">Desactivado</span>
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="voz" />
+                                    <span class="nameTwo">Activado</span>
+                                </label>
+                                </div>
+                            </div>
+                            </fieldset>
+
+                        <fieldset>
+                        <legend>Neurología</legend>
+
+                        <div class="option-row">
+                            <label for="destellantes">Imágenes destellantes</label>
+                            <div class="radio-inputs">
+                            <label class="radio">
+                                <input type="radio" name="destellantes" checked />
+                                <span class="nameTwo">Desactivado</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="destellantes" />
+                                <span class="nameTwo">Activado</span>
+                            </label>
+                            </div>
+                        </div>
+
+                        <div class="option-row">
+                            <label for="animaciones">Animaciones</label>
+                            <div class="radio-inputs">
+                            <label class="radio">
+                                <input type="radio" name="animaciones" checked />
+                                <span class="nameTwo">Desactivado</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="animaciones" />
+                                <span class="nameTwo">Activado</span>
+                            </label>
+                            </div>
+                        </div>
+                        </fieldset>
                     </div>
                 </div>
                 <div class="accordion-item">
@@ -237,7 +346,85 @@
                         <i class="fa-solid fa-chevron-down" :class="openItem == 3 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 3 ? 'open' : ''">
-                        asdasd
+                        <fieldset>
+                        <legend>Activar o desactivar notificaciones</legend>
+
+                        <div class="option-rowNoti">
+                            <label for="destellantes">Todas las notificaciones</label>
+                            <div class="radio-inputsNoti">
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                            </div>
+                        </div>
+
+                        <div class="option-rowNoti">
+                            <label for="animaciones">Notificaciones de estado de pedidos</label>
+                            <div class="radio-inputsNoti">
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                            </div>
+                        </div>
+
+                        <div class="option-rowNoti">
+                            <label for="animaciones">Notificaciones de cambios en la plataforma</label>
+                            <div class="radio-inputsNoti">
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                            </div>
+                        </div>
+
+                        <div class="option-rowNoti">
+                            <label for="animaciones">Notificaciones de ofertas especiales</label>
+                            <div class="radio-inputsNoti">
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                            </div>
+                        </div>
+
+                        </fieldset>
+
+                        <fieldset>
+                        <legend>Destino de las notificaciones</legend>
+
+                        <div class="option-rowNoti">
+                            <label for="destellantes">Todos los destinos</label>
+                            <div class="radio-inputsNoti">
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                            </div>
+                        </div>
+
+                        <div class="option-rowNoti">
+                            <label for="animaciones">Notificaciones al correo</label>
+                            <div class="radio-inputsNoti">
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                            </div>
+                        </div>
+
+                        <div class="option-rowNoti">
+                            <label for="animaciones">Notificaciones al celular</label>
+                            <div class="radio-inputsNoti">
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                            </div>
+                        </div>
+
+                        </fieldset>
                     </div>
                 </div>
                 <div class="accordion-item">
@@ -246,7 +433,28 @@
                         <i class="fa-solid fa-chevron-down" :class="openItem == 4 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 4 ? 'open' : ''">
-                        asdasd
+                        <fieldset>
+                            <legend>Versión</legend>
+
+                            <div class="option-row">
+                                <label for="version">Trivium V. 1.07.1 BrewMaster</label>
+                                <div class="radio-inputsNoti"></div>
+                            </div>
+
+                            <div class="option-row">
+                                <label for="lenguaje">Probas funciones experimentales</label>
+                                <div class="radio-inputs">
+                                <label class="radio">
+                                    <input type="radio" name="funcion" checked />
+                                    <span class="nameTwo">Desactivado</span>
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" name="funcion" />
+                                    <span class="nameTwo">Activado</span>
+                                </label>
+                                </div>
+                            </div>
+                            </fieldset>
                     </div>
                 </div>
             </div>
@@ -310,13 +518,12 @@
                 </div>
                 <div class="accordion-item">
                     <div class="accordion-header" @click="toggleItem(4)">
-                        <h1>¿Ofrecen servicios de entrega internacional?</h1>
+                        <h1>¿Cómo puedo comprar cerveza desde la página?</h1>
                         <i class="fa-solid fa-chevron-down" :class="openItem == 4 ? 'open' : ''"></i>
                     </div>
                     <div class="accordion-body" :class="openItem == 4 ? 'open' : ''">
                         <div>
-                            Actualmente nuestras entregas están limitadas al territorio nacional.
-                            Sin embargo, estamos trabajando para habilitar envíos internacionales próximamente. ¡Te mantendremos informado!
+                            Solo debes registrarte, acceder al catálogo, añadir tus cervezas favoritas al carrito y finalizar la compra desde la sección de pagos.
                         </div>
                     </div>
                 </div>
