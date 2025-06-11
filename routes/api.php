@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Api\ClienteController;
-use App\Http\Controllers\Api\EntradaDeMaterialController;
 use App\Http\Controllers\Api\InsumoController;
 use App\Http\Controllers\Api\PedidoController;
 use App\Http\Controllers\Api\ProcesoController;

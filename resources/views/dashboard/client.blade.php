@@ -42,6 +42,7 @@
         <a href=""></a>
     </template>
     <template x-if="section =='store'">
+        <!-- Sección de productos -->
         <section id="products" class="relevant-content" x-data="productos">
             <template x-if="showProductDetail">
                 <div class="product-detail">
@@ -102,7 +103,7 @@
                             <div class="right">
                                 <input type="number" x-model="quantity" name="quantity" class="quantity" value="1"
                                     autocomplete="off">
-                                <div class="add-to-cart" @click="addToCart(product, quantity)">
+                                <div class="add-to-cart" @click.stop="$root.__x.$data.addToCart(product, quantity)">
                                     <i class="fa-solid fa-cart-shopping"></i>
                                 </div>
                             </div>
@@ -155,7 +156,8 @@
                     </div>
                 </article>
             </div>
-        </section>
+            </section>
+        </div>
     </template>
     <template x-if="section =='contact'">
         <div id="contact" class="relevant-content">
