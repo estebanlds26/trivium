@@ -67,8 +67,8 @@ class ProcesoSeeder extends Seeder
             \App\Models\Proceso::create([
                 'nombre' => $beer['nombre'],
                 'descripcion' => $beer['descripcion'],
-                'steps' => json_encode($steps),
-                'insumos' => json_encode($beer['insumos']),
+                'steps' => $steps,
+                'insumos' => $beer['insumos'],
             ]);
         }
     }

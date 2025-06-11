@@ -12,10 +12,10 @@ class EntradaDeMaterial extends Model
 
     protected $table = 'entrada_de_material'; // Laravel lo nombraría mal por defecto
 
-    protected $fillable = ['fecha', 'cantidad', 'insumos_id'];
+    protected $fillable = ['fecha', 'cantidad', 'insumo_id'];
 
     public function insumo()
     {
-        return $this->belongsTo(Insumo::class, 'insumos_id');
+        return $this->belongsTo(Insumo::class);
     }
 }

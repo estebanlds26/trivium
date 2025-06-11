@@ -18,7 +18,7 @@ class Insumo extends Model
 
     public function entradas()
     {
-        return $this->hasMany(EntradaDeMaterial::class, 'insumos_id');
+        return $this->hasMany(EntradaDeMaterial::class, 'insumo_id');
     }
 
     public function producciones()

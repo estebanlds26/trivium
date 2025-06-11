@@ -15,21 +15,21 @@ class InsumoSeeder extends Seeder
         DB::table('insumos')->insert([
             [
                 'nombre' => 'Malta Pale Ale',
-                'unidad' => 25,
+                'unidad' => 'libra',
                 'marca' => 'BrewMaster',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'nombre' => 'Lúpulo Cascade',
-                'unidad' => 5,
+                'unidad' => 'gramo',
                 'marca' => 'HopGrowers',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'nombre' => 'Levadura Ale',
-                'unidad' => 1,
+                'unidad' => 'gramo',
                 'marca' => 'YeastLab',
                 'created_at' => now(),
                 'updated_at' => now(),

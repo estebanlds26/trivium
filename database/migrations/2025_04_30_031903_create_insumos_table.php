@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('insumos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 45);
-            $table->integer('unidad');
+            $table->string('unidad');
             $table->string('marca', 45);
             $table->timestamps();
         });

@@ -36,6 +36,7 @@ class ProduccionController extends Controller
             'producto_id' => 'required|integer|exists:productos,id',
             'user_id' => 'required|integer|exists:users,id',
             'proceso_id' => 'required|integer|exists:procesos,id',
+            'estado' => 'sometimes|string|in:Pendiente,En proceso,Completado,Cancelado',
         ]);
 
         if ($validator->fails()) {
@@ -54,7 +55,8 @@ class ProduccionController extends Controller
         }
         $produccionData = $request->all();
         $produccionData['proceso_steps_copy'] = $proceso_steps_copy;
-        $produccion = Produccion::with(['insumos', 'proceso', 'producto', 'user'])->create($produccionData);
+        $produccion = Produccion::create($produccionData);
+        $produccion->load(['insumos', 'proceso', 'producto', 'user']);
 
         // // Attach insumos from proceso to produccion
         // if ($proceso && $proceso->insumos) {
@@ -117,6 +119,7 @@ class ProduccionController extends Controller
             'producto_id' => 'integer|exists:productos,id',
             'user_id' => 'integer|exists:users,id',
             'proceso_id' => 'integer|exists:procesos,id',
+            'estado' => 'sometimes|string|in:Pendiente,En proceso,Completado,Cancelado',
         ]);
 
         if ($validator->fails()) {
@@ -128,6 +131,7 @@ class ProduccionController extends Controller
         }
 
         $produccion->update($request->all());
+        $produccion->load(['insumos', 'proceso', 'producto', 'user']);
 
         return response()->json([
             'success' => true,
