@@ -584,16 +584,19 @@
                     <div class="left">
                         <img src="{{ asset('images/welcome/TRIVIUM_recortado.png') }}" alt="Trivium"
                             class="logo-trivium">
-                        <div class="return" @click="goBack()" x-show="sections[section].subsection != 'index'">
+                        <div class="return" @click="goBack" x-show="sections[section].subsection != 'index'">
                             <i class="fa-solid fa-chevron-left"></i>
                         </div>
                         <h1 x-text="capitalize(sections[section].pluralName)"></h1>
                     </div>
                     <div class="right">
-                        <div class="search action">
+                        <template x-if="sections[section].searchManagement">
+                            <a class="reset-search" @click="resetSearch">Borrar búsqueda</a>
+                        </template>
+                        <label class="search action" for="search-management">
                             <i class="fa-solid fa-magnifying-glass"></i>
-                            <input type="text" placeholder="Buscar en Productos" class="search">
-                        </div>
+                            <input type="text" @input="filter" x-model="sections[section].searchManagement" :placeholder="`Buscar en ${capitalize(sections[section].pluralName)}`" class="search" id="search-management" name="search-management">
+                        </label>
                         <div class="select-multiple action">
                             <i class="fa-solid fa-check"></i>
                         </div>
