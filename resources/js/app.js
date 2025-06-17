@@ -16,11 +16,7 @@ Alpine.data('welcomeApp', () => ({
     section: 'home',
     previousSection: "about",
     scrollTop: 0,
-    loaded: false,
-    bottomPaddingTop: window.location.pathname=="/" ? 75 : 0,
-    figureImgWidth: window.location.pathname=="/" ? 160 : 85,
-    figurePaddingTop: window.location.pathname=="/" ? 0 : 5,
-    systemScroll: false,
+
     init() {
         this.routesInverse = Object.fromEntries(
             Object.entries(this.routes).map(([key, value]) => [`/${value}`, key])
@@ -28,28 +24,18 @@ Alpine.data('welcomeApp', () => ({
 
 
         console.log(this.routesInverse)
+        this.updateFigure();
         window.addEventListener("resize", this.updateFigure);
-        this.$nextTick(()=>{
+        this.$nextTick(() => {
             this.section = this.routesInverse[window.location.pathname];
-            this.setSection(this.section, "abrupt")
-            this.$nextTick(() => {
-                this.loaded = true;
-            })
-        })
-        window.onpopstate = () => {
-            this.section = this.routesInverse[window.location.pathname];
-            this.setSection(this.section, "abrupt")
-            this.$nextTick(() => {
-                this.loaded = true;
-            })
-        }
+            this.setSection(this.section)
+        });
 
     },
     toggle() {
         this.open = !this.open;
     },
     handleScroll() {
-        if(this.systemScroll)return
         this.scrollTop = this.$refs.content.scrollTop;
         this.$refs.background.style.filter = `blur(${this.scrollTop / 74}px)`;
         this.updateFigure();
@@ -69,16 +55,6 @@ Alpine.data('welcomeApp', () => ({
         this.autoScrollHeaderTop();
     },
     setSection(section, mode) {
-        if(typeof mode !="undefined" && mode == "abrupt"){
-            this.previousSection = this.section == "home" ? this.previousSection : this.section;
-            this.section= section;
-            if(section == "home"){
-                this.autoScrollHeaderBottom("abrupt")
-            }else{
-                this.autoScrollHeaderTop("abrupt")
-            }
-            return
-        }
         this.previousSection = this.section == "home" ? this.previousSection : this.section;
         this.section = section;
         this.$nextTick(() => {
@@ -89,59 +65,26 @@ Alpine.data('welcomeApp', () => ({
             this.autoScrollHeaderBottom() :
             this.autoScrollHeaderTop();
     },
-    autoScrollHeaderTop(mode="normal") {
-        const behavior = mode === "abrupt" ? "auto" : "smooth";
-        
-        if(behavior== "auto"){
-            this.systemScroll = true;
-            this.bottomPaddingTop= 0;
-            this.figureImgWidth = 85;
-            this.$refs.content.scrollTop= 0 + parseInt(getComputedStyle(document.querySelector(".content"))["padding-top"])
-           console.log(this.$refs.content.scrollTop)
-            this.systemScroll = false;
-        }else{
-            document.querySelector(".relevant nav").scrollIntoView({ behavior, block: "start" });
-        }
+    autoScrollHeaderTop() {
+        document.querySelector(".relevant nav").scrollIntoView({ behavior: "smooth", block: "start" });
     },
-    autoScrollHeaderBottom(mode="normal") {
+    autoScrollHeaderBottom(mode) {
         const behavior = mode === "abrupt" ? "auto" : "smooth";
-        
-        this.$nextTick(() => {
-            if(behavior== "auto"){
-                this.systemScroll = true;
-                this.$refs.content.scrollTop= 0
-                this.bottomPaddingTop = 75;
-                this.figureImgWidth = 160;
-                this.figurePaddingTop = 0;
-            this.systemScroll = false;
-            }else{
-                document.querySelector(".relevant nav").scrollIntoView({ behavior, block: "end" });
-            }
-            this.systemScroll = false;
-        })
+        document.querySelector(".relevant nav").scrollIntoView({ behavior, block: "end" });
     },
-    updateFigure(mode= "normal") {
+    updateFigure() {
         const e = this.$refs.content;
         const eScrollTopMax = e.scrollHeight - e.clientHeight;
-        
-        if(mode =="abrupt-small"){
-            this.bottomPaddingTop = 0;
-            this.figureImgWidth = 85;
-            this.figurePaddingTop = 5;
-            return
-        }
-        if(mode=="abrupt-big"){
-            this.bottomPaddingTop = 75;
-            this.figureImgWidth = 160;
-            return
-        }
+        const bottom = document.querySelector(".bottom");
+        const figureImg = document.querySelector(".content figure img");
+        const figure = document.querySelector(".content figure");
         if (eScrollTopMax - e.scrollTop < 1) {
-            this.bottomPaddingTop = eScrollTopMax - e.scrollTop;
-            this.figureImgWidth = 85 + eScrollTopMax - e.scrollTop;
-            this.figurePaddingTop = eScrollTopMax - e.scrollTop < 5 ? 5 - (eScrollTopMax - e.scrollTop) : 0;
+            bottom.style.paddingTop = `${eScrollTopMax - e.scrollTop}px`;
+            figureImg.style.width = `${85 + eScrollTopMax - e.scrollTop}px`;
+            figure.style.paddingTop = eScrollTopMax - e.scrollTop < 5 ? `${5 - (eScrollTopMax - e.scrollTop)}px` : `0px`;
         } else {
-            this.bottomPaddingTop = 75;
-            this.figureImgWidth = 160;
+            bottom.style.paddingTop = "75px";
+            figureImg.style.width = "160px";
         }
     },
 
@@ -625,15 +568,12 @@ Alpine.data('managementData', () => ({
     defaultSection: 'productos',
     section: '',
     nextAction: null,
-    searchManagement: '',
     sections: {
         'productos': {
             api: 'producto',
             subsection: 'index',
             pluralName: 'productos',
             singularName: 'producto',
-            searchManagement: '',
-            allRows: '',
             rows: null,
             details: {},
             availableProducts: null,
@@ -644,8 +584,6 @@ Alpine.data('managementData', () => ({
             subsection: 'index',
             pluralName: 'ventas',
             singularName: 'venta',
-            searchManagement: '',
-            allRows: null,
             rows: null,
             details: {},
             selectedProducts: [],
@@ -656,8 +594,6 @@ Alpine.data('managementData', () => ({
             subsection: 'index',
             pluralName: 'producciones',
             singularName: 'producción',
-            searchManagement: '',
-            allRows: null,
             rows: null,
             details: {},
             selectedInsumos: [],
@@ -667,8 +603,6 @@ Alpine.data('managementData', () => ({
             subsection: 'index',
             pluralName: 'procesos',
             singularName: 'proceso',
-            searchManagement: '',
-            allRows: null,
             rows: null,
             details: {},
             selectedInsumos: [],
@@ -679,8 +613,6 @@ Alpine.data('managementData', () => ({
             subsection: 'index',
             pluralName: 'insumos',
             singularName: 'insumo',
-            searchManagement: '',
-            allRows: null,
             rows: null,
             details: {},
         },
@@ -689,8 +621,6 @@ Alpine.data('managementData', () => ({
             subsection: 'index',
             pluralName: 'entradas',
             singularName: 'entrada',
-            searchManagement: '',
-            allRows: null,
             rows: null,
             details: {},
         },
@@ -775,7 +705,6 @@ Alpine.data('managementData', () => ({
         })
             .then(response => response.json())
             .then(data => {
-                this.sections[section].allRows = data.data;
                 this.sections[section].rows = data.data
             })
             .catch(error => console.error('Error:', error));
@@ -803,7 +732,6 @@ Alpine.data('managementData', () => ({
             })
                 .then(response => response.json())
                 .then(data => {
-                    this.sections.productos.allRows = data.data;
                     this.sections.productos.rows = data.data
                 })
                 .catch(error => console.error('Error:', error));
@@ -816,7 +744,6 @@ Alpine.data('managementData', () => ({
             })
                 .then(response => response.json())
                 .then(data => {
-                    this.sections.insumos.allRows = data.data;
                     this.sections.insumos.rows = data.data
                 })
                 .catch(error => console.error('Error:', error));
@@ -829,7 +756,6 @@ Alpine.data('managementData', () => ({
             })
                 .then(response => response.json())
                 .then(data => {
-                    this.sections.procesos.allRows = data.data;
                     this.sections.procesos.rows = data.data
                 })
                 .catch(error => console.error('Error:', error));
@@ -845,7 +771,6 @@ Alpine.data('managementData', () => ({
             })
                 .then(response => response.json())
                 .then(data => {
-                    this.sections.insumos.allRows = data.data;
                     this.sections.insumos.rows = data.data
                 })
                 .catch(error => console.error('Error:', error));
@@ -861,12 +786,10 @@ Alpine.data('managementData', () => ({
                 })
                     .then(response => response.json())
                     .then(data => {
-                        this.sections.insumos.allRows = data.data;
                         this.sections.insumos.rows = data.data
                     })
                     .catch(error => console.error('Error:', error));
             }
-            this.filter();
     },
     setSection(section) {
         this.section = section;
@@ -884,40 +807,6 @@ Alpine.data('managementData', () => ({
                 this.setUrl("ver", this.sections[this.section].details.id);
                 break;
         }
-    },
-    filter(){
-        let searchQuery = this.sections[this.section].searchManagement;
-        this.sections[this.section].rows = this.sections[this.section].allRows.filter(item => {
-            //Comparar con cada columna de cada fila
-            return Object.entries(item).some(([key, val]) => {
-                if (typeof val === 'string' && val.toLowerCase().includes(searchQuery)) {
-                    return true;
-                }
-                if ((key === 'created_at' || key === 'fecha') && typeof val === 'string') {
-                    if (this.formatDate(val).toLowerCase().includes(searchQuery)) {
-                        return true;
-                    }
-                }
-                //Comparar con cada columna de las relaciones también
-                if (val && typeof val === 'object') {
-                    if (Array.isArray(val)) {
-                        return val.some(rel =>
-                            Object.values(rel).some(relVal =>
-                                typeof relVal === 'string' && this.normalize(relVal).toLowerCase().includes(searchQuery)
-                            )
-                        );
-                    }
-                    return Object.values(val).some(relVal =>
-                        typeof relVal === 'string' && this.normalize(relVal).toLowerCase().includes(searchQuery)
-                    );
-                }
-                return false;
-            });
-        });
-    },
-    resetSearch(){
-        this.sections[this.section].searchManagement = '';
-        this.sections[this.section].rows = this.sections[this.section].allRows;
     },
     getListQuantitiesProducts(items) {
         let list = []

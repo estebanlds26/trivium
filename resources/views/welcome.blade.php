@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="welcomeApp">
 
 <head>
     <meta charset="UTF-8" />
@@ -122,144 +122,144 @@
                 </template>
                 <template x-if="section == 'about'">
 
-                        <section id="about" x-ref="about" class="relevant-content" @scroll="handleInnerScroll($el)">
-                            <div class="paragraph">
-                                <img src="{{ asset('images/welcome/TRIVIUM-36.jpg') }}" alt>
-                                <p>
-                                    Así fue como nació Trivium, nuestro emprendimiento de cerveza
-                                    artesanal. Desde hace años, los tres compartimos una pasión
-                                    profunda por la buena cerveza. Nos encantaba explorar
-                                    diferentes
-                                    estilos y probar cervezas artesanales de todo el mundo,
-                                    maravillándonos con la variedad de sabores, aromas y la
-                                    calidad
-                                    que estas ofrecían, gracias a sus técnicas tradicionales y
-                                    cuidado
-                                    artesanal.
-                                    <br>
-                                    <br>
-                                    En 2022, decidimos que era momento de llevar nuestra pasión un
-                                    paso más allá. Nos inscribimos en un curso intensivo de
-                                    cerveza
-                                    artesanal, donde aprendimos desde los fundamentos básicos
-                                    hasta
-                                    técnicas avanzadas de elaboración. Durante semanas, nos
-                                    sumergimos en el proceso detallado de malteado, maceración,
-                                    hervido, fermentación y embotellado. Aprendimos sobre la
-                                    importancia de los ingredientes de calidad, las levaduras
-                                    adecuadas
-                                    para cada estilo y cómo controlar parámetros clave como la
-                                    temperatura y el pH para obtener resultados consistentes y
-                                    deliciosos.
-                                </p>
-                            </div>
-                            <div class="paragraph">
-                                <p>
-                                    Así fue como nació XXXX, nuestro emprendimiento de cerveza
-                                    artesanal. Desde hace años, los tres compartimos una pasión
-                                    profunda por la buena cerveza. Nos encantaba explorar
-                                    diferentes
-                                    estilos y probar cervezas artesanales de todo el mundo,
-                                    maravillándonos con la variedad de sabores, aromas y la
-                                    calidad
-                                    que estas ofrecían, gracias a sus técnicas tradicionales y
-                                    cuidado
-                                    artesanal.
-                                    <br>
-                                    <br>
-                                    En 2022, decidimos que era momento de llevar nuestra pasión un
-                                    paso más allá. Nos inscribimos en un curso intensivo de
-                                    cerveza
-                                    artesanal, donde aprendimos desde los fundamentos básicos
-                                    hasta
-                                    técnicas avanzadas de elaboración. Durante semanas, nos
-                                    sumergimos en el proceso detallado de malteado, maceración,
-                                    hervido, fermentación y embotellado. Aprendimos sobre la
-                                    importancia de los ingredientes de calidad, las levaduras
-                                    adecuadas
-                                    para cada estilo y cómo controlar parámetros clave como la
-                                    temperatura y el pH para obtener resultados consistentes y
-                                    deliciosos.
-                                </p>
-                                <img src="{{ asset('images/welcome/TRIVIUM-36.jpg') }}" alt>
-                            </div>
-                            <div class="paragraph vertical">
-                                <img src="{{ asset('images/welcome/TRIVIUM-38.jpg') }}" alt>
-                                <p>
-                                    Así fue como nació XXXX, nuestro emprendimiento de cerveza
-                                    artesanal. Desde hace años, los tres compartimos una pasión
-                                    profunda por la buena cerveza. Nos encantaba explorar
-                                    diferentes
-                                    estilos y probar cervezas artesanales de todo el mundo,
-                                    maravillándonos con la variedad de sabores, aromas y la
-                                    calidad
-                                    que estas ofrecían, gracias a sus técnicas tradicionales y
-                                    cuidado
-                                    artesanal.
-                                    <br>
-                                    <br>
-                                    En 2022, decidimos que era momento de llevar nuestra pasión un
-                                    paso más allá. Nos inscribimos en un curso intensivo de
-                                    cerveza
-                                    artesanal, donde aprendimos desde los fundamentos básicos
-                                    hasta
-                                    técnicas avanzadas de elaboración. Durante semanas, nos
-                                    sumergimos en el proceso detallado de malteado, maceración,
-                                    hervido, fermentación y embotellado. Aprendimos sobre la
-                                    importancia de los ingredientes de calidad, las levaduras
-                                    adecuadas
-                                    para cada estilo y cómo controlar parámetros clave como la
-                                    temperatura y el pH para obtener resultados consistentes y
-                                    deliciosos.
-                                </p>
-                            </div>
-                        </section>
-                    </template>
-                    <template x-if="section == 'register'">
+                    <section id="about" x-ref="about" class="relevant-content" @scroll="handleInnerScroll($el)">
+                        <div class="paragraph">
+                            <img src="{{ asset('images/welcome/TRIVIUM-36.jpg') }}" alt>
+                            <p>
+                                Así fue como nació Trivium, nuestro emprendimiento de cerveza
+                                artesanal. Desde hace años, los tres compartimos una pasión
+                                profunda por la buena cerveza. Nos encantaba explorar
+                                diferentes
+                                estilos y probar cervezas artesanales de todo el mundo,
+                                maravillándonos con la variedad de sabores, aromas y la
+                                calidad
+                                que estas ofrecían, gracias a sus técnicas tradicionales y
+                                cuidado
+                                artesanal.
+                                <br>
+                                <br>
+                                En 2022, decidimos que era momento de llevar nuestra pasión un
+                                paso más allá. Nos inscribimos en un curso intensivo de
+                                cerveza
+                                artesanal, donde aprendimos desde los fundamentos básicos
+                                hasta
+                                técnicas avanzadas de elaboración. Durante semanas, nos
+                                sumergimos en el proceso detallado de malteado, maceración,
+                                hervido, fermentación y embotellado. Aprendimos sobre la
+                                importancia de los ingredientes de calidad, las levaduras
+                                adecuadas
+                                para cada estilo y cómo controlar parámetros clave como la
+                                temperatura y el pH para obtener resultados consistentes y
+                                deliciosos.
+                            </p>
+                        </div>
+                        <div class="paragraph">
+                            <p>
+                                Así fue como nació XXXX, nuestro emprendimiento de cerveza
+                                artesanal. Desde hace años, los tres compartimos una pasión
+                                profunda por la buena cerveza. Nos encantaba explorar
+                                diferentes
+                                estilos y probar cervezas artesanales de todo el mundo,
+                                maravillándonos con la variedad de sabores, aromas y la
+                                calidad
+                                que estas ofrecían, gracias a sus técnicas tradicionales y
+                                cuidado
+                                artesanal.
+                                <br>
+                                <br>
+                                En 2022, decidimos que era momento de llevar nuestra pasión un
+                                paso más allá. Nos inscribimos en un curso intensivo de
+                                cerveza
+                                artesanal, donde aprendimos desde los fundamentos básicos
+                                hasta
+                                técnicas avanzadas de elaboración. Durante semanas, nos
+                                sumergimos en el proceso detallado de malteado, maceración,
+                                hervido, fermentación y embotellado. Aprendimos sobre la
+                                importancia de los ingredientes de calidad, las levaduras
+                                adecuadas
+                                para cada estilo y cómo controlar parámetros clave como la
+                                temperatura y el pH para obtener resultados consistentes y
+                                deliciosos.
+                            </p>
+                            <img src="{{ asset('images/welcome/TRIVIUM-36.jpg') }}" alt>
+                        </div>
+                        <div class="paragraph vertical">
+                            <img src="{{ asset('images/welcome/TRIVIUM-38.jpg') }}" alt>
+                            <p>
+                                Así fue como nació XXXX, nuestro emprendimiento de cerveza
+                                artesanal. Desde hace años, los tres compartimos una pasión
+                                profunda por la buena cerveza. Nos encantaba explorar
+                                diferentes
+                                estilos y probar cervezas artesanales de todo el mundo,
+                                maravillándonos con la variedad de sabores, aromas y la
+                                calidad
+                                que estas ofrecían, gracias a sus técnicas tradicionales y
+                                cuidado
+                                artesanal.
+                                <br>
+                                <br>
+                                En 2022, decidimos que era momento de llevar nuestra pasión un
+                                paso más allá. Nos inscribimos en un curso intensivo de
+                                cerveza
+                                artesanal, donde aprendimos desde los fundamentos básicos
+                                hasta
+                                técnicas avanzadas de elaboración. Durante semanas, nos
+                                sumergimos en el proceso detallado de malteado, maceración,
+                                hervido, fermentación y embotellado. Aprendimos sobre la
+                                importancia de los ingredientes de calidad, las levaduras
+                                adecuadas
+                                para cada estilo y cómo controlar parámetros clave como la
+                                temperatura y el pH para obtener resultados consistentes y
+                                deliciosos.
+                            </p>
+                        </div>
+                    </section>
+                </template>
+                <template x-if="section == 'register'">
 
-                        <section id="register" x-ref="register" class="relevant-content" @scroll="handleInnerScroll($el)">
-                            <form method="POST" action="{{ route('register') }}">
-                                @csrf
-                                <label for="username">
-                                    <i class="fa-solid fa-user"></i>
-                                    <input type="text" name="username" placeholder="Nombre de usuario">
-                                </label>
-                                <label for="name">
-                                    <i class="fa-solid fa-id-card"></i>
-                                    <input type="text" name="name" placeholder="Nombres y apellidos">
-                                </label>
-                                <label for="cellphone">
-                                    <i class="fa-solid fa-mobile-screen-button"></i>
-                                    <input type="text" name="cellphone" placeholder="Número de celular">
-                                </label>
-                                <label for="email">
-                                    <i class="fa-solid fa-envelope"></i>
-                                    <input type="email" name="email" placeholder="Correo electrónico">
-                                </label>
-                                <label for="email_confirmation">
-                                    <i class="fa-solid fa-envelope"></i>
-                                    <input type="email" name="email_confirmation"
-                                        placeholder="Confirma el correo electrónico">
-                                </label>
-                                <label for="password">
-                                    <i class="fa-solid fa-key"></i>
-                                    <input type="password" name="password" placeholder="Crea una contraseña">
-                                </label>
-                                <label for="password_confirmation">
-                                    <i class="fa-solid fa-key"></i>
-                                    <input type="password" name="password_confirmation"
-                                        placeholder="Confirma la contraseña">
-                                </label>
-                                <button type="submit" class="fa-solid fa-user-plus"></button>
-                            </form>
-                            <figure>
-                                <img src="{{ asset('images/welcome/TRIVIUM-Texto-Sin Fondo.png') }}" alt>
-                            </figure>
-                        </section>
-                    </template>
-                </article>
-            </section>
-        </aside>
+                    <section id="register" x-ref="register" class="relevant-content" @scroll="handleInnerScroll($el)">
+                        <form method="POST" action="{{ route('register') }}">
+                            @csrf
+                            <label for="username">
+                                <i class="fa-solid fa-user"></i>
+                                <input type="text" name="username" placeholder="Nombre de usuario">
+                            </label>
+                            <label for="name">
+                                <i class="fa-solid fa-id-card"></i>
+                                <input type="text" name="name" placeholder="Nombres y apellidos">
+                            </label>
+                            <label for="cellphone">
+                                <i class="fa-solid fa-mobile-screen-button"></i>
+                                <input type="text" name="cellphone" placeholder="Número de celular">
+                            </label>
+                            <label for="email">
+                                <i class="fa-solid fa-envelope"></i>
+                                <input type="email" name="email" placeholder="Correo electrónico">
+                            </label>
+                            <label for="email_confirmation">
+                                <i class="fa-solid fa-envelope"></i>
+                                <input type="email" name="email_confirmation"
+                                    placeholder="Confirma el correo electrónico">
+                            </label>
+                            <label for="password">
+                                <i class="fa-solid fa-key"></i>
+                                <input type="password" name="password" placeholder="Crea una contraseña">
+                            </label>
+                            <label for="password_confirmation">
+                                <i class="fa-solid fa-key"></i>
+                                <input type="password" name="password_confirmation"
+                                    placeholder="Confirma la contraseña">
+                            </label>
+                            <button type="submit" class="fa-solid fa-user-plus"></button>
+                        </form>
+                        <figure>
+                            <img src="{{ asset('images/welcome/TRIVIUM-Texto-Sin Fondo.png') }}" alt>
+                        </figure>
+                    </section>
+                </template>
+            </article>
+        </section>
+    </aside>
     <img class="background" x-ref="background" src="{{ asset('images/welcome/3cervezastrivium.jpg') }}" alt="Tres cervezas Trivium">
 </body>
 </html>
