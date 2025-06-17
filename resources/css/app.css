@@ -46,7 +46,8 @@ body {
   padding-top: calc(100vh - 170px);
   overflow-y: scroll;
   transition: all 1s ease-in-out;
-  z-index: 2
+  z-index: 2;
+  visibility: hidden;
 }
 
 .content>.bottom {
@@ -63,7 +64,6 @@ body {
   left: 0;
   right: 0;
   top: 0;
-  padding: 0;
   margin: 0;
   pointer-events: none;
   display: flex;

@@ -19,7 +19,7 @@ Alpine.data('welcomeApp', () => ({
     loaded: false,
     bottomPaddingTop: window.location.pathname=="/" ? 75 : 0,
     figureImgWidth: window.location.pathname=="/" ? 160 : 85,
-    figurePaddingTop: 0,
+    figurePaddingTop: window.location.pathname=="/" ? 0 : 5,
     systemScroll: false,
     init() {
         this.routesInverse = Object.fromEntries(
@@ -36,6 +36,13 @@ Alpine.data('welcomeApp', () => ({
                 this.loaded = true;
             })
         })
+        window.onpopstate = () => {
+            this.section = this.routesInverse[window.location.pathname];
+            this.setSection(this.section, "abrupt")
+            this.$nextTick(() => {
+                this.loaded = true;
+            })
+        }
 
     },
     toggle() {
@@ -97,14 +104,16 @@ Alpine.data('welcomeApp', () => ({
         }
     },
     autoScrollHeaderBottom(mode="normal") {
-        this.systemScroll = true;
         const behavior = mode === "abrupt" ? "auto" : "smooth";
-        if(mode == "abrupt"){
-            this.updateFigure("abrupt-big")
-        }
+        
         this.$nextTick(() => {
             if(behavior== "auto"){
+                this.systemScroll = true;
                 this.$refs.content.scrollTop= 0
+                this.bottomPaddingTop = 75;
+                this.figureImgWidth = 160;
+                this.figurePaddingTop = 0;
+            this.systemScroll = false;
             }else{
                 document.querySelector(".relevant nav").scrollIntoView({ behavior, block: "end" });
             }

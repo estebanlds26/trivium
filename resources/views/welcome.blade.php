@@ -12,7 +12,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="welcome" x-data="welcomeApp" x-cloak>
+<body class="welcome" x-data="welcomeApp">
 
         <aside :style="{visibility: loaded ? 'visible' : 'hidden'}" class="content" x-ref="content" @scroll="handleScroll()">
             <section class="bottom" x-ref="bottom" :style="{paddingTop: bottomPaddingTop + 'px'}">
