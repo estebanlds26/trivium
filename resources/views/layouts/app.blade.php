@@ -88,6 +88,12 @@
                 </div>
             </div>
         </section>
+        <section class="notification" :class="notification.visible?'visible':''">
+            <div class="notification-container">
+                <i class="fa-solid fa-bell"></i>
+                <span class="notification-text">677576</span>
+            </div>
+        </section>
         <section class="sidebar">
             @yield('sidebar')
         </section>

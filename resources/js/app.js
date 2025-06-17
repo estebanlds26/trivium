@@ -327,6 +327,11 @@ Alpine.data('produccion', () => ({
 Alpine.data('dashboardApp', () => ({
     section: 'home',
     openProfileLink: false,
+    notification: {
+        message: '',
+        type: 'info',
+        visible: false,
+    },
     routes: {
         home: '',
         production: 'produccion',
@@ -335,6 +340,16 @@ Alpine.data('dashboardApp', () => ({
         settings: 'ajustes',
         help: 'ayuda',
         inventory: 'inventario',
+    },
+    notify(message, type = 'info'){
+        this.notification.message = message;
+        this.notification.type = type;
+        this.notification.visible = true;
+        setTimeout(()=>{
+            this.notification.visible = false;
+            this.notification.message = '';
+            this.notification.type = 'info';
+        })
     },
     toggleProfile() {
         this.openProfileLink = !this.openProfileLink;
@@ -368,6 +383,7 @@ Alpine.data('dashboardApp', () => ({
     cart: [],
     showCartModal: false,
     addToCart(product, quantity = 1) {
+        this.notify("Producto agregado al carrito con éxito")
         const existing = this.cart.find(item => item.id === product.id);
         if (existing) {
             existing.quantity += parseInt(quantity);

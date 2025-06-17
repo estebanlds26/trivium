@@ -697,18 +697,26 @@ body {
     }
   }
 }
-
+.notification{
+  position: fixed;
+  top: 60px;
+  max-width: 40px;
+  transition: all 1s ease;
+  &.visible{
+    max-width: 1000px;
+  }
+}
 .sidebar {
   min-width: 47px;
   z-index: 3;
-  max-width: 47px;
+  max-width: 57px;
   height: calc(100% - 47px);
   background-color: #0A0C13;
   position: fixed;
   top: 47px;
   display: grid;
   overflow-x: hidden;
-  padding-top: 0.8em;
+  padding: 0.8em 5px;
   grid-template-rows: repeat(auto-fill, 60px);
   transition: max-width 0.4s ease-in-out;
 
